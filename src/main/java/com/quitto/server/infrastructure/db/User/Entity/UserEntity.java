@@ -12,7 +12,7 @@ import jakarta.persistence.Table;
 import com.quitto.server.domain.enums.Role;
 
 @Entity
-@Table(name = "user")
+@Table(name = "\"user\"")
 public class UserEntity {
 
     @Id
