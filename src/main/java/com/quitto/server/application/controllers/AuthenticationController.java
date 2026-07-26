@@ -8,11 +8,11 @@ import com.quitto.server.application.dto.Auth.LoginResponseDTO;
 import com.quitto.server.application.dto.Auth.RegisterDTO;
 import com.quitto.server.application.dto.Auth.RegisterResponseDTO;
 import com.quitto.server.application.services.Auth.UserAuthenticationService;
-import com.quitto.server.domain.interfaces.Auth.CookieManager;
+import com.quitto.server.domain.interfaces.Cookies.CookieManager;
 import com.quitto.server.domain.valueobject.CookieDomain;
-import com.quitto.server.infrastructure.Adpter.out.CookieManagerAdapter;
+import com.quitto.server.infrastructure.interfaces.Cookies.HttpCookieWriter;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import java.util.Date;
 
@@ -20,7 +20,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 
 
@@ -29,11 +28,13 @@ import jakarta.servlet.http.HttpServletResponse;
 public class AuthenticationController {
 
     private final UserAuthenticationService service;
-    private final CookieManagerAdapter cookieManager;
+    private final CookieManager cookieManager;
+    private final HttpCookieWriter cookieWriter;
 
-    public AuthenticationController(UserAuthenticationService service, CookieManagerAdapter cookieManager) {
+    public AuthenticationController(UserAuthenticationService service,  CookieManager cookieManager, HttpCookieWriter cookieWriter) {
         this.service = service;
         this.cookieManager = cookieManager;
+        this.cookieWriter = cookieWriter;
     }
 
     @PostMapping("/login")
@@ -45,8 +46,7 @@ public class AuthenticationController {
         }
 
         CookieDomain cookieDomain = cookieManager.createAccessTokenCookie(token);
-        Cookie cookie = cookieManager.toFrameworkCookie(cookieDomain);
-        cookieManager.writeCookie(response, cookie);
+        cookieWriter.writeCookie(response, cookieDomain);
 
         LoginResponseDTO responseBody = new LoginResponseDTO(
             token,
@@ -57,7 +57,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<RegisterResponseDTO> register(@RequestBody @Valid RegisterDTO data) {
+    public ResponseEntity<RegisterResponseDTO> register(@RequestBody @Valid RegisterDTO data, HttpServletResponse response) {
 
         if (data.password().length() <= 0 || data.password().length() >= 500) {
             return ResponseEntity.status(401).build();
@@ -69,12 +69,15 @@ public class AuthenticationController {
             return ResponseEntity.status(401).build();
         }
 
-        RegisterResponseDTO  response = new RegisterResponseDTO(
+        CookieDomain cookieDomain = cookieManager.createAccessTokenCookie(token);
+        cookieWriter.writeCookie(response, cookieDomain);
+
+        RegisterResponseDTO  responseBody = new RegisterResponseDTO(
             token,
             new Date()
         );
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(responseBody);
     }
 
 }

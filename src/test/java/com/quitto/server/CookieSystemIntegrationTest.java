@@ -145,7 +145,7 @@ class CookieSystemIntegrationTest {
         assertEquals("access_token", cookie.name());
         assertEquals("jwt-value", cookie.value());
         assertTrue(cookie.httpOnly());
-        assertTrue(cookie.secure());
+        assertFalse(cookie.secure());
         assertEquals("/", cookie.path());
     }
 
@@ -156,20 +156,6 @@ class CookieSystemIntegrationTest {
         assertEquals("refresh_token", cookie.name());
         assertEquals("/api", cookie.path());
         assertEquals(7200, cookie.maxAge());
-    }
-
-    @Test
-    void httpCookieService_convertsDomainToFrameworkCookie() {
-        CookieDomain domain = CookieDomain.of("session", "abc", "/app", 3600);
-        Cookie framework = httpCookieService.toFrameworkCookie(domain);
-
-        assertEquals("session", framework.getName());
-        assertEquals("abc", framework.getValue());
-        assertEquals("/app", framework.getPath());
-        assertTrue(framework.isHttpOnly());
-        assertTrue(framework.getSecure());
-        assertEquals(3600, framework.getMaxAge());
-        assertEquals("coffe_server", framework.getDomain());
     }
 
     @Test

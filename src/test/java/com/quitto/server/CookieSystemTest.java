@@ -205,23 +205,8 @@ class CookieSystemTest {
     // --- HttpCookieService ---
 
     @Test
-    void cookieService_convertsDomainToFrameworkCookie() {
-        HttpCookieService service = new HttpCookieService();
-        CookieDomain domain = CookieDomain.of("test", "value", "/app", 7200);
-
-        jakarta.servlet.http.Cookie cookie = service.toFrameworkCookie(domain);
-
-        assertEquals("test", cookie.getName());
-        assertEquals("value", cookie.getValue());
-        assertEquals("/app", cookie.getPath());
-        assertTrue(cookie.isHttpOnly());
-        assertTrue(cookie.getSecure());
-        assertEquals(7200, cookie.getMaxAge());
-    }
-
-    @Test
     void cookieService_createsCookie() {
-        HttpCookieService service = new HttpCookieService();
+        HttpCookieService service = new HttpCookieService(false);
         CookieDomain cookie = service.createCookie("x", "y");
 
         assertEquals("x", cookie.name());
@@ -230,7 +215,7 @@ class CookieSystemTest {
 
     @Test
     void cookieService_createsCookieWithPathAndMaxAge() {
-        HttpCookieService service = new HttpCookieService();
+        HttpCookieService service = new HttpCookieService(false);
         CookieDomain cookie = service.createCookie("x", "y", "/path", 1800);
 
         assertEquals("/path", cookie.path());

@@ -134,7 +134,8 @@ class LoginIntegrationTest {
         Cookie cookie = result.getResponse().getCookie("access_token");
         assertNotNull(cookie);
         assertTrue(cookie.isHttpOnly(), "Cookie must be httpOnly");
-        assertTrue(cookie.getSecure(), "Cookie must be secure");
+        // Secure depends on app.cookie.secure property (false on HTTP/dev, true on HTTPS/prod)
+        assertFalse(cookie.getSecure(), "Cookie should NOT be secure on HTTP (test profile)");
     }
 
     @Test

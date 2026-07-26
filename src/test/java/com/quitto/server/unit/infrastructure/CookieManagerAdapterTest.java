@@ -9,7 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.quitto.server.domain.interfaces.Cookies.CookieService;
+import com.quitto.server.domain.interfaces.Cookies.CookieFactory;
 import com.quitto.server.domain.valueobject.CookieDomain;
 import com.quitto.server.infrastructure.Adpter.out.CookieManagerAdapter;
 
@@ -17,7 +17,7 @@ import com.quitto.server.infrastructure.Adpter.out.CookieManagerAdapter;
 class CookieManagerAdapterTest {
 
     @Mock
-    private CookieService cookieService;
+    private CookieFactory cookieService;
 
     @InjectMocks
     private CookieManagerAdapter adapter;

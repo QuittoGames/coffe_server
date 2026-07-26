@@ -4,36 +4,34 @@ import java.util.Objects;
 
 import org.springframework.stereotype.Component;
 
-import com.quitto.server.domain.interfaces.Auth.CookieManager;
 import com.quitto.server.domain.valueobject.CookieDomain;
+import com.quitto.server.infrastructure.interfaces.Cookies.HttpCookieMapper;
+import com.quitto.server.infrastructure.interfaces.Cookies.HttpCookieWriter;
+import com.quitto.server.infrastructure.services.Auth.Token.Cookies.HttpCookieWriterManeger;
+import com.quitto.server.domain.interfaces.Cookies.CookieManager;
+import com.quitto.server.domain.interfaces.Cookies.CookieFactory;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
-
-import com.quitto.server.domain.interfaces.Cookies.CookieService;
 
 @Component
 public class CookieManagerAdapter implements CookieManager {
 
-    private final CookieService cookieService;
+    private final CookieFactory cookieFactory;
+    private final HttpCookieWriter cookieWriter;
 
-    public CookieManagerAdapter(CookieService cookieService) {
-        this.cookieService = cookieService;
+    public CookieManagerAdapter(CookieFactory cookieService, HttpCookieWriter cookieWriter) {
+        this.cookieFactory = cookieService;
+        this.cookieWriter = cookieWriter;
     }
 
     @Override
     public CookieDomain createAccessTokenCookie(String value) {
-        return cookieService.createCookie("access_token", value);
+        return cookieFactory.createCookie("access_token", value);
     }
 
-    public Cookie toFrameworkCookie(CookieDomain domainCookie) {
-        return cookieService.toFrameworkCookie(domainCookie);
-    }
-
-    public void writeCookie(HttpServletResponse response, Cookie cookie){
+    public void writeCookie(HttpServletResponse response, CookieDomain cookieDomain) {
         Objects.requireNonNull(response, "response cannot be null");
-        Objects.requireNonNull(cookie, "cookieDomain cannot be null");
+        Objects.requireNonNull(cookieDomain, "cookieDomain cannot be null");
 
-        response.addCookie(cookie);
     }
 }
