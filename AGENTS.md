@@ -1,5 +1,5 @@
 ---
-description: Backend central de homelab com Clean Architecture — autenticação JWT, OAuth2 Google, gerenciamento de máquinas, integração Linux e servidor MCP para agentes de IA.
+description: Servidor pessoal multifuncional com Clean Architecture — autenticação JWT, OAuth2 Google, gerenciamento de máquinas, integração Linux, servidor MCP para agentes de IA, controle de backup e sistema multi-usuário com permissões.
 ---
 
 # coffe_server
@@ -58,11 +58,13 @@ The result is a highly maintainable architecture where:
 
 ## 1. Descrição do Projeto
 
-**coffe_server** é o backend central do ecossistema de homelab do Quitto. A visão de longo prazo é um sistema tipo "Jarvis" (Iron Man) — um hub que integra autenticação centralizada, gerenciamento de máquinas (Wake-on-LAN, Tailscale), usuários Linux, serviços Google (Calendar, Tasks) e um servidor MCP para agentes de IA.
+**coffe_server** é o servidor central do ecossistema pessoal do Quitto — um hub multifuncional pensado para estudos, automação e gerenciamento de homelab. A visão de longo prazo é um sistema tipo "Jarvis" (Iron Man): um backend que integra autenticação centralizada, gerenciamento de máquinas (Wake-on-LAN, Tailscale), usuários Linux, serviços Google (Calendar, Tasks), servidor MCP para agentes de IA, **controle de backup** e **sistema de permissões multi-usuário**.
+
+Ele funciona como um **servidor geral** que pode ser acessado por outras pessoas que o administrador permitir, cada uma com seu nível de acesso. A ideia é que seja o cérebro do homelab — máquinas, arquivos, calendário, tarefas, automação — tudo exposto via REST e MCP Tools para agentes de IA, formando a base de um ecossistema de agentes consistente.
 
 O projeto segue **Clean Architecture / Arquitetura Hexagonal** com camadas bem definidas: domínio puro (sem frameworks), application (orquestração), infraestrutura (implementações concretas) e MCP (camada de agentes de IA).
 
-Usuários finais: Quitto (dev/admin), agentes de IA via MCP, e futuros usuários do PS3 (Project Setup 3 Web).
+Usuários finais: Quitto (dev/admin), agentes de IA via MCP, usuários convidados com permissões específicas, e futuros usuários do PS3 (Project Setup 3 Web).
 
 ---
 
@@ -375,3 +377,10 @@ SERVER_API_KEY=***
 - **Notas de planejamento**: `doc/plain.md` (visão geral, motivações, integrações futuras)
 - **README**: `README.md` (vazio — documentação por fazer)
 - **Licença**: MIT (`LICENSE`)
+
+
+**OBS:**
+
+The services of OAuth 2 for Google, nao devem ser usados como base para analises de arquitetura ja que seram refatorados posteriometne , a analise ou uso deles so deve ocorrer quadno o `client` pedir
+
+**Folders**, pastas vazias nao devem pesar na analise, ja que estao ai meio que prontas para quando forem nessesarias

@@ -35,7 +35,7 @@
     </appender>
 
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <file>logs/application.log</file>
+        <file>docs/logs/application.log</file>
         <append>true</append>
 
         <encoder charset="UTF-8">

@@ -361,7 +361,7 @@ a
 
 > **Versão:** 0.0.1-SNAPSHOT
 > **Stack:** Java 21 + Spring Boot 4.0.6
-> **Propósito:** Servidor backend com autenticação JWT, integração Google OAuth2, MCP/IA e gerenciamento de máquinas.
+> **Propósito:** Servidor pessoal multifuncional — autenticação JWT, OAuth2 Google, gerenciamento de máquinas, integração Linux, MCP para agentes de IA, controle de backup e sistema multi-usuário com permissões.
 
 ---
 
@@ -472,13 +472,16 @@ The result is a highly maintainable architecture where:
 
 ## 1. Visão Geral do Projeto
 
-O **coffe_server** é um servidor backend Spring Boot que expõe:
+O **coffe_server** é o servidor central do ecossistema pessoal do Quitto — um hub multifuncional para estudos, automação e gerenciamento de homelab. Ele funciona como um backend geral que expõe:
 
 - **API REST** para autenticação (login/register) e gerenciamento de recursos
 - **Autenticação JWT** via cookie ou header `Authorization: Bearer`
 - **Login social** via Google OAuth2
 - **Integração MCP** (Model Context Protocol) para agentes de IA
 - **Gerenciamento de Máquinas** com suporte a Tailscale e Wake-on-LAN
+- **Controle de backup** de arquivos e sistemas
+- **Sistema multi-usuário com permissões** — acesso concedido pelo administrador para outras pessoas
+- **Integração com Linux** (users, groups, sistema de arquivos)
 
 ### Stack Tecnológica
 
