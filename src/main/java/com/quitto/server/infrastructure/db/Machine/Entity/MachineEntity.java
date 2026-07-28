@@ -62,6 +62,10 @@ public class MachineEntity {
     public MachineEntity(Long id, String hostname, String tailscaleNodeKey, String currentIp, String macAddress,
             boolean wolEnabled, boolean status, String oS, Long userId) {
         this(id, hostname, tailscaleNodeKey, currentIp, macAddress, wolEnabled, status, oS);
+        if (userId != null) {
+            this.user = new UserEntity();
+            this.user.setId(userId);
+        }
     }
 
     public Long getId() {

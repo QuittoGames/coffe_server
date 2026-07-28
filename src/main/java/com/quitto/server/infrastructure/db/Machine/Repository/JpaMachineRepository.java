@@ -4,6 +4,10 @@ import java.util.Optional;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
 import com.quitto.server.infrastructure.db.Machine.Entity.MachineEntity;
 
 public interface JpaMachineRepository extends JpaRepository<MachineEntity,Long>{
@@ -23,6 +27,10 @@ public interface JpaMachineRepository extends JpaRepository<MachineEntity,Long>{
     boolean existsByHostname(String hostname);
 
     boolean existsByMacAddress(String macAddress);
+
+    @Modifying
+    @Query(value = "UPDATE machine SET user_id = :userId WHERE id = :machineId", nativeQuery = true)
+    int updateOwner(@Param("machineId") long machineId, @Param("userId") long userId);
 
     void deleteById(long id);
 

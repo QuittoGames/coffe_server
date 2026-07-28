@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 
 import com.quitto.server.domain.Repository.Machine.MachineRepository;
 import com.quitto.server.domain.models.Machine.Machine;
-import com.quitto.server.domain.models.User.User;
 import com.quitto.server.infrastructure.db.Machine.Entity.MachineEntity;
 import com.quitto.server.infrastructure.db.Machine.Mapper.MachineMapper;
 import com.quitto.server.infrastructure.db.Machine.Repository.JpaMachineRepository;
@@ -82,8 +81,12 @@ public class MachineRepositoryAdapter implements MachineRepository {
     }
 
     @Override
-    public User setOwner(User new_user){
-        return new User();
+    public Optional<Machine> setOwner(long machineId, long userId) {
+        int updated = repository.updateOwner(machineId, userId);
+        if (updated == 0) {
+            return Optional.empty();
+        }
+        return findById(machineId);
     }
 
     @Override

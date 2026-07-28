@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 
 import com.quitto.server.domain.models.Machine.Machine;
-import com.quitto.server.domain.models.User.User;
 
 public interface MachineRepository {
 
@@ -18,7 +17,7 @@ public interface MachineRepository {
 
     Optional<Machine> findByTailscaleNodeKey(String tailscaleNodeKey);
 
-    User setOwner(User new_user);
+    Optional<Machine> setOwner(long machineId, long userId);
 
     List<Machine> findAll();
 
