@@ -3,7 +3,9 @@ package com.quitto.server.infrastructure.security.Filter;
 import com.quitto.server.domain.exception.InvalidTokenException;
 
 import java.io.IOException;
+import java.net.http.HttpResponse;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -43,12 +45,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)throws ServletException, IOException{
         try{
-            String token = recoverToken(request); // The token cannot be null because recoverToken() validates it before.
-            boolean isValidToken = tokenService.verifyToken(token);
+            Optional<String> token = recoverToken(request); // The token cannot be null because recoverToken() validates it before.
 
-            if(!isValidToken) throw new InvalidTokenException("The provided JWT token is invalid or expired");
+            String jwt = token
+                .filter(t -> !t.isBlank())
+                .orElse(null);
 
-            Long id = tokenService.extractIdSubject(token)
+           if (jwt == null){
+                filterChain.doFilter(request, response);
+                return;
+            }
+
+            boolean isValidToken = tokenService.verifyToken(jwt);
+
+            if(!isValidToken) {
+                throw new InvalidTokenException("The provided JWT token is invalid or expired");
+            }
+
+            Long id = tokenService.extractIdSubject(jwt)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid token subject"));
 
             User user_domain = repository.findById(id)
@@ -60,16 +74,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 
             var auth = new UsernamePasswordAuthenticationToken(user, null, authorities);
             SecurityContextHolder.getContext().setAuthentication(auth);
-
-        }catch(NullPointerException e){
-            logger.error("Null pointer during authentication", e);
+        }
+        catch (IllegalArgumentException e) {
+            logger.warn("Authentication failed due to invalid authentication data: {}", e);
             SecurityContextHolder.clearContext();
         }
         catch(JWTVerificationException e){
             logger.error("JWT verification failed", e);
             SecurityContextHolder.clearContext();
         }
-        catch(IllegalArgumentException e){
+        catch(InvalidTokenException e){
             logger.warn("Authentication argument error", e);
             SecurityContextHolder.clearContext();
         }
@@ -77,9 +91,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
         filterChain.doFilter(request, response);
     }
 
-    public String recoverToken(HttpServletRequest request) throws IllegalArgumentException{
+    public Optional<String> recoverToken(HttpServletRequest request){
         TokenRequestContext context = new HttpTokenRequestContext(request);
-        return manager.resolve(context) //Get all tokens in session
-            .orElseThrow(() -> new IllegalArgumentException("token is required"));
+        return manager.resolve(context); //Get all tokens in session
     }
 }

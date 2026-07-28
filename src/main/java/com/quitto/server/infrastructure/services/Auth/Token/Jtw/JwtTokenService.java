@@ -7,6 +7,7 @@ import javax.validation.constraints.NotNull;
 
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.oauth2.jwt.Jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -37,20 +38,21 @@ public class JwtTokenService implements TokenService<Long> {
     }
 
     @Override
-    public boolean verifyToken(String token) throws JWTVerificationException{
-        Algorithm algorithm = Algorithm.HMAC256(this.KEY);
+    public boolean verifyToken(String token){
+        try{
+            Algorithm algorithm = Algorithm.HMAC256(this.KEY);
 
-        String JwtSubject = JWT.require(algorithm)
-            .withIssuer("coffe-api")
-            .build()
-            .verify(token)
-            .getSubject();
+            String JwtSubject = JWT.require(algorithm)
+                .withIssuer("coffe-api")
+                .build()
+                .verify(token)
+                .getSubject();
 
-        if (!JwtSubject.isBlank()){
-            return true;
+
+            return JwtSubject != null && !JwtSubject.isBlank();
+        }catch(JWTVerificationException JTWVE){
+            return false;
         }
-
-        return false;
     }
 
     @Override
