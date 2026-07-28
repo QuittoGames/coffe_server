@@ -338,16 +338,16 @@ Ainda há **bugs críticos** que impedem features novas.
 <span class="badge badge-phase1">Fazer AGORA</span>
 <span class="badge badge-fire">8 itens</span>
 
-<div class="progress-bar"><div class="progress-fill fire" style="width: 0%"></div></div>
+<div class="progress-bar"><div class="progress-fill fire" style="width: 50%"></div></div>
 
 Esses bugs **impedem features novas** ou causam falhas em produção. Cada item resolvido aqui desbloqueia o resto.
 
 ### 🐛 Bugs Críticos
 
-- [ ] **`MachineEntity` construtor ignora `userId`** — O parâmetro `userId` nunca é atribuído ao campo `@ManyToOne user`. `MachineMapper.toInfra()` passa `machine.getUserId()` mas o valor é silenciosamente descartado. Causa `ConstraintViolationException` (NOT NULL).
+- [x] **`MachineEntity` construtor ignora `userId`** — O parâmetro `userId` nunca é atribuído ao campo `@ManyToOne user`. `MachineMapper.toInfra()` passa `machine.getUserId()` mas o valor é silenciosamente descartado. Causa `ConstraintViolationException` (NOT NULL).
   <span class="tag">MachineEntity.java:62-65</span>
 
-- [ ] **`MachineRepositoryAdapter.setOwner()` retorna `new User()` vazio** — Perde todos os dados do owner. Método na interface `MachineRepository` deveria ser removido ou implementado corretamente.
+- [x] **`MachineRepositoryAdapter.setOwner()` retorna `new User()` vazio** — Perde todos os dados do owner. Método na interface `MachineRepository` deveria ser removido ou implementado corretamente.
   <span class="tag">MachineRepositoryAdapter.java:85-87</span>
 
 - [ ] **OAuth2 authority com espaço** — `"ROLE_ "` produz `"ROLE_ USER"` em vez de `"ROLE_USER"`. Nenhum usuário OAuth2 consegue acessar rotas protegidas.
@@ -359,10 +359,10 @@ Esses bugs **impedem features novas** ou causam falhas em produção. Cada item 
 - [ ] **OAuth2 cria usuário sem passwordHash** — `UserEntity.password_hash` é `nullable = false`. Novo usuário OAuth2 criado via `new UserEntity()` sem `setPasswordHash()` causa `ConstraintViolationException`.
   <span class="tag">OAuth2UserProvisioningService.java:35-38</span>
 
-- [ ] **`JwtAuthenticationFilter` não retorna 401 em caso de falha** — `filterChain.doFilter()` é chamado incondicionalmente mesmo quando a autenticação falha. A requisição prossegue sem autenticação em vez de retornar 401.
+- [x] **`JwtAuthenticationFilter` não retorna 401 em caso de falha** — `filterChain.doFilter()` é chamado incondicionalmente mesmo quando a autenticação falha. A requisição prossegue sem autenticação em vez de retornar 401.
   <span class="tag">JwtAuthenticationFilter.java:77</span>
 
-- [ ] **`User.toString()` vaza `passwordHash`** — BCrypt hash exposto em logs e mensagens de debug.
+- [x] **`User.toString()` vaza `passwordHash`** — BCrypt hash exposto em logs e mensagens de debug.
   <span class="tag">User.java:97-99</span>
 
 ### 🔴 Segurança Imediata
@@ -653,7 +653,7 @@ Esses bugs **impedem features novas** ou causam falhas em produção. Cada item 
 
 <div class="section-summary">
   <div class="stat-card">
-    <strong>0</strong> / 8<br><span class="tag">🔥 Fase 1</span>
+    <strong>4</strong> / 8<br><span class="tag">🔥 Fase 1</span>
   </div>
   <div class="stat-card">
     <strong>0</strong> / 16<br><span class="tag badge-high">Fase 2</span>
@@ -674,7 +674,7 @@ Esses bugs **impedem features novas** ou causam falhas em produção. Cada item 
     <strong>0</strong> / 3<br><span class="tag">Fase 7</span>
   </div>
   <div class="stat-card">
-    <strong>0</strong> / 46<br><span class="tag">Total</span>
+    <strong>4</strong> / 46<br><span class="tag">Total</span>
   </div>
 </div>
 
@@ -683,5 +683,6 @@ Esses bugs **impedem features novas** ou causam falhas em produção. Cada item 
 <blockquote>
 <strong>📅 Gerado em:</strong> 2026-07-28 · <strong>Baseado em análise completa do código-fonte</strong><br>
 <strong>🎯 Meta:</strong> Completar Fase 1 antes de começar qualquer feature nova. Bugs críticos de Machine, OAuth2 e JWT Filter impedem produção.<br>
-<strong>✅ O que já foi feito desde o último audit:</strong> CookieSystem refatorado (CookieManager + CookieFactory no domínio), typos corrigidos (JwtTokenResolver, BCryptPasswordService, Provider, ExternalAccount, GoogleCalendarTools, etc.), JwtTokenService.extractIdSubject retorna Optional, verifyToken() safe.
+<strong>✅ O que já foi feito desde o último audit:</strong> CookieSystem refatorado (CookieManager + CookieFactory no domínio), typos corrigidos (JwtTokenResolver, BCryptPasswordService, Provider, ExternalAccount, GoogleCalendarTools, etc.), JwtTokenService.extractIdSubject retorna Optional, verifyToken() safe. <br>
+MachineEntity userId mapping corrigido, MachineRepositoryAdapter.setOwner() implementado, JwtAuthenticationFilter retorna 401 em falha, User.toString() sem vazar passwordHash.
 </blockquote>
