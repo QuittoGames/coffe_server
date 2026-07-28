@@ -317,168 +317,335 @@
     transition: width 0.3s;
   }
 
-  .progress-fill.fire { background: linear-gradient(90deg, #EF4444, #F97316); width: 0%; }
-  .progress-fill.high { background: linear-gradient(90deg, #F97316, #EAB308); width: 0%; }
-  .progress-fill.med { background: linear-gradient(90deg, #EAB308, #22C55E); width: 0%; }
-  .progress-fill.low { background: linear-gradient(90deg, #22C55E, #3B82F6); width: 0%; }
+  .progress-fill.fire { background: linear-gradient(90deg, #EF4444, #F97316); }
+  .progress-fill.high { background: linear-gradient(90deg, #F97316, #EAB308); }
+  .progress-fill.med { background: linear-gradient(90deg, #EAB308, #22C55E); }
+  .progress-fill.low { background: linear-gradient(90deg, #22C55E, #3B82F6); }
 </style>
 
 # coffe_server — TODO
 
 <blockquote>
-<strong>Readiness:</strong> 🟡 5/10 · <strong>Baseado em audit completo</strong> — architecture, exception-handling, security. <br>
-Sprint de preparação antes de implementar features reais: backup, Unix profile, WOL, Tailscale.
+<strong>Readiness:</strong> 🟡 6/10 · <strong>Revisão completa em 2026-07-28</strong> — architecture, security, code quality. <br>
+Muitos typos foram corrigidos e o sistema de cookies foi refatorado corretamente. <br>
+Ainda há **bugs críticos** que impedem features novas.
 </blockquote>
 
 ---
 
-## 🔥 Fase 1 — Bloqueantes
+## 🔥 Fase 1 — Bloqueantes (PRIORIDADE MÁXIMA)
 
 <span class="badge badge-phase1">Fazer AGORA</span>
-<span class="badge badge-fire">15 itens</span>
+<span class="badge badge-fire">8 itens</span>
 
 <div class="progress-bar"><div class="progress-fill fire" style="width: 0%"></div></div>
 
-Esses problemas impedem qualquer feature nova. Cada item resolvido aqui evita que a dívida técnica se propague.
+Esses bugs **impedem features novas** ou causam falhas em produção. Cada item resolvido aqui desbloqueia o resto.
 
-### Arquitetura (Domínio)
+### 🐛 Bugs Críticos
 
-- [ ] **Mover `CookieService` para o domínio** — `toFrameworkCookie()` vaza `jakarta.servlet.http.Cookie` na porta do domínio. Criar `CookieFrameworkConverter` na infraestrutura.
-  <span class="tag">domain/interfaces/Cookies/CookieService.java</span>
+- [ ] **`MachineEntity` construtor ignora `userId`** — O parâmetro `userId` nunca é atribuído ao campo `@ManyToOne user`. `MachineMapper.toInfra()` passa `machine.getUserId()` mas o valor é silenciosamente descartado. Causa `ConstraintViolationException` (NOT NULL).
+  <span class="tag">MachineEntity.java:62-65</span>
 
-- [ ] **`AuthenticationController` depender da interface `CookieManager`, não da implementação `CookieManagerAdapter`** — adicionar `toFrameworkCookie()` e `writeCookie()` na interface.
-  <span class="tag">AuthenticationController.java / CookieManager.java</span>
-
-- [ ] **`OAuth2UserProvisioningService` usar `UserRepository` (porta do domínio) ao invés de `JpaUserRepository`** — bypassa toda a camada de domínio.
-  <span class="tag">OAuth2UserProvisioningService.java</span>
-
-### Stubs Perigosos
-
-- [ ] **`MachineRepositoryAdapter.setOwner()` retorna `new User()` vazio** — implementar de verdade ou lançar `UnsupportedOperationException`.
+- [ ] **`MachineRepositoryAdapter.setOwner()` retorna `new User()` vazio** — Perde todos os dados do owner. Método na interface `MachineRepository` deveria ser removido ou implementado corretamente.
   <span class="tag">MachineRepositoryAdapter.java:85-87</span>
 
-- [ ] **`MachineEntity` construtor ignora `userId`** — o parâmetro nunca é mapeado pro campo `@ManyToOne user`, causa violação de constraint NOT NULL.
-  <span class="tag">MachineEntity.java:42-44, 62-65</span>
-
-### Segurança
-
-- [ ] **Authority do OAuth2 com espaço** — `"ROLE_ "` produz `"ROLE_ USER"` em vez de `"ROLE_USER"`. Nenhum usuário OAuth2 funciona.
+- [ ] **OAuth2 authority com espaço** — `"ROLE_ "` produz `"ROLE_ USER"` em vez de `"ROLE_USER"`. Nenhum usuário OAuth2 consegue acessar rotas protegidas.
   <span class="tag">OAuth2UserProvisioningService.java:41</span>
 
-- [ ] **`User.toString()` vaza `passwordHash`** — BCrypt hash exposto em logs.
-  <span class="tag">User.java:97-100</span>
+- [ ] **OAuth2UserProvisioningService usa `JpaUserRepository` direto** — Bypassa toda a camada de domínio. Deveria usar `UserRepository` (porta do domínio).
+  <span class="tag">OAuth2UserProvisioningService.java:20-23</span>
 
-- [ ] **`CalendarController` com `@PreAuthorize("permitAll()")`** — endpoints expostos. Remover ou proteger por endpoint.
-  <span class="tag">CalendarController.java:18</span>
+- [ ] **OAuth2 cria usuário sem passwordHash** — `UserEntity.password_hash` é `nullable = false`. Novo usuário OAuth2 criado via `new UserEntity()` sem `setPasswordHash()` causa `ConstraintViolationException`.
+  <span class="tag">OAuth2UserProvisioningService.java:35-38</span>
 
-- [ ] **Adicionar rate limiting em `/auth/login` e `/auth/register`** — sem proteção contra brute force.
+- [ ] **`JwtAuthenticationFilter` não retorna 401 em caso de falha** — `filterChain.doFilter()` é chamado incondicionalmente mesmo quando a autenticação falha. A requisição prossegue sem autenticação em vez de retornar 401.
+  <span class="tag">JwtAuthenticationFilter.java:77</span>
+
+- [ ] **`User.toString()` vaza `passwordHash`** — BCrypt hash exposto em logs e mensagens de debug.
+  <span class="tag">User.java:97-99</span>
+
+### 🔴 Segurança Imediata
+
+- [ ] **Adicionar rate limiting em `/auth/login` e `/auth/register`** — Sem proteção contra brute force.
   <span class="tag">AuthenticationController.java</span>
-
-### Autenticação
-
-- [ ] **`JwtAuthenticationFilter` sempre chama `doFilter()` mesmo após falha** — retornar 401 e interromper o chain.
-  <span class="tag">JwtAuthenticationFilter.java:64-77</span>
-
-- [ ] **`JwtTokenService.extractIdSubject()` pode lançar NPE** — `getSubject()` retorna null, `isBlank()` quebra.
-  <span class="tag">JwtTokenService.java:67</span>
-
-- [ ] **`JwtTokenService.verifyToken()` pode lançar NPE** — mesmo problema do `getSubject()`.
-  <span class="tag">JwtTokenService.java:49</span>
-
-### Persistência
-
-- [ ] **`LinuxUser` e `Groups` sem infraestrutura JPA** — mappers, adapters, repositories tudo vazio.
-  <span class="tag">infrastructure/db/LinuxUser/</span>
-
-- [ ] **`ExternalAccount` sem mapper, adapter, repository** — Entity existe, resto falta.
-  <span class="tag">infrastructure/db/ExternalAccount/</span>
-
-- [ ] **`GoogleCalendarClient.getCalendar()` cria HTTP transport em toda chamada** — resource leak (threads, file descriptors).
-  <span class="tag">GoogleCalendarClient.java:35</span>
 
 ---
 
-## 🟡 Fase 2 — Importantes
+## 🟡 Fase 2 — Refatorações e Correções
 
 <span class="badge badge-phase2">Fazer junto com features</span>
-<span class="badge badge-high">12 itens</span>
+<span class="badge badge-high">16 itens</span>
 
 <div class="progress-bar"><div class="progress-fill high" style="width: 0%"></div></div>
 
-### Refatorações
+### Clean Architecture
 
-- [ ] **Mover `TokenResolverManager` para `application/services/Auth/Token/`** — é orquestrador (use case), não infraestrutura.
+- [ ] **Mover `TokenResolverManager` para `application/services/Auth/Token/`** — É orquestrador (use case), não infraestrutura.
+  <span class="tag">infrastructure/services/Auth/Token/TokenResolverManager.java</span>
 
-- [ ] **Converter field injection para constructor injection**:
-  - `UserRepositoryAdapter.java`
-  - `GoogleCalendarService.java`
-  - `GoogleCalendarTools.java`
+- [ ] **`MachineService` lança `UsernameNotFoundException` (Spring)** — Vazamento de framework na camada de aplicação. Criar `UserNotFoundException` no domínio.
+  <span class="tag">MachineService.java:28</span>
 
 - [ ] **Mover `MachineNotFoundException` de `shared/exception/` para `domain/exception/`**
+  <span class="tag">shared/exception/MachineNotFoundException.java</span>
+
+### Injection
+
+- [ ] **Converter field injection para constructor injection**:
+  - `UserRepositoryAdapter.java` — `@Autowired JpaUserRepository`
+  - `GoogleCalendarService.java` — `@Autowired GoogleCalendarClient`
+  - `GoogleCalendarTools.java` — `@Autowired GoogleCalendarService`, `@Autowired GoogleAuthService`
 
 ### Exception Handling
 
-- [ ] **Criar `UserNotFoundException` no domínio** — substituir `UsernameNotFoundException` (Spring Security) no `MachineService`.
+- [ ] **Adicionar `@ExceptionHandler` no `AuthExceptionHandler`** — Para `IllegalArgumentException`, `MachineNotFoundException`, `JWTVerificationException`, `InvalidTokenException`.
+  <span class="tag">AuthExceptionHandler.java</span>
 
-- [ ] **Adicionar `@ExceptionHandler` no `AuthExceptionHandler`** — para `IllegalArgumentException`, `MachineNotFoundException`, `JWTVerificationException`.
+- [ ] **Remover catch genérico `Exception` e `System.out/err`** — Em `GoogleCalendarTools` e `CalendarController`. Substituir por SLF4J + erro estruturado.
+  <span class="tag">GoogleCalendarTools.java / CalendarController.java</span>
 
-- [ ] **Remover catch genérico `Exception` no `GoogleCalendarTools` e `CalendarController`** — erros silenciados retornam lista vazia. Propagar ou retornar erro estruturado.
+### Service Gaps
 
-### User Service
+- [ ] **Implementar `UserService` com CRUD básico** — Só tem construtor vazio.
+  <span class="tag">UserService.java</span>
 
-- [ ] **Implementar `UserService` com CRUD básico** — só tem construtor vazio.
+- [ ] **`GoogleCalendarService.createEvent()` implementar de verdade** — Retorna `""` vazio (stub).
+  <span class="tag">GoogleCalendarService.java:19-21</span>
+
+### Persistência Incompleta
+
+- [ ] **Completar `LinuxUser` e `Groups` persistence** — Entities existem, faltam: Spring Data repos, mappers, adapters, domain repository interfaces.
+  <span class="tag">infrastructure/db/LinuxUser/</span>
+
+- [ ] **Completar `ExternalAccount` persistence** — Entity existe, faltam: Spring Data repo, mapper, adapter, domain repository interface.
+  <span class="tag">infrastructure/db/User/Entity/ExternalAccountEntity.java</span>
 
 ### Segurança
 
-- [ ] **Adicionar CORS configuration** — bean `CorsConfigurationSource` com origins explícitas.
+- [ ] **Adicionar CORS configuration** — Bean `CorsConfigurationSource` com origins explícitas.
   <span class="tag">SecurityConfig.java</span>
 
-- [ ] **Adicionar validação de senha** — min 8 chars, maiúscula, minúscula, número.
-  <span class="tag">AuthenticationController.java:61-63</span>
+- [ ] **Adicionar validação de senha** — Min 8 chars, maiúscula, minúscula, número.
+  <span class="tag">AuthenticationController.java:62</span>
 
-- [ ] **Adicionar SameSite=Strict nos cookies** — campo novo no `CookieDomain` record.
-  <span class="tag">CookieDomain.java / HttpCookieService.java</span>
+- [ ] **Adicionar SameSite=Strict nos cookies** — Atualmente `SameSite("Lax")`. Mudar para `Strict` e adicionar campo opcional no `CookieDomain`.
+  <span class="tag">CookieMapper.java:18 / CookieDomain.java</span>
 
-### Observability
+- [ ] **`CalendarController` proteger endpoints** — Remover `@PreAuthorize("permitAll()")` e proteger por endpoint ou role.
+  <span class="tag">CalendarController.java:18</span>
 
-- [ ] **Criar endpoint de health check com status do banco** — além do Actuator básico.
+### Resource Leaks
 
-- [ ] **Adicionar audit logging** — eventos de login, criação de usuário, operações sensíveis.
+- [ ] **`GoogleCalendarClient.getCalendar()` cachear HTTP transport** — Novo `GoogleNetHttpTransport.newTrustedTransport()` criado em toda chamada (resource leak: threads, file descriptors).
+  <span class="tag">GoogleCalendarClient.java:34-35</span>
 
 ---
 
-## 🟢 Fase 3 — Features
+## 🟠 Fase 3 — Próximas Features
 
 <span class="badge badge-phase3">Próximos passos</span>
-<span class="badge badge-med">4 features</span>
+<span class="badge badge-med">7 features</span>
 
 <div class="progress-bar"><div class="progress-fill med" style="width: 0%"></div></div>
 
-### Backup Control
+### Rate Limiting
 
-- [ ] Definir modelo de domínio (`Backup`, `BackupSchedule`, `BackupStatus`)
-- [ ] Criar repositório (porta no domínio)
-- [ ] Implementar adapter (compressão, SCP, storage local/S3)
-- [ ] Adicionar dependências: compressão, SCP/S3 SDK no `pom.xml`
-- [ ] Criar service + controller + MCP tools
+- [ ] Adicionar dependência `spring-boot-starter-webmvc-test` (já existe) + configurar bucket4j ou resilience4j
+- [ ] Criar filter/ interceptor para rate limiting em `/auth/login` e `/auth/register`
+- [ ] Configurar limites: N tentativas por minuto por IP
+- [ ] Retornar `429 Too Many Requests` com headers de rate limit
 
-### Unix Profile Reader
+### MCP Services
 
-- [ ] Completar infraestrutura de `LinuxUser` e `Groups` (Fase 1)
-- [ ] Implementar leitura real via SSH (JSch ou Apache SSHD)
-- [ ] Adicionar dependência SSH no `pom.xml`
-- [ ] Criar service para sincronizar Linux users com banco
+- [ ] Completar `GoogleCalendarService.createEvent()` — implementar chamada real à API
+- [ ] Adicionar `@Tool` para criar eventos no Google Calendar
+- [ ] Adicionar MCP tools para gerenciamento de máquinas (status, WOL)
+- [ ] Adicionar MCP tool para health check do servidor
+- [ ] Garantir que MCP tools sejam corretamente descobertas pelo Spring AI (`@Component` já adicionado)
 
-### Wake-on-LAN
+### OAuth2 External
 
-- [ ] Implementar envio de magic packet (UDP raw)
-- [ ] Criar endpoint `POST /api/machines/:id/wake`
-- [ ] Adicionar dependência JOLP ou raw UDP no `pom.xml`
+- [ ] Adicionar suporte a GitHub OAuth2 (Provider enum já existe)
+- [ ] Criar `OAuth2UserProvisioningService` genérico (não só Google)
+- [ ] Corrigir `OAuth2UserProvisioningService` para usar `UserRepository` (porta do domínio)
+- [ ] Vincular `ExternalAccount` ao usuário no banco durante OAuth2
 
-### Tailscale Integration
+### Coffee-SDK Connect
 
-- [ ] Implementar cliente API Tailscale
-- [ ] Sincronizar status das máquinas
+- [ ] Definir interface de conexão com SDK próprio (REST local ou Unix socket)
+- [ ] Criar health client do SDK: `coffee server status` → CPU, RAM, Disk, Docker, Postgres, serviços
+- [ ] Expor endpoints no servidor para o SDK consumir
+- [ ] Documentar formato de resposta do SDK
+
+### Frontend
+
+- [ ] Construir dashboard administrativo com Thymeleaf (preservar paleta de cores CSS existente)
+- [ ] Página de login funcional (já existe template)
+- [ ] Página de gerenciamento de máquinas
+- [ ] Página de visualização de backups
+- [ ] Design system: usar a paleta coffee + blue já definida no CSS
+
+### Backup Controllers
+
+- [ ] Usar Coffee-SDK para ler diretório `/mnt/mount/data/backups` (produção)
+- [ ] Listar backups disponíveis
+- [ ] Criar backup (via SDK ou script)
+- [ ] Restaurar backup
+- [ ] Agendar backups recorrentes
+- [ ] Domain model: `Backup`, `BackupSchedule`, `BackupStatus`
+
+### UnixUserService
+
+- [ ] Usar Coffee-SDK para parsear `/etc/passwd` e `/etc/group` do servidor
+- [ ] Sincronizar usuários e grupos Unix com o banco
+- [ ] Vincular `User` do sistema com `LinuxUser`
+- [ ] Interface de domínio: `LinuxUserRepository`
+- [ ] Completar infraestrutura JPA de `LinuxUser` e `Groups`
+
+---
+
+## 🔵 Fase 4 — Observabilidade
+
+<span class="badge badge-phase3" style="background:#1a2a4a; color:#60A5FA; border-color: #3B82F6;">Nova</span>
+<span class="badge badge-med">5 itens</span>
+
+<div class="progress-bar"><div class="progress-fill med" style="width: 0%"></div></div>
+
+### Logs Estruturados
+
+- [ ] Adicionar MDC (Mapped Diagnostic Context) com request ID, user ID, session ID em cada requisição
+- [ ] Substituir `System.out.println` e `System.err.println` por SLF4J em todo o codebase
+- [ ] Configurar logback-spring.xml com formato estruturado (JSON ou padrão coffee)
+
+### Métricas
+
+- [ ] Coletar métricas de uso dos endpoints (Spring Actuator + Micrometer)
+- [ ] Métricas de autenticação: tentativas de login, sucessos, falhas
+- [ ] Métricas de performance: latency dos endpoints, taxa de erro
+
+### Health Checks
+
+- [ ] Criar endpoint `/api/health` com status detalhado:
+  - Banco de dados (PostgreSQL / H2)
+  - Google Calendar API
+  - Disk usage (espaço em /mnt/mount/data/backups)
+  - Docker (se aplicável)
+  - Tailscale (se configurado)
+- [ ] Configurar grupos de health check no Actuator
+
+### Diagnóstico
+
+- [ ] Endpoint `/api/status` com informações do servidor:
+  - Uptime
+  - Versão do server
+  - Perfil ativo (dev/prod)
+  - Dependências externas (UP/DOWN)
+- [ ] Endpoint `/api/debug/auth` (já existe em CalendarController) — mover para rota apropriada
+
+### Audit Logging
+
+- [ ] Logar eventos importantes com estrutura padronizada:
+  - Login (sucesso/falha)
+  - Registro de usuário
+  - Criação de máquina
+  - Alteração de owner
+  - Operações de backup
+  - Ações MCP
+- [ ] Incluir em cada evento: timestamp, user ID, ação, target, resultado, IP
+
+---
+
+## 🟣 Fase 5 — Sistema de Permissões
+
+<span class="badge badge-phase3" style="background:#2a1a3a; color:#C084FC; border-color: #A855F7;">Nova</span>
+<span class="badge badge-med">4 itens</span>
+
+<div class="progress-bar"><div class="progress-fill med" style="width: 0%"></div></div>
+
+### Roles
+
+- [ ] Expandir `Role` enum: `ADMIN`, `DEVELOPER`, `USER`, `MACHINE`, `API`, `MCP`
+- [ ] Cada role com conjunto padrão de permissões
+
+### Permissions (granulares)
+
+- [ ] Modelar sistema de permissões no domínio:
+  - `machine.read`
+  - `machine.execute` (WOL, restart)
+  - `service.restart`
+  - `backup.create`
+  - `backup.restore`
+  - `user.manage`
+- [ ] Tabela `permissions` no banco
+- [ ] Relacionamento N:N entre roles e permissions
+
+### Scopes
+
+- [ ] Adicionar conceito de scope para tokens JWT
+- [ ] Validação de scope no `JwtAuthenticationFilter`
+- [ ] Endpoints expõem required scopes via annotation
+
+### Integração
+
+- [ ] `@PreAuthorize` com permisssões (ex: `hasPermission('machine.execute')`)
+- [ ] Seeds no `data-h2.sql` com roles + permissions padrão
+- [ ] Endpoint `/api/permissions` para consulta
+
+---
+
+## ⚫ Fase 6 — Auditoria
+
+<span class="badge badge-phase3" style="background:#1a1a1a; color:#F9FAFB; border-color: #6B7280;">Nova</span>
+<span class="badge badge-low">3 itens</span>
+
+<div class="progress-bar"><div class="progress-fill low" style="width: 0%"></div></div>
+
+### Audit Model
+
+- [ ] Domain model `AuditLog`:
+  - `id`, `userId`, `username`, `action`, `target`, `targetId`, `result` (SUCCESS/FAILURE), `details`, `ipAddress`, `timestamp`
+- [ ] Interface `AuditRepository` no domínio
+
+### Audit Infrastructure
+
+- [ ] Entity JPA `AuditLogEntity`
+- [ ] Mapper + Adapter + Spring Data Repository
+- [ ] Serviço de auditoria (sync ou async)
+
+### Audit Middleware
+
+- [ ] Criar `@Auditable` annotation para marcar endpoints auditáveis
+- [ ] Aspect/interceptor para log automático
+- [ ] Endpoint `/api/audit/logs` (admin only)
+
+---
+
+## ⚪ Fase 7 — Jobs Assíncronos
+
+<span class="badge badge-phase3" style="background:#1a2a1a; color:#4ADE80; border-color: #22C55E;">Nova</span>
+<span class="badge badge-low">3 itens</span>
+
+<div class="progress-bar"><div class="progress-fill low" style="width: 0%"></div></div>
+
+### Job Model
+
+- [ ] Domain model `Job`:
+  - `id`, `type` (BACKUP, RESTORE, SYNC), `status` (PENDING, RUNNING, COMPLETED, FAILED), `progress` (0-100), `result`, `createdAt`, `completedAt`, `userId`
+- [ ] Interface `JobRepository` no domínio
+
+### Job Infrastructure
+
+- [ ] Entity JPA + Mapper + Adapter + Repository
+- [ ] Serviço de job com execução assíncrona (`@Async` ou `TaskExecutor`)
+- [ ] Callback de progresso
+
+### Job API
+
+- [ ] `POST /api/jobs` — criar job (retorna `202 Accepted` + job ID)
+- [ ] `GET /api/jobs/{id}` — status do job
+- [ ] `GET /api/jobs` — listar jobs do usuário
+- [ ] Exemplo: `POST /backup/create` → `202 { jobId: "82ad91" }` → `GET /jobs/82ad91` → `{ status: "running", progress: 65% }`
 
 ---
 
@@ -486,22 +653,35 @@ Esses problemas impedem qualquer feature nova. Cada item resolvido aqui evita qu
 
 <div class="section-summary">
   <div class="stat-card">
-    <strong>0</strong> / 15<br><span class="tag">🔥 Fase 1</span>
+    <strong>0</strong> / 8<br><span class="tag">🔥 Fase 1</span>
   </div>
   <div class="stat-card">
-    <strong>0</strong> / 12<br><span class="tag badge-high">Fase 2</span>
+    <strong>0</strong> / 16<br><span class="tag badge-high">Fase 2</span>
   </div>
   <div class="stat-card">
-    <strong>0</strong> / 4<br><span class="tag badge-med">Fase 3</span>
+    <strong>0</strong> / 7<br><span class="tag badge-med">Fase 3</span>
   </div>
   <div class="stat-card">
-    <strong>0</strong> / 31<br><span class="tag">Total</span>
+    <strong>0</strong> / 5<br><span class="tag">Fase 4</span>
+  </div>
+  <div class="stat-card">
+    <strong>0</strong> / 4<br><span class="tag">Fase 5</span>
+  </div>
+  <div class="stat-card">
+    <strong>0</strong> / 3<br><span class="tag">Fase 6</span>
+  </div>
+  <div class="stat-card">
+    <strong>0</strong> / 3<br><span class="tag">Fase 7</span>
+  </div>
+  <div class="stat-card">
+    <strong>0</strong> / 46<br><span class="tag">Total</span>
   </div>
 </div>
 
 <hr>
 
 <blockquote>
-<strong>📅 Gerado em:</strong> 2026-07-26 · <strong>Auditado por:</strong> architecture-analyzer, exception-analyzer, security-explore, security-tester, codebase-explainer<br>
-<strong>🎯 Meta:</strong> Completar Fase 1 antes de começar qualquer feature nova.
+<strong>📅 Gerado em:</strong> 2026-07-28 · <strong>Baseado em análise completa do código-fonte</strong><br>
+<strong>🎯 Meta:</strong> Completar Fase 1 antes de começar qualquer feature nova. Bugs críticos de Machine, OAuth2 e JWT Filter impedem produção.<br>
+<strong>✅ O que já foi feito desde o último audit:</strong> CookieSystem refatorado (CookieManager + CookieFactory no domínio), typos corrigidos (JwtTokenResolver, BCryptPasswordService, Provider, ExternalAccount, GoogleCalendarTools, etc.), JwtTokenService.extractIdSubject retorna Optional, verifyToken() safe.
 </blockquote>
