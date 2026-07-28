@@ -1,3 +1,10 @@
 {
-  "customInstructions": "Read @.agents/AGENTS.md and @.agents/IA_README.md for full project context before answering. These files contain architecture, conventions, known issues, and code rules."
+  "$schema": "https://opencode.ai/config.json",
+
+  "instructions": [
+    "AGENTS.md",
+    ".agents/AGENTS.md",
+    ".agents/IA_README.md",
+    "docs/**/*.md"
+  ]
 }
