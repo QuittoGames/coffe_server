@@ -6,9 +6,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.auth0.jwt.exceptions.JWTDecodeException;
-import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.quitto.server.infrastructure.services.Auth.Token.Jtw.JwtTokenService;
+
+
+import com.auth0.jwt.exceptions.JWTDecodeException;
 
 class JwtTokenServiceTest {
 
@@ -34,15 +35,13 @@ class JwtTokenServiceTest {
     }
 
     @Test
-    void verifyToken_throwsOnInvalidToken() {
-        assertThrows(JWTDecodeException.class,
-            () -> tokenService.verifyToken("invalid-token-string"));
+    void verifyToken_returnsFalseOnInvalidToken() {
+        assertFalse(tokenService.verifyToken("invalid-token-string"));
     }
 
     @Test
-    void verifyToken_throwsOnEmptyToken() {
-        assertThrows(JWTDecodeException.class,
-            () -> tokenService.verifyToken(""));
+    void verifyToken_returnsFalseOnEmptyToken() {
+        assertFalse(tokenService.verifyToken(""));
     }
 
     @Test
@@ -74,12 +73,11 @@ class JwtTokenServiceTest {
     }
 
     @Test
-    void verifyToken_throwsOnTokenFromDifferentKey() {
+    void verifyToken_returnsFalseOnTokenFromDifferentKey() {
         JwtTokenService otherService = new JwtTokenService();
         ReflectionTestUtils.setField(otherService, "KEY", "different-secret-key");
 
         String token = otherService.generateToken(1L);
-        assertThrows(SignatureVerificationException.class,
-            () -> tokenService.verifyToken(token));
+        assertFalse(tokenService.verifyToken(token));
     }
 }

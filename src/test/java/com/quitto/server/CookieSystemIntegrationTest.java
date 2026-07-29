@@ -134,8 +134,7 @@ class CookieSystemIntegrationTest {
 
     @Test
     void jwtTokenService_rejectsInvalidToken() {
-        assertThrows(com.auth0.jwt.exceptions.JWTDecodeException.class,
-            () -> tokenService.verifyToken("invalid-token"));
+        assertFalse(tokenService.verifyToken("invalid-token"));
     }
 
     @Test
@@ -223,8 +222,9 @@ class CookieSystemIntegrationTest {
         var request = new MockHttpServletRequest();
         request.addHeader("Authorization", "Bearer some-token");
 
-        String result = jwtAuthenticationFilter.recoverToken(request);
-        assertEquals("some-token", result);
+        var result = jwtAuthenticationFilter.recoverToken(request);
+        assertTrue(result.isPresent());
+        assertEquals("some-token", result.get());
     }
 
     @Test

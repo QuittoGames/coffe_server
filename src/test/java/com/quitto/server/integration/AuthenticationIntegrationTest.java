@@ -172,9 +172,8 @@ class AuthenticationIntegrationTest {
     }
 
     @Test
-    void tokenService_throwsOnInvalidToken() {
-        assertThrows(JWTDecodeException.class,
-            () -> tokenService.verifyToken("invalid-token"));
+    void tokenService_rejectsInvalidToken() {
+        assertFalse(tokenService.verifyToken("invalid-token"));
         assertThrows(JWTDecodeException.class,
             () -> tokenService.extractIdSubject("invalid-token"));
     }

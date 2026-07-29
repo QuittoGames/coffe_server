@@ -33,12 +33,14 @@ public class OAuth2UserProvisioningService extends DefaultOAuth2UserService {
         UserEntity user = repo.findByEmail(email)
             .orElseGet(() -> {
                 UserEntity u = new UserEntity();
+                u.setName(oauthUser.getAttribute("name"));
                 u.setEmail(email);
-                u.setRole(Role.USER); // default seguro
+                u.setPasswordHash(java.util.UUID.randomUUID().toString());
+                u.setRole(Role.USER);
                 return repo.save(u);
             });
 
-        List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_ "+ user.getRole().name()));
+        List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_"+ user.getRole().name()));
 
         return new DefaultOAuth2User(
             authorities,
