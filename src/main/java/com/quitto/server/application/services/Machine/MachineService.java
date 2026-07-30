@@ -7,7 +7,7 @@ import com.quitto.server.domain.Repository.Machine.MachineRepository;
 import com.quitto.server.domain.Repository.users.UserRepository;
 import com.quitto.server.domain.models.Machine.Machine;
 import com.quitto.server.domain.models.User.User;
-import com.quitto.server.shared.exception.MachineNotFoundException;
+import com.quitto.server.domain.exception.MachineNotFoundException;
 
 @Service
 public class MachineService {

@@ -1,4 +1,4 @@
-package com.quitto.server.shared.exception;
+package com.quitto.server.domain.exception;
 
 public class MachineNotFoundException extends RuntimeException {
     public MachineNotFoundException(String message) {
