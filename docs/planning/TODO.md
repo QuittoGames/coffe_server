@@ -326,9 +326,9 @@
 # coffe_server — TODO
 
 <blockquote>
-<strong>Readiness:</strong> 🟡 6/10 · <strong>Revisão completa em 2026-07-28</strong> — architecture, security, code quality. <br>
+<strong>Readiness:</strong> 🟡 6/10 · <strong>Revisão completa em 2026-07-30</strong> — architecture, security, code quality. <br>
 Muitos typos foram corrigidos e o sistema de cookies foi refatorado corretamente. <br>
-Ainda há **bugs críticos** que impedem features novas.
+Abstração Redis implementada (Clean Architecture com Ports & Adapters). <br>
 </blockquote>
 
 ---
@@ -387,7 +387,7 @@ Esses bugs **impedem features novas** ou causam falhas em produção. Cada item 
 - [ ] **`MachineService` lança `UsernameNotFoundException` (Spring)** — Vazamento de framework na camada de aplicação. Criar `UserNotFoundException` no domínio.
   <span class="tag">MachineService.java:28</span>
 
-- [ ] **Mover `MachineNotFoundException` de `shared/exception/` para `domain/exception/`**
+- [x] **Mover `MachineNotFoundException` de `shared/exception/` para `domain/exception/`**
   <span class="tag">shared/exception/MachineNotFoundException.java</span>
 
 ### Injection
@@ -649,6 +649,61 @@ Esses bugs **impedem features novas** ou causam falhas em produção. Cada item 
 
 ---
 
+## 🟤 Fase 8 — Redis Abstraction (Ports & Adapters)
+
+<span class="badge badge-phase3" style="background:#3C2415; color:#E8D5C4; border-color: #A67B5B;">Nova</span>
+<span class="badge badge-med">14 itens</span>
+
+<div class="progress-bar"><div class="progress-fill med" style="width: 57%"></div></div>
+
+### ✅ Concluído
+
+- [x] **`Connection.java` — Domain port enriquecida** — Adicionados métodos `isOpen()` e `close()` (antes era interface vazia).
+  <span class="tag">domain/Database/Connection.java</span>
+
+- [x] **`DatabaseClientProvider.java` — Import corrigido** — Trocado `java.sql.Connection` (JDBC) por `Connection` do domínio. Fix crítico que impedia compilação.
+  <span class="tag">domain/interfaces/Database/DatabaseClientProvider.java</span>
+
+- [x] **`RedisClientConnectionAdpter.java` — Adapter refatorado** — Agora recebe `StatefulRedisConnection` (não só `RedisAsyncCommands`), implementa `isOpen()` e `close()`.
+  <span class="tag">infrastructure/Adpter/in/RedisClientConnectionAdpter.java</span>
+
+- [x] **`RedisClientProvider.java` — Provider reescrito** — Implementa `get(String name)` corretamente, lê `RedisProperties`, cria conexões Lettuce, encapsula via adapter.
+  <span class="tag">infrastructure/services/Provaider/redis/RedisClientProvider.java</span>
+
+- [x] **`RedisClientConnection.java` removido — `RedisProperties` agora usa `RedisClientInstace` do domínio** — `getInstances()` retorna `List<RedisClientInstace>`. `RedisClientInstace` estende `DatabaseClient` (já tem name, host, port, enabled), eliminando duplicata de infra POJO.
+  <span class="tag">RedisClientConnection.java removido · RedisProperties.java · RedisClientProvider.java</span>
+
+- [x] **`StringByteArrayCodec.java` — Package corrigido** — Movido de `ratelimit` para `config.redis.Codec` e API ajustada para o `RedisCodec` real do Lettuce 6.8.2.
+  <span class="tag">infrastructure/config/redis/Codec/StringByteArrayCodec.java</span>
+
+- [x] **`Bucket4jConfig.java` — Rate limit config** — Bucket4j configurado com `LettuceBasedProxyManager`.
+  <span class="tag">infrastructure/config/ratelimit/Bucket4jConfig.java</span>
+
+- [x] **`RedisArryCodec.java` — Interface de codec** — Extends Lettuce `RedisCodec<String, byte[]>`.
+  <span class="tag">infrastructure/interfaces/Codec/RedisArryCodec.java</span>
+
+### 📝 Pendente
+
+- [ ] **Registrar `@EnableConfigurationProperties(RedisProperties.class)** — Sem isso o Spring não faz o binding das properties. Atualmente `properties.getInstances()` retorna `null`.
+  <span class="tag">RedisConfig.java / ServerApplication.java</span>
+
+- [ ] **Adicionar properties `coffee.redis.*` no application.properties** — O prefixo esperado é `coffee.redis.instances[0].name/host/port`, mas o properties atual só tem `redis.cache.*` e `redis.ratelimit.*`.
+  <span class="tag">application.properties</span>
+
+- [ ] **Configurar TLS/SSL nas conexões Redis** — Usar `rediss://` ou suporte a `RedisURI.Builder` com SSL.
+  <span class="tag">RedisClientProvider.java</span>
+
+- [ ] **Adicionar suporte a senha Redis** — Campo `password` em `RedisClientInstace` (domain model) e `RedisClientProvider`. Prover ao criar URI.
+  <span class="tag">RedisClientInstace.java · RedisClientProvider.java</span>
+
+- [ ] **@PreDestroy para fechar conexões** — `RedisClientProvider` precisa fechar todas as conexões no shutdown pra evitar vazamento de threads Netty.
+  <span class="tag">RedisClientProvider.java</span>
+
+- [ ] **Conectar Bucket4jConfig com a nova abstração** — Injeta `RedisAsyncCommands<String, byte[]>` direto (Lettuce), mas deveria consumir via `DatabaseClientProvider`.
+  <span class="tag">Bucket4jConfig.java</span>
+
+---
+
 ## 📊 Progresso Geral
 
 <div class="section-summary">
@@ -656,7 +711,7 @@ Esses bugs **impedem features novas** ou causam falhas em produção. Cada item 
     <strong>4</strong> / 8<br><span class="tag">🔥 Fase 1</span>
   </div>
   <div class="stat-card">
-    <strong>0</strong> / 16<br><span class="tag badge-high">Fase 2</span>
+    <strong>1</strong> / 16<br><span class="tag badge-high">Fase 2</span>
   </div>
   <div class="stat-card">
     <strong>0</strong> / 7<br><span class="tag badge-med">Fase 3</span>
@@ -674,15 +729,19 @@ Esses bugs **impedem features novas** ou causam falhas em produção. Cada item 
     <strong>0</strong> / 3<br><span class="tag">Fase 7</span>
   </div>
   <div class="stat-card">
-    <strong>4</strong> / 46<br><span class="tag">Total</span>
+    <strong>8</strong> / 14<br><span class="tag">Fase 8</span>
+  </div>
+  <div class="stat-card">
+    <strong>13</strong> / 60<br><span class="tag">Total</span>
   </div>
 </div>
 
 <hr>
 
 <blockquote>
-<strong>📅 Gerado em:</strong> 2026-07-28 · <strong>Baseado em análise completa do código-fonte</strong><br>
+<strong>📅 Gerado em:</strong> 2026-07-30 · <strong>Baseado em análise completa do código-fonte</strong><br>
 <strong>🎯 Meta:</strong> Completar Fase 1 antes de começar qualquer feature nova. Bugs críticos de Machine, OAuth2 e JWT Filter impedem produção.<br>
 <strong>✅ O que já foi feito desde o último audit:</strong> CookieSystem refatorado (CookieManager + CookieFactory no domínio), typos corrigidos (JwtTokenResolver, BCryptPasswordService, Provider, ExternalAccount, GoogleCalendarTools, etc.), JwtTokenService.extractIdSubject retorna Optional, verifyToken() safe. <br>
-MachineEntity userId mapping corrigido, MachineRepositoryAdapter.setOwner() implementado, JwtAuthenticationFilter retorna 401 em falha, User.toString() sem vazar passwordHash.
+MachineEntity userId mapping corrigido, MachineRepositoryAdapter.setOwner() implementado, JwtAuthenticationFilter retorna 401 em falha, User.toString() sem vazar passwordHash. <br>
+DatabaseClientProvider.java import corrigido (java.sql → domain), Connection.java enriquecida (isOpen/close), RedisClientConnectionAdpter refatorado, StringByteArrayCodec corrigido (package + API), RedisClientProvider reescrito com get(), RedisClientConnection removido (substituído por RedisClientInstace do domínio), RedisProperties.getInstances() retorna List&lt;RedisClientInstace&gt;.
 </blockquote>
