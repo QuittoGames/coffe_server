@@ -3,9 +3,7 @@ package com.quitto.server.infrastructure.security.Filter;
 import com.quitto.server.domain.exception.InvalidTokenException;
 
 import java.io.IOException;
-import java.net.http.HttpResponse;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,8 +18,8 @@ import com.quitto.server.domain.Repository.users.UserRepository;
 import com.quitto.server.domain.interfaces.Token.TokenRequestContext;
 import com.quitto.server.domain.interfaces.Token.TokenService;
 import com.quitto.server.domain.models.User.User;
-import com.quitto.server.infrastructure.security.Filter.Adapter.HttpTokenRequestContext;
 import com.quitto.server.infrastructure.security.SecurityUser;
+import com.quitto.server.infrastructure.security.Filter.Adpter.HttpTokenRequestContext;
 import com.quitto.server.infrastructure.services.Auth.Token.TokenResolverManager;
 
 import jakarta.servlet.FilterChain;

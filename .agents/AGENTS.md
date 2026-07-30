@@ -378,7 +378,6 @@ SERVER_API_KEY=***
 - **README**: `README.md` (vazio — documentação por fazer)
 - **Licença**: MIT (`LICENSE`)
 
-
 **OBS:**
 
 The services of OAuth 2 for Google, nao devem ser usados como base para analises de arquitetura ja que seram refatorados posteriometne , a analise ou uso deles so deve ocorrer quadno o `client` pedir

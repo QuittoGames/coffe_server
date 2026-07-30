@@ -1,5 +1,6 @@
 package com.quitto.server.infrastructure.ratelimit;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Service;
 
 import com.quitto.server.domain.enums.RateLimitPolicy;
@@ -10,6 +11,7 @@ import io.github.bucket4j.BucketConfiguration;
 import io.github.bucket4j.distributed.proxy.ProxyManager;
 
 @Service
+@ConditionalOnBean(ProxyManager.class)
 public class Bucket4jRateLimiter implements RateLimit {
 
     private final ProxyManager<String> proxyManager;

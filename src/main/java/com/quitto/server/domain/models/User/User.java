@@ -5,6 +5,7 @@ import java.util.List;
 import com.quitto.server.domain.enums.Role;
 import com.quitto.server.domain.models.LinuxAccount.LinuxUser;
 import com.quitto.server.domain.models.Machine.Machine;
+import com.quitto.server.domain.exception.InvalidPasswordException;
 
 public class User {
     private long id;
@@ -54,7 +55,8 @@ public class User {
         return role;
     }
 
-    public void changePassword(String newPasswordHash) {
+    public void changePassword(String newPasswordHash) throws InvalidPasswordException {
+        if (newPasswordHash == null || newPasswordHash.length() < 8) { throw new InvalidPasswordException("Password must be at least 8 characters"); }
         this.passwordHash = newPasswordHash;
     }
 
@@ -100,3 +102,4 @@ public class User {
     }
 
 }
+

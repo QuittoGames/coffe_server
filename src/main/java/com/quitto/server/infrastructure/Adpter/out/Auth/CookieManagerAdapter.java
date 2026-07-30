@@ -1,13 +1,11 @@
-package com.quitto.server.infrastructure.Adpter.out;
+package com.quitto.server.infrastructure.Adpter.out.Auth;
 
 import java.util.Objects;
 
 import org.springframework.stereotype.Component;
 
 import com.quitto.server.domain.valueobject.CookieDomain;
-import com.quitto.server.infrastructure.interfaces.Cookies.HttpCookieMapper;
 import com.quitto.server.infrastructure.interfaces.Cookies.HttpCookieWriter;
-import com.quitto.server.infrastructure.services.Auth.Token.Cookies.HttpCookieWriterManeger;
 import com.quitto.server.domain.interfaces.Cookies.CookieManager;
 import com.quitto.server.domain.interfaces.Cookies.CookieFactory;
 
