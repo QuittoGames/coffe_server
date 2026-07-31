@@ -63,11 +63,11 @@ class UserAuthenticationServiceTest {
 
     @Test
     void register_whenUsernameExists_throwsException() {
-        when(authService.register("existente", "senha", "email@test.com"))
+        when(authService.register("existente", "senha123", "email@test.com"))
             .thenThrow(new IllegalArgumentException("Username already exists"));
 
         assertThrows(IllegalArgumentException.class,
-            () -> userAuthService.register("existente", "senha", "email@test.com"));
+            () -> userAuthService.register("existente", "senha123", "email@test.com"));
         verify(tokenService, never()).generateToken(any());
     }
 }

@@ -19,7 +19,7 @@ import com.quitto.server.domain.interfaces.Token.TokenRequestContext;
 import com.quitto.server.domain.interfaces.Token.TokenService;
 import com.quitto.server.domain.models.User.User;
 import com.quitto.server.infrastructure.security.SecurityUser;
-import com.quitto.server.infrastructure.security.Filter.Adpter.HttpTokenRequestContext;
+import com.quitto.server.infrastructure.security.Filter.Adapter.HttpTokenRequestContext;
 import com.quitto.server.infrastructure.services.Auth.Token.TokenResolverManager;
 
 import jakarta.servlet.FilterChain;

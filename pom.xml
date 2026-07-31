@@ -101,6 +101,11 @@
             <artifactId>bucket4j_jdk17-lettuce</artifactId>
             <version>8.11.0</version>
         </dependency>
+        <!-- Redis connection pool (required by LettuceConnectionConfiguration) -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-pool2</artifactId>
+        </dependency>
 		<!-- Crypto -->
 		<dependency>
 			<groupId>org.springframework.security</groupId>
@@ -232,7 +237,7 @@
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.8.12</version>
+				<version>0.8.15</version>
 				<executions>
 					<execution>
 						<id>prepare-agent</id>

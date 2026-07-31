@@ -11,6 +11,9 @@ public class APIController {
 
     @GetMapping("/test")
     public String test(Authentication authentication) {
+        if (authentication == null) {
+            return "Authenticated user: anonymousUser";
+        }
         return "Authenticated user: " + authentication.getName();
     }
 }

@@ -16,4 +16,11 @@ public class AuthExceptionHandler {
                 .status(HttpStatus.UNAUTHORIZED)
                 .body(new ErrorResponse("Invalid username or password"));
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgument(IllegalArgumentException e) {
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(new ErrorResponse(e.getMessage()));
+    }
 }

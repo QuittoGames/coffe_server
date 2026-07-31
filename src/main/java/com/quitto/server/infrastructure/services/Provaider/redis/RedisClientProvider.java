@@ -3,6 +3,7 @@ package com.quitto.server.infrastructure.services.Provaider.redis;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import com.quitto.server.domain.interfaces.Database.DatabaseClientProvider;
@@ -15,6 +16,7 @@ import io.lettuce.core.RedisClient;
 import io.lettuce.core.api.StatefulRedisConnection;
 
 @Component
+@ConditionalOnProperty(prefix = "coffee.redis", name = "enabled", havingValue = "true", matchIfMissing = false)
 public class RedisClientProvider implements DatabaseClientProvider<RedisClientConnectionAdpter> {
 
     private final Map<String, RedisClientConnectionAdpter> clients = new HashMap<>();
