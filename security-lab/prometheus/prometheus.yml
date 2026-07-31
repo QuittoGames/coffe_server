@@ -1,0 +1,51 @@
+# =============================================================================
+# Prometheus Configuration — Security Lab Monitoring
+# =============================================================================
+# Coleta métricas do coffe_server (actuator) e do security-runner
+# =============================================================================
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  scrape_timeout: 10s
+
+# ── Alerting (placeholder para futuras regras) ──
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: []
+
+# ── Regras de alerta ──
+rule_files:
+  # - "alerts.yml"
+
+# ── Targets de coleta ──
+scrape_configs:
+
+  # ── coffe_server Application ──
+  - job_name: 'coffe-server'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['localhost:8080']
+        labels:
+          application: 'coffe_server'
+          environment: 'lab'
+
+  # ── coffe_server Health ──
+  - job_name: 'coffe-server-health'
+    metrics_path: '/actuator/health'
+    static_configs:
+      - targets: ['localhost:8080']
+        labels:
+          application: 'coffe_server'
+          check: 'health'
+
+  # ── Prometheus itself ──
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # ── Node Exporter (se disponível) ──
+  # - job_name: 'node'
+  #   static_configs:
+  #     - targets: ['localhost:9100']

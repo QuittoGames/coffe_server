@@ -7,8 +7,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import com.quitto.server.domain.interfaces.Database.DatabaseClientProvider;
-import com.quitto.server.infrastructure.Adpter.in.RedisClientConnectionAdpter;
 import com.quitto.server.domain.Database.redis.RedisClientInstace;
+import com.quitto.server.infrastructure.Adapters.in.RedisClientConnectionAdpter;
 import com.quitto.server.infrastructure.config.redis.RedisProperties;
 import com.quitto.server.infrastructure.config.redis.Codec.StringByteArrayCodec;
 

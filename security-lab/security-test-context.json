@@ -1,0 +1,108 @@
+{
+  "_description": "Security Test Context — Autorização e Configuração para testes de segurança automatizados",
+  "_warning": "APENAS para ambientes LAB. Nunca usar contra produção sem autorização explícita.",
+
+  "environment": "LAB",
+  "target": {
+    "base_url": "http://localhost:8080",
+    "host": "localhost",
+    "port": 8080,
+    "protocol": "http",
+    "authorized": true,
+    "authorization_note": "Ambiente homelab local — autorizado pelo proprietário Quitto"
+  },
+
+  "constraints": {
+    "max_duration_seconds": 600,
+    "max_concurrent_users": 1000,
+    "max_requests_per_second": 5000,
+    "network_scope": "local_only",
+    "block_external_targets": true
+  },
+
+  "logging": {
+    "enabled": true,
+    "log_dir": "logs/security-lab/logs",
+    "level": "INFO",
+    "capture_application_logs": true,
+    "capture_docker_logs": true,
+    "capture_system_logs": true
+  },
+
+  "modules": {
+    "load_testing": {
+      "enabled": true,
+      "tools": ["k6", "locust"],
+      "scenarios": ["normal", "spike", "stress"]
+    },
+    "zap_scan": {
+      "enabled": true,
+      "mode": "baseline",
+      "full_scan_allowed": false
+    },
+    "nuclei_scan": {
+      "enabled": true,
+      "severity": ["medium", "high", "critical"],
+      "templates": ["cves", "misconfiguration", "exposed-panels"]
+    },
+    "api_fuzzing": {
+      "enabled": true,
+      "tools": ["ffuf"],
+      "payload_types": ["path_traversal", "injection", "special_chars"]
+    },
+    "auth_testing": {
+      "enabled": true,
+      "jwt_tests": true,
+      "brute_force_limit": 100,
+      "rate_limit_expected": true
+    },
+    "container_scan": {
+      "enabled": true,
+      "tools": ["trivy"],
+      "fail_on_critical": true
+    },
+    "mhddos_resilience": {
+      "enabled": true,
+      "mode": "LAB_RESILIENCE_TEST_ONLY",
+      "max_threads": 50,
+      "max_duration_seconds": 120,
+      "methods": ["GET", "POST"],
+      "target_confirmed": "http://localhost:8080",
+      "auto_stop": true
+    },
+    "chaos_testing": {
+      "enabled": true,
+      "container_failure": true,
+      "network_latency": true,
+      "auto_recovery": true
+    }
+  },
+
+  "observability": {
+    "prometheus": {
+      "enabled": true,
+      "port": 9090
+    },
+    "grafana": {
+      "enabled": true,
+      "port": 3000
+    }
+  },
+
+  "reporting": {
+    "output_dir": "logs/security-lab",
+    "formats": ["markdown", "json", "html"],
+    "include_screenshots": false,
+    "include_logs": true
+  },
+
+  "security_assertions": {
+    "build_fail_conditions": {
+      "critical_vulnerabilities_gt": 0,
+      "error_rate_percent_gt": 5,
+      "p99_latency_ms_gt": 5000,
+      "application_crash": true,
+      "rate_limit_missing": false
+    }
+  }
+}

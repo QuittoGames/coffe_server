@@ -1,4 +1,4 @@
-package com.quitto.server.infrastructure.Adpter.out.Auth;
+package com.quitto.server.infrastructure.Adapters.out.Auth;
 
 import java.util.Objects;
 

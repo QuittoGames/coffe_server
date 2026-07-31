@@ -1,0 +1,85 @@
+# =============================================================================
+# docker-compose.yml — Security Lab
+# =============================================================================
+# Ambiente de teste de segurança isolado para o coffe_server.
+# Sobe o security-runner com todas as ferramentas + monitoring stack.
+# Uso: docker compose -f security-lab/docker-compose.yml up -d
+# =============================================================================
+
+services:
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # Security Runner — Container principal com todas as tools
+  # ────────────────────────────────────────────────────────────────────────────
+  security-runner:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: coffe-security-runner
+    network_mode: "host"  # Acesso direto ao localhost:8080
+    volumes:
+      - ./scripts:/workspace/scripts:ro
+      - ./k6-scripts:/workspace/k6-scripts:ro
+      - ../logs/security-lab:/workspace/logs/security-lab
+      - ./security-test-context.json:/workspace/security-test-context.json:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro  # Para container scan
+    environment:
+      - TARGET_URL=http://localhost:8080
+      - LAB_MODE=true
+      - REPORT_DIR=/workspace/logs/security-lab
+      - LOG_DIR=/workspace/logs/security-lab/logs
+      - SECURITY_TIMEOUT=600
+      - MHDDOS_MAX_THREADS=50
+      - MHDDOS_MAX_DURATION=120
+    stdin_open: true
+    tty: true
+    cap_add:
+      - NET_ADMIN    # Para chaos testing (latency injection)
+      - NET_RAW      # Para MHDDoS layer4 (se usado com autorização)
+    restart: "no"
+    profiles:
+      - security-runner
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # Prometheus — Coleta de métricas durante os testes
+  # ────────────────────────────────────────────────────────────────────────────
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: coffe-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    restart: unless-stopped
+    profiles:
+      - monitoring
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # Grafana — Dashboards de observabilidade
+  # ────────────────────────────────────────────────────────────────────────────
+  grafana:
+    image: grafana/grafana:latest
+    container_name: coffe-grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./grafana/datasources:/etc/grafana/provisioning/datasources:ro
+      - grafana-data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=coffe_security
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel
+    restart: unless-stopped
+    profiles:
+      - monitoring
+
+volumes:
+  prometheus-data:
+  grafana-data:

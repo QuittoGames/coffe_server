@@ -1,3 +1,6 @@
+### Generated log & report artifacts ###
+/logs/
+
 ### General ###
 *.log
 *.jar
