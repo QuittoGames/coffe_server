@@ -83,7 +83,7 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
-      - name: Compile (profile: test)
+      - name: "Compile (profile: test)"
         run: ./mvnw compile -Dspring.profiles.active=${{ env.SPRING_PROFILES_ACTIVE }}
         env:
           DB_URL: jdbc:postgresql://localhost:5432/coffe_server_test
