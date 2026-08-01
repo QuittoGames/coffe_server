@@ -1,16 +1,16 @@
-package com.quitto.server.infrastructure.Adpter.in;
+package com.quitto.server.infrastructure.Adapters.in;
 
 import com.quitto.server.domain.Database.Connection;
 
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.async.RedisAsyncCommands;
 
-public class RedisClientConnectionAdpter implements Connection {
+public class RedisClientConnectionAdapter implements Connection {
 
     private final StatefulRedisConnection<String, byte[]> connection;
     private final RedisAsyncCommands<String, byte[]> commands;
 
-    public RedisClientConnectionAdpter(StatefulRedisConnection<String, byte[]> connection) {
+    public RedisClientConnectionAdapter(StatefulRedisConnection<String, byte[]> connection) {
         this.connection = connection;
         this.commands = connection.async();
     }
@@ -27,5 +27,9 @@ public class RedisClientConnectionAdpter implements Connection {
 
     public RedisAsyncCommands<String, byte[]> getCommands() {
         return commands;
+    }
+
+    public StatefulRedisConnection<String, byte[]> getConnection() {
+        return connection;
     }
 }
