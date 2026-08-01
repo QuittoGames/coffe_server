@@ -43,6 +43,7 @@ replay_pid*
 *.jks
 *.cer
 *.crt
+keys/
 
 ### Maven ###
 target/
