@@ -1,4 +1,4 @@
-package com.quitto.server.infrastructure.interfaces;
+package com.quitto.server.infrastructure.interfaces.Cookies;
 
 import com.quitto.server.domain.valueobject.CookieDomain;
 

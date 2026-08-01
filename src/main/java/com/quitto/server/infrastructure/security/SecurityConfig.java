@@ -13,6 +13,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.quitto.server.infrastructure.security.Filter.JwtAuthenticationFilter;
+import com.quitto.server.infrastructure.security.Filter.Ratelimt.RateLimitFilter;
 import com.quitto.server.infrastructure.services.OAuth.OAuth2UserProvisioningService;
 
 @Configuration
@@ -22,10 +23,12 @@ public class SecurityConfig {
 
     private final OAuth2UserProvisioningService oauthService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final RateLimitFilter rateLimitFilter;
 
-    public SecurityConfig(OAuth2UserProvisioningService oauthService, JwtAuthenticationFilter jwtAuthenticationFilter) {
+    public SecurityConfig(OAuth2UserProvisioningService oauthService, JwtAuthenticationFilter jwtAuthenticationFilter,RateLimitFilter rateLimitFilter) {
         this.oauthService = oauthService;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.rateLimitFilter = rateLimitFilter;
     }
 
     @Bean
@@ -46,7 +49,20 @@ public class SecurityConfig {
         .csrf(csrf -> csrf.disable())
         // .csrf(Customizer.withDefaults())
 
+        // Filter
+        // Request
+        //    |
+        //    v
+        // JwtAuthenticationFilter
+        //    |
+        //    v
+        // RateLimitFilter
+        //    |
+        //    v
+        // Controller
+
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class) // Object Filter before of class
+        .addFilterAfter(rateLimitFilter, JwtAuthenticationFilter.class)
 
         .exceptionHandling(ex -> ex
             .authenticationEntryPoint((req, res, authException) -> {

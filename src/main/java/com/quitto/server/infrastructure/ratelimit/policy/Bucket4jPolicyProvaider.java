@@ -1,4 +1,4 @@
-package com.quitto.server.infrastructure.config.ratelimit;
+package com.quitto.server.infrastructure.ratelimit.policy;
 
 import java.time.Duration;
 

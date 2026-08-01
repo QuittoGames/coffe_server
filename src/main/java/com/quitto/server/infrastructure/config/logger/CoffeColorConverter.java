@@ -5,8 +5,6 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import org.springframework.boot.ansi.AnsiColor;
 import org.springframework.boot.ansi.AnsiOutput;
 import org.springframework.boot.logging.logback.ColorConverter;
-
-
 public class CoffeColorConverter extends ColorConverter{
 
     @Override
