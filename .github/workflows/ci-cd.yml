@@ -10,9 +10,9 @@ name: ☕ coffe_server CI/CD
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, develop, dev ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, dev ]
   workflow_dispatch:
     inputs:
       skip_security_scan:

@@ -704,6 +704,103 @@ Esses bugs **impedem features novas** ou causam falhas em produção. Cada item 
 
 ---
 
+## 🔒 Segurança — mTLS e Autenticação Unificada
+
+<span class="badge badge-phase1" style="background:#8B0000; color:white; border-color:#FF4444;">Pesquisa + Decisão</span>
+<span class="badge badge-fire">4 itens</span>
+
+<div class="progress-bar"><div class="progress-fill fire" style="width: 0%"></div></div>
+
+O feedback aponta que a autenticação atual (JWT + cookie + OAuth2 + ACL por driver) está confusa. A sugestão é simplificar para **um método único reforçado com mTLS**.
+
+### Pesquisa Necessária
+
+- [ ] **Pesquisar implementação de mTLS no Spring Boot 4.x** — Entender como configurar mutual TLS com certificados client/server, truststore/keystore, e integração com `SecurityFilterChain`.
+  - Por que: mTLS elimina necessidade de JWT para autenticação mútua serviço-a-serviço; handshake TLS garante identidade de ambas as partes
+  - Abordagem: `server.ssl.*` properties + `SecurityConfig` com `X509AuthenticationFilter` ou custom filter
+
+- [ ] **Avaliar trade-offs: mTLS vs JWT para este cenário** — Comparar complexidade operacional (rotação de certs, CA privada), latência do handshake, suporte a clientes diversos (browser, CLI, agents MCP).
+  - Por que: mTLS é excelente para service-to-service, mas browsers não suportam bem client certs; MCP agents podem ou não suportar
+  - Decisão: provavelmente **híbrido** — mTLS para comunicação servidor↔SDK/CLI, JWT/OAuth2 para browsers e MCP
+
+- [ ] **Definir estratégia de certificado para homelab** — CA própria (step-ca, smallstep, cfssl), certificados de curta duração (24h-7d), renovação automática via cert-manager ou script.
+  - Por que: sem CA gerenciada, mTLS vira pesadelo operacional
+  - Abordagem: `step-ca` + `step` CLI para emissão/renovação; distribuir certs via SDK
+
+### Implementação (após decisão)
+
+- [ ] **Criar `MtlsAuthenticationFilter` ou configurar `X509AuthenticationFilter`** — Extrair subject do certificado cliente, mapear para `User`/`Machine` do domínio, popular `SecurityContext`.
+  - Dependência: decisão da pesquisa acima
+  - Localização: `infrastructure/security/Filter/`
+
+---
+
+## 🌐 API — Versionamento e Contratos
+
+<span class="badge badge-phase2">Planejamento</span>
+<span class="badge badge-high">3 itens</span>
+
+<div class="progress-bar"><div class="progress-fill high" style="width: 0%"></div></div>
+
+### Estratégia de Versionamento
+
+- [ ] **Definir estratégia de versionamento de API** — URL path (`/api/v1/...`), header (`Accept: application/vnd.coffe.v1+json`), ou query param. Documentar decisão no `docs/architecture/api-versioning.md`.
+  - Por que: evita breaking changes futuros; clientes (SDK, MCP, Web) precisam saber como evoluir
+  - Recomendação inicial: **URL path** (`/api/v1/`) — simples, visível, compatível com cache/CDN
+
+- [ ] **Aplicar versionamento nos controllers existentes** — `AuthenticationController`, `APIController`, `CalendarController`, `MachineController` (futuro).
+  - Exemplo: `@RequestMapping("/api/v1/auth")`
+  - Manter `/api/test` como health check sem versão (ou `/api/v1/health`)
+
+- [ ] **Criar DTOs versionados ou usar OpenAPI para contratos** — Separar `v1` DTOs de `v2` quando houver breaking change; gerar spec OpenAPI automaticamente (`springdoc-openapi`).
+  - Por que: contratos claros facilitam geração de cliente (SDK Rust/Python, TypeScript)
+
+---
+
+## 🧱 Arquitetura — Modularização Maven (MCP + SDK)
+
+<span class="badge badge-phase2">Pesquisa + Execução</span>
+<span class="badge badge-high">5 itens</span>
+
+<div class="progress-bar"><div class="progress-fill high" style="width: 0%"></div></div>
+
+O feedback sugere avaliar módulos Maven separados para MCP e SDK. Isso alinha com a estratégia SDK documentada no relatório de arquitetura.
+
+### Pesquisa
+
+- [ ] **Pesquisar estrutura multi-module Maven para Spring Boot 4.x** — Best practices: `pom.xml` pai com `<packaging>pom</packaging>`, modules com dependências bem definidas, build order, profiles.
+  - Referência: Spring Boot multi-module samples, Gradle vs Maven trade-offs
+
+- [ ] **Avaliar separação: `coffe-mcp` vs `coffe-server`** — MCP tools (`GoogelCalenderTools`, `CalendarController`, `GoogleCalendarService`) podem virar módulo independente que o server importa? Vantagem: agents MCP podem usar só o JAR do MCP sem subir o server todo.
+
+### Estrutura Proposta (após pesquisa)
+
+- [ ] **Criar módulo `server-domain` (JAR puro)** — Domain models, interfaces (ports), value objects, enums, exceptions. **Zero dependências**.
+  - Consumido por: `server-application`, `server-infrastructure`, `server-mcp`, `coffe-sdk` (externo)
+
+- [ ] **Criar módulo `server-mcp` (JAR)** — MCP tools, services, controllers relacionados a MCP. Depende de `server-domain` + `spring-ai-mcp`.
+  - Permite: agents consumirem `server-mcp` como library; server importa como dependency
+
+- [ ] **Criar módulo `server-infrastructure` (JAR)** — JPA adapters, security (JWT, mTLS), external clients (Google, GitHub), Redis. Depende de `server-domain` + `server-application`.
+
+- [ ] **Criar módulo `server-boot` (executável)** — `ServerApplication`, `application.properties`, templates, static. Depende de TODOS os módulos acima. É o artefato de deploy.
+
+---
+
+## 📋 Decisões Arquiteturais a Revisar
+
+> Esta seção centraliza decisões de design que o feedback trouxe e que impactam múltiplas áreas. Cada decisão deve ser documentada em `docs/architecture/adr/` (Architecture Decision Records) após definição.
+
+| # | Decisão | Status | Impacto | ADR Sugerido |
+|---|---------|--------|---------|--------------|
+| ADR-001 | **Estratégia de autenticação: JWT + mTLS híbrido vs JWT only vs mTLS only** | ✅ **Decidido: JWT + mTLS híbrido** | SecurityConfig, FilterChain, SDK clients, MCP agents | `adr-001-auth-strategy.md` |
+| ADR-002 | **Versionamento de API: URL path (`/api/v1/`) vs Header vs Query** | 🔴 Pendente | Todos Controllers, OpenAPI, SDK clients | `adr-002-api-versioning.md` |
+| ADR-003 | **Modularização Maven: multi-module vs single-module** | 🔴 Pendente | Build, deploy, dependency graph, SDK extraction | `adr-003-maven-modules.md` |
+| ADR-004 | **mTLS para homelab: CA própria (step-ca) vs certs auto-assinados vs managed (Let's Encrypt + ACME)** | 🔴 Pendente | Infra, cert rotation, client provisioning | `adr-004-mtls-ca.md` |
+| ADR-005 | **MCP como módulo separado vs integrado no server** | 🔴 Pendente | Deploy, agent consumption, versionamento independente | `adr-005-mcp-module.md` |
+
+---
+
 ## 📊 Progresso Geral
 
 <div class="section-summary">
