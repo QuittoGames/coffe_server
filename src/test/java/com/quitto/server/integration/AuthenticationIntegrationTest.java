@@ -21,7 +21,6 @@ import org.springframework.web.context.WebApplicationContext;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.quitto.server.application.dto.Auth.LoginDTO;
-import com.quitto.server.application.dto.Auth.LoginResponseDTO;
 import com.quitto.server.domain.enums.Role;
 import com.quitto.server.domain.interfaces.Token.TokenService;
 import com.quitto.server.infrastructure.db.User.Entity.UserEntity;
@@ -76,7 +75,7 @@ class AuthenticationIntegrationTest {
     }
 
     @Test
-    void fullFlow_loginReturnsValidJwt() throws Exception {
+    void fullFlow_loginReturnsValidJwtInCookie() throws Exception {
         LoginDTO login = new LoginDTO(USERNAME, PASSWORD);
 
         MvcResult loginResult = mockMvc.perform(post("/auth/login")
@@ -85,11 +84,10 @@ class AuthenticationIntegrationTest {
             .andExpect(status().isOk())
             .andReturn();
 
-        LoginResponseDTO response = objectMapper.readValue(
-            loginResult.getResponse().getContentAsString(),
-            LoginResponseDTO.class);
+        Cookie cookie = loginResult.getResponse().getCookie("access_token");
+        assertNotNull(cookie, "access_token cookie must be present");
 
-        String jwt = response.token();
+        String jwt = cookie.getValue();
         assertTrue(tokenService.verifyToken(jwt));
         Long extractedId = tokenService.extractIdSubject(jwt).orElseThrow();
         assertEquals(savedUserId, extractedId);
@@ -138,27 +136,17 @@ class AuthenticationIntegrationTest {
 
     @Test
     void bearerTokenCanBeResolvedByJwtResolver() throws Exception {
-        LoginDTO login = new LoginDTO(USERNAME, PASSWORD);
-
-        MvcResult loginResult = mockMvc.perform(post("/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(login)))
-            .andExpect(status().isOk())
-            .andReturn();
-
-        LoginResponseDTO response = objectMapper.readValue(
-            loginResult.getResponse().getContentAsString(),
-            LoginResponseDTO.class);
+        String jwt = tokenService.generateToken(savedUserId);
 
         var manager = new TokenResolverManager(List.of(cookieResolver, jwtResolver));
 
         var request = new MockHttpServletRequest();
-        request.addHeader("Authorization", "Bearer " + response.token());
+        request.addHeader("Authorization", "Bearer " + jwt);
         var ctx = new HttpTokenRequestContext(request);
 
         var resolved = manager.resolve(ctx);
         assertTrue(resolved.isPresent());
-        assertEquals(response.token(), resolved.get());
+        assertEquals(jwt, resolved.get());
     }
 
     @Test
@@ -199,7 +187,7 @@ class AuthenticationIntegrationTest {
     }
 
     @Test
-    void loginTokenMatchesCookieValue() throws Exception {
+    void loginCookieMatchesJwtResolverValue() throws Exception {
         LoginDTO login = new LoginDTO(USERNAME, PASSWORD);
 
         MvcResult result = mockMvc.perform(post("/auth/login")
@@ -208,13 +196,17 @@ class AuthenticationIntegrationTest {
             .andExpect(status().isOk())
             .andReturn();
 
-        LoginResponseDTO response = objectMapper.readValue(
-            result.getResponse().getContentAsString(),
-            LoginResponseDTO.class);
-
         Cookie cookie = result.getResponse().getCookie("access_token");
         assertNotNull(cookie);
-        assertEquals(response.token(), cookie.getValue());
+
+        var manager = new TokenResolverManager(List.of(cookieResolver, jwtResolver));
+        var request = new MockHttpServletRequest();
+        request.addHeader("Authorization", "Bearer " + cookie.getValue());
+        var ctx = new HttpTokenRequestContext(request);
+
+        var resolved = manager.resolve(ctx);
+        assertTrue(resolved.isPresent());
+        assertEquals(cookie.getValue(), resolved.get());
     }
 
     @Test

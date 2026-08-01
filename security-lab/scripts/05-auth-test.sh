@@ -22,23 +22,30 @@ AUTH_RESULTS="$REPORT_DIR/metrics/auth-results-${TIMESTAMP}.json"
 
 log_info() { echo "  [*] $1"; }
 log_ok()   { echo "  [+] $1"; }
+log_warn() { echo "  [!] $1"; }
 log_fail() { echo "  [-] $1"; }
 log_detail() { echo "       $1"; }
 
 # ──────── 1. Obter um token válido para testes ────────
+# O servidor agora é cookie-only: o JWT não vem no body, e sim no header
+# Set-Cookie: access_token=<jwt>. Extraímos da resposta.
 log_info "1/5 Obter token de referência"
-REGISTER_RES=$(curl -s -X POST "$TARGET_URL/auth/register" \
+extract_access_token() {
+  sed -n 's/^[Ss]et-[Cc]ookie: access_token=\([^;]*\).*/\1/p' | head -n1
+}
+
+REGISTER_HEADERS=$(curl -s -D - -o /dev/null -X POST "$TARGET_URL/auth/register" \
   -H 'Content-Type: application/json' \
   -d '{"name":"sec_test_user_'"$TIMESTAMP"'","password":"Test@123!","email":"sec_'"$TIMESTAMP"'@test.com"}' 2>/dev/null)
 
-VALID_TOKEN=$(echo "$REGISTER_RES" | jq -r '.token // .Token // empty' 2>/dev/null)
+VALID_TOKEN=$(echo "$REGISTER_HEADERS" | extract_access_token)
 
 if [ -z "$VALID_TOKEN" ]; then
   log_warn "Register failed — trying login with admin_teste"
-  LOGIN_RES=$(curl -s -X POST "$TARGET_URL/auth/login" \
+  LOGIN_HEADERS=$(curl -s -D - -o /dev/null -X POST "$TARGET_URL/auth/login" \
     -H 'Content-Type: application/json' \
     -d '{"name":"admin_teste","password":"admin123"}' 2>/dev/null)
-  VALID_TOKEN=$(echo "$LOGIN_RES" | jq -r '.token // .Token // empty' 2>/dev/null)
+  VALID_TOKEN=$(echo "$LOGIN_HEADERS" | extract_access_token)
 fi
 
 if [ -z "$VALID_TOKEN" ]; then

@@ -19,7 +19,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.quitto.server.application.dto.Auth.LoginDTO;
-import com.quitto.server.application.dto.Auth.LoginResponseDTO;
 import com.quitto.server.domain.enums.Role;
 import com.quitto.server.domain.interfaces.Token.TokenService;
 import com.quitto.server.infrastructure.db.User.Entity.UserEntity;
@@ -70,7 +69,7 @@ class LoginIntegrationTest {
     }
 
     @Test
-    void login_withValidCredentials_returns200WithToken() throws Exception {
+    void login_withValidCredentials_returns200AndSetsCookie() throws Exception {
         LoginDTO login = new LoginDTO(USERNAME, PASSWORD);
 
         MvcResult result = mockMvc.perform(post("/auth/login")
@@ -79,16 +78,13 @@ class LoginIntegrationTest {
             .andExpect(status().isOk())
             .andReturn();
 
-        String body = result.getResponse().getContentAsString();
-        LoginResponseDTO response = objectMapper.readValue(body, LoginResponseDTO.class);
-
-        assertNotNull(response.token());
-        assertFalse(response.token().isBlank());
-        assertNotNull(response.date());
+        Cookie accessTokenCookie = result.getResponse().getCookie("access_token");
+        assertNotNull(accessTokenCookie, "access_token cookie must be present");
+        assertFalse(accessTokenCookie.getValue().isBlank());
     }
 
     @Test
-    void login_returnsValidJwtToken() throws Exception {
+    void login_cookieContainsValidJwt() throws Exception {
         LoginDTO login = new LoginDTO(USERNAME, PASSWORD);
 
         MvcResult result = mockMvc.perform(post("/auth/login")
@@ -97,11 +93,11 @@ class LoginIntegrationTest {
             .andExpect(status().isOk())
             .andReturn();
 
-        LoginResponseDTO response = objectMapper.readValue(
-            result.getResponse().getContentAsString(), LoginResponseDTO.class);
+        Cookie cookie = result.getResponse().getCookie("access_token");
+        assertNotNull(cookie);
 
-        assertTrue(tokenService.verifyToken(response.token()));
-        var extractedId = tokenService.extractIdSubject(response.token());
+        assertTrue(tokenService.verifyToken(cookie.getValue()));
+        var extractedId = tokenService.extractIdSubject(cookie.getValue());
         assertTrue(extractedId.isPresent());
         assertEquals(savedUserId, extractedId.get());
     }
@@ -172,24 +168,5 @@ class LoginIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{malformed"))
             .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void login_cookieContainsSameTokenAsResponseBody() throws Exception {
-        LoginDTO login = new LoginDTO(USERNAME, PASSWORD);
-
-        MvcResult result = mockMvc.perform(post("/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(login)))
-            .andExpect(status().isOk())
-            .andReturn();
-
-        LoginResponseDTO response = objectMapper.readValue(
-            result.getResponse().getContentAsString(), LoginResponseDTO.class);
-
-        Cookie cookie = result.getResponse().getCookie("access_token");
-        assertNotNull(cookie);
-        assertEquals(response.token(), cookie.getValue(),
-            "Cookie value must match the JWT from response body");
     }
 }

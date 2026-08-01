@@ -20,7 +20,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.quitto.server.application.dto.Auth.LoginDTO;
 import com.quitto.server.application.dto.Auth.RegisterDTO;
 import com.quitto.server.domain.interfaces.Token.TokenService;
+import com.quitto.server.infrastructure.db.User.Entity.UserEntity;
 import com.quitto.server.infrastructure.db.User.Repository.JpaUserRepository;
+
+import jakarta.servlet.http.Cookie;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -57,7 +60,7 @@ class RegisterIntegrationTest {
     }
 
     @Test
-    void register_withValidData_returns200AndToken() throws Exception {
+    void register_withValidData_returns200AndSetsCookie() throws Exception {
         RegisterDTO register = new RegisterDTO("new_user_reg", "SenhaForte123!", "new_reg@email.com");
 
         MvcResult result = mockMvc.perform(post("/auth/register")
@@ -66,31 +69,22 @@ class RegisterIntegrationTest {
             .andExpect(status().isOk())
             .andReturn();
 
-        var response = objectMapper.readValue(
-            result.getResponse().getContentAsString(),
-            com.quitto.server.application.dto.Auth.RegisterResponseDTO.class);
-
-        assertNotNull(response.token());
-        assertFalse(response.token().isBlank());
-        assertTrue(tokenService.verifyToken(response.token()));
+        Cookie cookie = result.getResponse().getCookie("access_token");
+        assertNotNull(cookie, "access_token cookie must be present");
+        assertFalse(cookie.getValue().isBlank());
+        assertTrue(tokenService.verifyToken(cookie.getValue()));
     }
 
     @Test
     void register_createsUserInDatabase() throws Exception {
         RegisterDTO register = new RegisterDTO("db_check_user", "Senha123!", "db_check@email.com");
 
-        MvcResult result = mockMvc.perform(post("/auth/register")
+        mockMvc.perform(post("/auth/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(register)))
-            .andExpect(status().isOk())
-            .andReturn();
+            .andExpect(status().isOk());
 
-        var response = objectMapper.readValue(
-            result.getResponse().getContentAsString(),
-            com.quitto.server.application.dto.Auth.RegisterResponseDTO.class);
-
-        Long userId = tokenService.extractIdSubject(response.token()).orElseThrow();
-        var savedUser = userRepository.findById(userId);
+        var savedUser = userRepository.findByName("db_check_user");
         assertTrue(savedUser.isPresent());
         assertEquals("db_check_user", savedUser.get().getName());
         assertEquals("db_check@email.com", savedUser.get().getEmail());

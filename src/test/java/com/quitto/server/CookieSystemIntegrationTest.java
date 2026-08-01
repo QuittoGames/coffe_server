@@ -22,7 +22,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.quitto.server.application.dto.Auth.LoginDTO;
-import com.quitto.server.application.dto.Auth.LoginResponseDTO;
 import com.quitto.server.domain.enums.Role;
 import com.quitto.server.domain.interfaces.Token.TokenService;
 import com.quitto.server.domain.valueobject.CookieDomain;
@@ -94,7 +93,7 @@ class CookieSystemIntegrationTest {
     }
 
     @Test
-    void login_withValidCredentials_returnsJwtToken() throws Exception {
+    void login_withValidCredentials_returnsJwtInCookie() throws Exception {
         LoginDTO login = new LoginDTO(TEST_USER, TEST_PASSWORD);
 
         MvcResult result = mockMvc.perform(post("/auth/login")
@@ -103,11 +102,11 @@ class CookieSystemIntegrationTest {
             .andExpect(status().isOk())
             .andReturn();
 
-        String body = result.getResponse().getContentAsString();
-        LoginResponseDTO response = objectMapper.readValue(body, LoginResponseDTO.class);
+        Cookie cookie = result.getResponse().getCookie("access_token");
 
-        assertNotNull(response.token());
-        assertFalse(response.token().isBlank());
+        assertNotNull(cookie);
+        assertNotNull(cookie.getValue());
+        assertFalse(cookie.getValue().isBlank());
     }
 
     @Test
@@ -267,14 +266,12 @@ class CookieSystemIntegrationTest {
             .andExpect(status().isOk())
             .andReturn();
 
-        LoginResponseDTO response = objectMapper.readValue(
-            loginResult.getResponse().getContentAsString(),
-            LoginResponseDTO.class
-        );
+        Cookie cookie = loginResult.getResponse().getCookie("access_token");
+        assertNotNull(cookie);
 
-        assertTrue(tokenService.verifyToken(response.token()));
+        assertTrue(tokenService.verifyToken(cookie.getValue()));
 
-        Long extractedId = tokenService.extractIdSubject(response.token()).orElseThrow();
+        Long extractedId = tokenService.extractIdSubject(cookie.getValue()).orElseThrow();
         assertEquals(savedUserId, extractedId);
     }
 

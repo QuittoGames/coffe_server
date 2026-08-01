@@ -18,10 +18,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.quitto.server.application.controllers.AuthenticationController;
 import com.quitto.server.application.dto.Auth.LoginDTO;
 import com.quitto.server.application.dto.Auth.RegisterDTO;
+import com.quitto.server.application.interfaces.Cookies.HttpCookieWriter;
 import com.quitto.server.application.services.Auth.UserAuthenticationService;
 import com.quitto.server.domain.interfaces.Cookies.CookieManager;
 import com.quitto.server.domain.valueobject.CookieDomain;
-import com.quitto.server.infrastructure.interfaces.Cookies.HttpCookieWriter;
 
 @ExtendWith(MockitoExtension.class)
 class AuthenticationControllerTest {
@@ -47,7 +47,7 @@ class AuthenticationControllerTest {
     }
 
     @Test
-    void login_withValidCredentials_returns200AndToken() throws Exception {
+    void login_withValidCredentials_returns200AndSetsCookie() throws Exception {
         when(userAuthService.login("quitto", "senha123")).thenReturn("jwt-token");
         CookieDomain domain = CookieDomain.of("access_token", "jwt-token");
         when(cookieManager.createAccessTokenCookie("jwt-token")).thenReturn(domain);
@@ -59,8 +59,10 @@ class AuthenticationControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(login)))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.token").value("jwt-token"))
-            .andExpect(jsonPath("$.date").isNotEmpty());
+            .andExpect(content().string(""));
+
+        verify(cookieWriter).writeCookie(any(), eq(domain));
+        verify(userAuthService).login("quitto", "senha123");
     }
 
     @Test
@@ -74,12 +76,17 @@ class AuthenticationControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(login)))
             .andExpect(status().isUnauthorized());
+
+        verifyNoInteractions(cookieManager, cookieWriter);
     }
 
     @Test
-    void register_withValidData_returns200AndToken() throws Exception {
+    void register_withValidData_returns200AndSetsCookie() throws Exception {
         when(userAuthService.register("novo", "senha123", "novo@test.com"))
             .thenReturn("new-jwt-token");
+        CookieDomain domain = CookieDomain.of("access_token", "new-jwt-token");
+        when(cookieManager.createAccessTokenCookie("new-jwt-token")).thenReturn(domain);
+        doNothing().when(cookieWriter).writeCookie(any(), any());
 
         RegisterDTO register = new RegisterDTO("novo", "senha123", "novo@test.com");
 
@@ -87,8 +94,10 @@ class AuthenticationControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(register)))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.token").value("new-jwt-token"))
-            .andExpect(jsonPath("$.date").isNotEmpty());
+            .andExpect(content().string(""));
+
+        verify(cookieWriter).writeCookie(any(), eq(domain));
+        verify(userAuthService).register("novo", "senha123", "novo@test.com");
     }
 
     @Test
@@ -125,5 +134,8 @@ class AuthenticationControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(new LoginDTO("quitto", "senha123"))))
             .andExpect(status().isOk());
+
+        verify(cookieManager).createAccessTokenCookie("jwt-token");
+        verify(cookieWriter).writeCookie(any(), eq(domainCookie));
     }
 }
