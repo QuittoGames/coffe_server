@@ -326,9 +326,10 @@
 # coffe_server — TODO
 
 <blockquote>
-<strong>Readiness:</strong> 🟡 6/10 · <strong>Revisão completa em 2026-07-30</strong> — architecture, security, code quality. <br>
-Muitos typos foram corrigidos e o sistema de cookies foi refatorado corretamente. <br>
-Abstração Redis implementada (Clean Architecture com Ports & Adapters). <br>
+<strong>Readiness:</strong> 🟡 6/10 · <strong>Revisão completa em 2026-08-01</strong> — architecture, security, code quality. <br>
+Autenticação é <strong>cookie-only</strong>: o JWT não vem mais no body de login/register, só no HttpOnly cookie. <br>
+Rate limiting distribuído ativo na security chain (Bucket4j + Redis) com conexões lazy. <br>
+Abstração Redis ampliada (DatabaseProperties + getAdpterConnector) com properties <code>coffee.redis.*</code>. <br>
 </blockquote>
 
 ---
@@ -338,7 +339,7 @@ Abstração Redis implementada (Clean Architecture com Ports & Adapters). <br>
 <span class="badge badge-phase1">Fazer AGORA</span>
 <span class="badge badge-fire">8 itens</span>
 
-<div class="progress-bar"><div class="progress-fill fire" style="width: 50%"></div></div>
+<div class="progress-bar"><div class="progress-fill fire" style="width: 63%"></div></div>
 
 Esses bugs **impedem features novas** ou causam falhas em produção. Cada item resolvido aqui desbloqueia o resto.
 
@@ -367,8 +368,8 @@ Esses bugs **impedem features novas** ou causam falhas em produção. Cada item 
 
 ### 🔴 Segurança Imediata
 
-- [ ] **Adicionar rate limiting em `/auth/login` e `/auth/register`** — Sem proteção contra brute force.
-  <span class="tag">AuthenticationController.java</span>
+- [x] **Adicionar rate limiting em `/auth/login` e `/auth/register`** — RateLimitFilter na security chain com Bucket4j distribuído via Redis; conexão Redis criada de forma lazy (boot não depende do Redis no ar).
+  <span class="tag">RateLimitFilter.java · Bucket4jRateLimiter.java</span>
 
 ---
 
@@ -654,7 +655,7 @@ Esses bugs **impedem features novas** ou causam falhas em produção. Cada item 
 <span class="badge badge-phase3" style="background:#3C2415; color:#E8D5C4; border-color: #A67B5B;">Nova</span>
 <span class="badge badge-med">14 itens</span>
 
-<div class="progress-bar"><div class="progress-fill med" style="width: 57%"></div></div>
+<div class="progress-bar"><div class="progress-fill med" style="width: 93%"></div></div>
 
 ### ✅ Concluído
 
@@ -682,13 +683,25 @@ Esses bugs **impedem features novas** ou causam falhas em produção. Cada item 
 - [x] **`RedisArryCodec.java` — Interface de codec** — Extends Lettuce `RedisCodec<String, byte[]>`.
   <span class="tag">infrastructure/interfaces/Codec/RedisArryCodec.java</span>
 
+- [x] **`DatabaseProperties.java` — Interface de domínio para config de banco** — Define `getInstances()`; `RedisProperties` agora a implementa, desacoplando a porta de propriedades.
+  <span class="tag">domain/Database/DatabaseProperties.java · RedisProperties.java</span>
+
+- [x] **`DatabaseClientProvider` enriquecido** — Porta agora recebe `P extends DatabaseProperties` e expõe `getAdpterConnector(name)` + `getProvaiders(properties)`, substituindo `get(name)`.
+  <span class="tag">domain/interfaces/Database/DatabaseClientProvider.java</span>
+
+- [x] **`RedisClientProvider` — Conexões lazy** — Clientes Lettuce criados no construtor (baratos, sem rede); conexões reais sob demanda no primeiro uso e cacheadas em `ConcurrentHashMap`. Boot não depende do Redis no ar.
+  <span class="tag">infrastructure/services/Provaider/redis/RedisClientProvider.java</span>
+
+- [x] **`Bucket4jConfig` conectado à abstração** — Cria bean `RateLimit` (`Bucket4jRateLimiter`) via `RedisClientProvider` + `PolicyProvider`, com proxy manager lazy. `Bucket4jPolicyProvider` implementa a `PolicyProvider`.
+  <span class="tag">Bucket4jConfig.java · Bucket4jPolicyProvider.java · Bucket4jRateLimiter.java</span>
+
+- [x] **Properties `coffee.redis.*` e `coffee.ratelimit.enabled` adicionadas** — Instâncias `cache` e `rate-limit` declaradas no `application.properties`, `application-h2.properties` e `application-test.properties`.
+  <span class="tag">application.properties · application-h2.properties · application-test.properties</span>
+
 ### 📝 Pendente
 
 - [ ] **Registrar `@EnableConfigurationProperties(RedisProperties.class)** — Sem isso o Spring não faz o binding das properties. Atualmente `properties.getInstances()` retorna `null`.
   <span class="tag">RedisConfig.java / ServerApplication.java</span>
-
-- [ ] **Adicionar properties `coffee.redis.*` no application.properties** — O prefixo esperado é `coffee.redis.instances[0].name/host/port`, mas o properties atual só tem `redis.cache.*` e `redis.ratelimit.*`.
-  <span class="tag">application.properties</span>
 
 - [ ] **Configurar TLS/SSL nas conexões Redis** — Usar `rediss://` ou suporte a `RedisURI.Builder` com SSL.
   <span class="tag">RedisClientProvider.java</span>
@@ -698,9 +711,6 @@ Esses bugs **impedem features novas** ou causam falhas em produção. Cada item 
 
 - [ ] **@PreDestroy para fechar conexões** — `RedisClientProvider` precisa fechar todas as conexões no shutdown pra evitar vazamento de threads Netty.
   <span class="tag">RedisClientProvider.java</span>
-
-- [ ] **Conectar Bucket4jConfig com a nova abstração** — Injeta `RedisAsyncCommands<String, byte[]>` direto (Lettuce), mas deveria consumir via `DatabaseClientProvider`.
-  <span class="tag">Bucket4jConfig.java</span>
 
 ---
 
@@ -805,7 +815,7 @@ O feedback sugere avaliar módulos Maven separados para MCP e SDK. Isso alinha c
 
 <div class="section-summary">
   <div class="stat-card">
-    <strong>4</strong> / 8<br><span class="tag">🔥 Fase 1</span>
+    <strong>5</strong> / 8<br><span class="tag">🔥 Fase 1</span>
   </div>
   <div class="stat-card">
     <strong>1</strong> / 16<br><span class="tag badge-high">Fase 2</span>
@@ -826,19 +836,19 @@ O feedback sugere avaliar módulos Maven separados para MCP e SDK. Isso alinha c
     <strong>0</strong> / 3<br><span class="tag">Fase 7</span>
   </div>
   <div class="stat-card">
-    <strong>8</strong> / 14<br><span class="tag">Fase 8</span>
+    <strong>13</strong> / 14<br><span class="tag">Fase 8</span>
   </div>
   <div class="stat-card">
-    <strong>13</strong> / 60<br><span class="tag">Total</span>
+    <strong>19</strong> / 60<br><span class="tag">Total</span>
   </div>
 </div>
 
 <hr>
 
 <blockquote>
-<strong>📅 Gerado em:</strong> 2026-07-30 · <strong>Baseado em análise completa do código-fonte</strong><br>
+<strong>📅 Gerado em:</strong> 2026-08-01 · <strong>Baseado em análise completa do código-fonte</strong><br>
 <strong>🎯 Meta:</strong> Completar Fase 1 antes de começar qualquer feature nova. Bugs críticos de Machine, OAuth2 e JWT Filter impedem produção.<br>
 <strong>✅ O que já foi feito desde o último audit:</strong> CookieSystem refatorado (CookieManager + CookieFactory no domínio), typos corrigidos (JwtTokenResolver, BCryptPasswordService, Provider, ExternalAccount, GoogleCalendarTools, etc.), JwtTokenService.extractIdSubject retorna Optional, verifyToken() safe. <br>
 MachineEntity userId mapping corrigido, MachineRepositoryAdapter.setOwner() implementado, JwtAuthenticationFilter retorna 401 em falha, User.toString() sem vazar passwordHash. <br>
-DatabaseClientProvider.java import corrigido (java.sql → domain), Connection.java enriquecida (isOpen/close), RedisClientConnectionAdpter refatorado, StringByteArrayCodec corrigido (package + API), RedisClientProvider reescrito com get(), RedisClientConnection removido (substituído por RedisClientInstace do domínio), RedisProperties.getInstances() retorna List&lt;RedisClientInstace&gt;.
+Autenticação cookie-only (JWT fora do body de login/register), rate limiting ativo na security chain (Bucket4j + Redis lazy), abstração Redis ampliada com DatabaseProperties + getAdpterConnector/getProvaiders, properties coffee.redis.* em todos os profiles, Bucket4jConfig conectado via RedisClientProvider + Bucket4jPolicyProvider.
 </blockquote>
