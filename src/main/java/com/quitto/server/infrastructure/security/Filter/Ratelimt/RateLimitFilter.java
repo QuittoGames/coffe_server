@@ -24,25 +24,31 @@ public class RateLimitFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,HttpServletResponse response,FilterChain filterChain) throws ServletException, IOException {
+        try{
+            String key = request.getRemoteAddr();
 
-        String key = request.getRemoteAddr();
-
-        if (key == null) {
-            throw new IllegalArgumentException(
-                "Unable to apply rate limit: client IP address is missing"
+            if (key == null) {
+                throw new IllegalArgumentException(
+                    "Unable to apply rate limit: client IP address is missing"
             );
-        }
+            }
 
-        boolean allowed = rateLimiter.tryConsume(
+            boolean allowed = rateLimiter.tryConsume(
                 key,
                 RateLimitPolicy.API);
 
-        if (!allowed) {
-            response.setStatus(429);
-            logger.debug("Key: " + key + "cant acess API");
-            return;
-        }
+                if (!allowed) {
+                    response.setStatus(429);
+                    logger.debug("Key: " + key + "cant acess API");
+                return;
+            }
 
+        }catch(IllegalArgumentException IAE){
+
+        }
+        catch(Exception E){
+
+        }
         filterChain.doFilter(request, response);
     }
 }

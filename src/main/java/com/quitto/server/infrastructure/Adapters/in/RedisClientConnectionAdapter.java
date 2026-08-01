@@ -32,4 +32,6 @@ public class RedisClientConnectionAdapter implements Connection {
     public StatefulRedisConnection<String, byte[]> getConnection() {
         return connection;
     }
+
+
 }

@@ -4,10 +4,11 @@ import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import com.quitto.server.domain.Database.DatabaseProperties;
 import com.quitto.server.domain.Database.redis.RedisClientInstace;
 
 @ConfigurationProperties(prefix = "coffee.redis")
-public class RedisProperties {
+public class RedisProperties implements DatabaseProperties {
 
     private List<RedisClientInstace> instances;
 

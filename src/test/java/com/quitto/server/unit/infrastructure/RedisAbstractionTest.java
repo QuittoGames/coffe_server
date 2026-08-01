@@ -11,6 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.quitto.server.domain.Database.Connection;
 import com.quitto.server.domain.Database.DatabaseClient;
+import com.quitto.server.domain.Database.DatabaseProperties;
 import com.quitto.server.domain.Database.redis.RedisClientInstace;
 import com.quitto.server.domain.interfaces.Database.DatabaseClientProvider;
 
@@ -134,13 +135,13 @@ class RedisAbstractionTest {
     @DisplayName("DatabaseClientProvider returns connection by name")
     void provider_returnsConnectionByName() {
         @SuppressWarnings("unchecked")
-        DatabaseClientProvider<Connection<?>> provider = mock(DatabaseClientProvider.class);
+        DatabaseClientProvider<Connection<?>, DatabaseProperties> provider = mock(DatabaseClientProvider.class);
         Connection<?> mockConnection = mock(Connection.class);
 
-        doReturn(mockConnection).when(provider).get("cache");
+        doReturn(mockConnection).when(provider).getAdpterConnector("cache");
         when(mockConnection.isOpen()).thenReturn(true);
 
-        Connection<?> result = provider.get("cache");
+        Connection<?> result = provider.getAdpterConnector("cache");
         assertNotNull(result);
         assertTrue(result.isOpen());
     }
@@ -149,25 +150,25 @@ class RedisAbstractionTest {
     @DisplayName("DatabaseClientProvider throws when name not found")
     void provider_throwsWhenNameNotFound() {
         @SuppressWarnings("unchecked")
-        DatabaseClientProvider<Connection<?>> provider = mock(DatabaseClientProvider.class);
-        when(provider.get("nonexistent")).thenThrow(new IllegalArgumentException("Unknown database: nonexistent"));
+        DatabaseClientProvider<Connection<?>, DatabaseProperties> provider = mock(DatabaseClientProvider.class);
+        when(provider.getAdpterConnector("nonexistent")).thenThrow(new IllegalArgumentException("Unknown database: nonexistent"));
 
-        assertThrows(IllegalArgumentException.class, () -> provider.get("nonexistent"));
+        assertThrows(IllegalArgumentException.class, () -> provider.getAdpterConnector("nonexistent"));
     }
 
     @Test
     @DisplayName("DatabaseClientProvider returns different connections")
     void provider_returnsDifferentConnections() {
         @SuppressWarnings("unchecked")
-        DatabaseClientProvider<Connection<?>> provider = mock(DatabaseClientProvider.class);
+        DatabaseClientProvider<Connection<?>, DatabaseProperties> provider = mock(DatabaseClientProvider.class);
         Connection<?> cacheConn = mock(Connection.class);
         Connection<?> sessionConn = mock(Connection.class);
 
-        doReturn(cacheConn).when(provider).get("cache");
-        doReturn(sessionConn).when(provider).get("session");
+        doReturn(cacheConn).when(provider).getAdpterConnector("cache");
+        doReturn(sessionConn).when(provider).getAdpterConnector("session");
 
-        assertSame(cacheConn, provider.get("cache"));
-        assertSame(sessionConn, provider.get("session"));
+        assertSame(cacheConn, provider.getAdpterConnector("cache"));
+        assertSame(sessionConn, provider.getAdpterConnector("session"));
         assertNotSame(cacheConn, sessionConn);
     }
 
@@ -175,13 +176,13 @@ class RedisAbstractionTest {
     @DisplayName("DatabaseClientProvider connection lifecycle")
     void provider_connectionLifecycle() {
         @SuppressWarnings("unchecked")
-        DatabaseClientProvider<Connection<?>> provider = mock(DatabaseClientProvider.class);
+        DatabaseClientProvider<Connection<?>, DatabaseProperties> provider = mock(DatabaseClientProvider.class);
         Connection<?> conn = mock(Connection.class);
 
-        doReturn(conn).when(provider).get("cache");
+        doReturn(conn).when(provider).getAdpterConnector("cache");
         doNothing().when(conn).close();
 
-        Connection<?> obtained = provider.get("cache");
+        Connection<?> obtained = provider.getAdpterConnector("cache");
         obtained.close();
         verify(conn, times(1)).close();
     }
