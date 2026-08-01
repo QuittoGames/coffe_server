@@ -44,6 +44,9 @@ replay_pid*
 *.cer
 *.crt
 keys/
+certs/
+!certs/
+!certs/*.crt
 
 ### Maven ###
 target/
