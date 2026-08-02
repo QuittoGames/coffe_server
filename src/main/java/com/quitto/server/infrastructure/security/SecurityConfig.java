@@ -1,5 +1,6 @@
 package com.quitto.server.infrastructure.security;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,10 +26,14 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final RateLimitFilter rateLimitFilter;
 
-    public SecurityConfig(OAuth2UserProvisioningService oauthService, JwtAuthenticationFilter jwtAuthenticationFilter,RateLimitFilter rateLimitFilter) {
+    public SecurityConfig(OAuth2UserProvisioningService oauthService,
+                          JwtAuthenticationFilter jwtAuthenticationFilter,
+                          ObjectProvider<RateLimitFilter> rateLimitFilterProvider) {
         this.oauthService = oauthService;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
-        this.rateLimitFilter = rateLimitFilter;
+        // RateLimitFilter only exists when coffee.ratelimit.enabled=true
+        // (Bucket4jConfig is conditional on the same property).
+        this.rateLimitFilter = rateLimitFilterProvider.getIfAvailable();
     }
 
     @Bean
@@ -38,9 +43,10 @@ public class SecurityConfig {
             .requestMatchers("/auth/**").permitAll()
             .requestMatchers("/auth/login").permitAll()
             .requestMatchers("/auth/register").permitAll()
-            .requestMatchers("/api/test").permitAll()
             .requestMatchers("/login").permitAll()
+            .requestMatchers("/error").permitAll()
             .requestMatchers("/", "/css/**").permitAll()
+            .requestMatchers("/app", "/app/", "/app/**").permitAll()
             .requestMatchers("/mcp/**").hasAuthority("MCP")
             .requestMatchers("/admin/**").hasAuthority("ADMIN")
             // .requestMatchers("/api/**").hasAuthority("API")
@@ -61,10 +67,13 @@ public class SecurityConfig {
         //    v
         // Controller
 
-        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class) // Object Filter before of class
-        .addFilterAfter(rateLimitFilter, JwtAuthenticationFilter.class)
+        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class); // Object Filter before of class
 
-        .exceptionHandling(ex -> ex
+        if (rateLimitFilter != null) {
+            http.addFilterAfter(rateLimitFilter, JwtAuthenticationFilter.class);
+        }
+
+        http.exceptionHandling(ex -> ex
             .authenticationEntryPoint((req, res, authException) -> {
                 res.setStatus(401);
             })

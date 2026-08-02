@@ -2,6 +2,7 @@ package com.quitto.server.infrastructure.security.Filter.Ratelimt;
 
 import java.io.IOException;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -14,6 +15,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 @Component
+@ConditionalOnProperty(
+    prefix = "coffee.ratelimit",
+    name = "enabled",
+    havingValue = "true"
+)
 public class RateLimitFilter extends OncePerRequestFilter {
 
     private final RateLimit rateLimiter;
