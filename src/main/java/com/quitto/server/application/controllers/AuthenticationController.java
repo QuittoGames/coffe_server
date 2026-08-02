@@ -66,4 +66,12 @@ public class AuthenticationController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
+        // Revoga o cookie HttpOnly: Max-Age=0 remove o cookie no browser.
+        CookieDomain cookieDomain = cookieManager.createAccessTokenCookie("", 0);
+        cookieWriter.writeCookie(response, cookieDomain);
+        return ResponseEntity.ok().build();
+    }
+
 }

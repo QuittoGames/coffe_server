@@ -22,7 +22,7 @@ public class HttpCookieWriterManeger implements HttpCookieWriter{
 	}
 
 	@Override
-   public void writeCookie(HttpServletResponse response, CookieDomain cookieDomain) {
+    public void writeCookie(HttpServletResponse response, CookieDomain cookieDomain) {
         Objects.requireNonNull(response, "response cannot be null");
         Objects.requireNonNull(cookieDomain, "cookieDomain cannot be null");
 
