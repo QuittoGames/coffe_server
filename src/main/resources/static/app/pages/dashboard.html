@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — Coffee Server</title>
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+  <meta name="description" content="Visão geral do Coffee Server">
+  <link rel="stylesheet" href="../styles/main.css">
+</head>
+<body>
+  <div class="app">
+    <!-- Header (rendered by components/Header.js) -->
+    <header data-header></header>
+
+    <!-- Top nav (rendered by components/MiniPanel.js) -->
+    <nav data-mini-panel aria-label="Navegação principal"></nav>
+
+    <div class="app-main">
+      <main class="app-content">
+        <div class="app-page">
+          <!-- Page header -->
+          <div class="page-header">
+            <div>
+              <h1 class="page-title"><span class="terminal-prefix">❯ </span>Dashboard</h1>
+              <p class="page-subtitle">Visão geral do servidor e serviços conectados.</p>
+            </div>
+            <div class="page-actions">
+              <button class="btn btn-secondary" type="button" data-refresh>
+                ↻ atualizar
+              </button>
+              <a class="btn btn-primary" href="mcp.html">MCP</a>
+            </div>
+          </div>
+
+          <!-- Terminal strip (mock activity) -->
+          <div class="terminal-strip" data-terminal>
+            <span class="term-prompt">quitto@quittoserver:~$</span> <span class="term-cmd">coffee server status</span><br>
+            <span class="term-ok">✔</span> postgres <span class="term-dim">up</span> · <span class="term-ok">✔</span> redis <span class="term-dim">up</span> · <span class="term-ok">✔</span> mcp <span class="term-dim">online</span>
+          </div>
+
+          <!-- User Overview -->
+          <section class="section" aria-labelledby="user-section">
+            <div class="section-header">
+              <h2 class="section-title" id="user-section"><span class="terminal-prefix">❯ </span>Usuário</h2>
+              <span class="section-meta">session: cookie httpOnly</span>
+            </div>
+            <div class="card" data-user-card>
+              <div class="skeleton skeleton-text" style="width: 30%"></div>
+              <div class="skeleton skeleton-text" style="width: 50%; margin-top: 8px"></div>
+            </div>
+          </section>
+
+          <!-- KPI row -->
+          <section class="section" aria-labelledby="kpi-section">
+            <div class="section-header">
+              <h2 class="section-title" id="kpi-section"><span class="terminal-prefix">❯ </span>Servidor</h2>
+              <span class="section-meta">dados simulados</span>
+            </div>
+            <div class="kpi-row" data-kpi-row>
+              <!-- Populated by dashboard.js -->
+            </div>
+          </section>
+
+          <!-- Infrastructure Overview -->
+          <section class="section" aria-labelledby="infra-section">
+            <div class="section-header">
+              <h2 class="section-title" id="infra-section"><span class="terminal-prefix">❯ </span>Infraestrutura</h2>
+            </div>
+            <div class="card" data-infra-card>
+              <div class="infra-grid">
+                <div class="infra-item">
+                  <div class="infra-header">
+                    <span>CPU</span><span class="infra-value" data-infra-cpu-label>—</span>
+                  </div>
+                  <div class="progress"><div class="progress-fill blue" data-infra-cpu style="width: 0%"></div></div>
+                </div>
+                <div class="infra-item">
+                  <div class="infra-header">
+                    <span>Memória</span><span class="infra-value" data-infra-mem-label>—</span>
+                  </div>
+                  <div class="progress"><div class="progress-fill blue" data-infra-mem style="width: 0%"></div></div>
+                </div>
+                <div class="infra-item">
+                  <div class="infra-header">
+                    <span>Armazenamento</span><span class="infra-value" data-infra-disk-label>—</span>
+                  </div>
+                  <div class="progress"><div class="progress-fill coffee" data-infra-disk style="width: 0%"></div></div>
+                </div>
+                <div class="infra-item">
+                  <div class="infra-header">
+                    <span>Rede</span><span class="infra-value" data-infra-net-label>—</span>
+                  </div>
+                  <div class="progress"><div class="progress-fill blue" data-infra-net style="width: 0%"></div></div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Machines -->
+          <section class="section" id="machines" aria-labelledby="machines-section">
+            <div class="section-header">
+              <h2 class="section-title" id="machines-section"><span class="terminal-prefix">❯ </span>Máquinas</h2>
+              <span class="section-meta" data-machines-count>0 registradas</span>
+            </div>
+            <div class="machine-list" data-machines-list>
+              <!-- Populated by dashboard.js -->
+            </div>
+          </section>
+
+          <!-- Containers -->
+          <section class="section" id="containers" aria-labelledby="containers-section">
+            <div class="section-header">
+              <h2 class="section-title" id="containers-section"><span class="terminal-prefix">❯ </span>Containers</h2>
+              <span class="section-meta" data-containers-count>0 ativos</span>
+            </div>
+            <div class="table-wrapper">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Nome</th>
+                    <th>Status</th>
+                    <th>Estado</th>
+                    <th>Porta</th>
+                    <th>CPU / Mem</th>
+                    <th style="text-align: right;">Ações</th>
+                  </tr>
+                </thead>
+                <tbody data-containers-body>
+                  <!-- Populated by dashboard.js -->
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- MCP Manager Preview -->
+          <section class="section" id="mcp-preview" aria-labelledby="mcp-preview-section">
+            <div class="section-header">
+              <h2 class="section-title" id="mcp-preview-section"><span class="terminal-prefix">❯ </span>MCP Manager</h2>
+              <a class="btn btn-sm btn-ghost" href="mcp.html">ver todos →</a>
+            </div>
+            <div class="mcp-grid" data-mcp-preview>
+              <!-- Populated by dashboard.js -->
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <!-- Status bar (rendered by components/StatusBar.js) -->
+    <footer data-statusbar></footer>
+  </div>
+
+  <script type="module" src="../pages/dashboard.js"></script>
+</body>
+</html>

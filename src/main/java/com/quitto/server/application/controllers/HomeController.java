@@ -8,11 +8,12 @@ public class HomeController {
 
     @GetMapping("/")
     public String home() {
-        return "index";
+        // Novo frontend: entry point faz o redirect para login/dashboard.
+        return "redirect:/app/index.html";
     }
 
     @GetMapping("/login")
     public String login() {
-        return "login";
+        return "redirect:/app/pages/login.html";
     }
 }

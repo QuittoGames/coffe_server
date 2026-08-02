@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MCP Manager — Coffee Server</title>
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+  <meta name="description" content="Servidores e ferramentas MCP do Coffee Server">
+  <link rel="stylesheet" href="../styles/main.css">
+</head>
+<body>
+  <div class="app">
+    <!-- Header (rendered by components/Header.js) -->
+    <header data-header></header>
+
+    <!-- Top nav (rendered by components/MiniPanel.js) -->
+    <nav data-mini-panel aria-label="Navegação principal"></nav>
+
+    <div class="app-main">
+      <main class="app-content">
+        <div class="app-page">
+          <!-- Page header -->
+          <div class="page-header">
+            <div>
+              <h1 class="page-title"><span class="terminal-prefix">❯ </span>MCP Manager</h1>
+              <p class="page-subtitle">Servidores e ferramentas expostos para agentes de IA.</p>
+            </div>
+            <div class="page-actions">
+              <a class="btn btn-secondary" href="dashboard.html">← dashboard</a>
+              <button class="btn btn-primary" type="button" data-mcp-refresh>↻ verificar</button>
+            </div>
+          </div>
+
+          <!-- Server info strip -->
+          <div class="terminal-strip" data-mcp-server-info>
+            <span class="term-dim">// coffee-mcp-server · WebMVC (HTTP) · endpoint /mcp</span><br>
+            <span class="term-ok">✔</span> protocolo <span class="term-cmd">MCP</span> · <span class="term-ok">✔</span> status <span class="term-cmd">online</span>
+          </div>
+
+          <!-- MCP servers grid -->
+          <section class="section" aria-labelledby="mcp-servers-section">
+            <div class="section-header">
+              <h2 class="section-title" id="mcp-servers-section"><span class="terminal-prefix">❯ </span>Servidores</h2>
+              <span class="section-meta" data-mcp-count>0 online</span>
+            </div>
+            <div class="mcp-grid" data-mcp-grid>
+              <!-- Populated by mcp.js -->
+            </div>
+          </section>
+
+          <!-- Recent calls log -->
+          <section class="section" aria-labelledby="mcp-log-section">
+            <div class="section-header">
+              <h2 class="section-title" id="mcp-log-section"><span class="terminal-prefix">❯ </span>Log de chamadas</h2>
+              <span class="section-meta">últimas chamadas</span>
+            </div>
+            <div class="table-wrapper">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Hora</th>
+                    <th>Servidor</th>
+                    <th>Ferramenta</th>
+                    <th>Status</th>
+                    <th>Latência</th>
+                  </tr>
+                </thead>
+                <tbody data-mcp-log-body>
+                  <!-- Populated by mcp.js -->
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <!-- Status bar (rendered by components/StatusBar.js) -->
+    <footer data-statusbar></footer>
+  </div>
+
+  <script type="module" src="../pages/mcp.js"></script>
+</body>
+</html>

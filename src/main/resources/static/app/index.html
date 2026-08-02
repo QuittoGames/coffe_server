@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coffee Server</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <meta name="description" content="Coffee Server Dashboard — painel administrativo do homelab">
+  <!-- Entry point: redirects to dashboard or login based on local session -->
+  <script type="module" src="index.js"></script>
+</head>
+<body>
+  <main class="login-page" aria-busy="true">
+    <div class="login-container">
+      <div class="login-brand">
+        <img class="login-brand-logo" src="assets/Logo.png" alt="Coffee Server logo">
+        <h1 class="login-brand-title">Coffee <span class="accent">Server</span></h1>
+        <p class="login-brand-sub">// redirecionando…</p>
+      </div>
+      <div class="card skeleton-card" style="height: 220px; border-radius: var(--radius-lg);"></div>
+    </div>
+  </main>
+</body>
+</html>
