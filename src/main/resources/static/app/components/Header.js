@@ -30,6 +30,9 @@ export function renderHeader(target, { title = 'Coffee Server', active = 'dashbo
 
   const header = el('header', { class: 'header glass' });
 
+  // Zona esquerda: logo + endereço fake
+  const left = el('div', { class: 'header-left' });
+
   const logoLink = el('a', { class: 'header-logo', attrs: { href: './dashboard.html', 'aria-label': 'Dashboard' } });
   logoLink.append(
     el('img', {
@@ -51,9 +54,10 @@ export function renderHeader(target, { title = 'Coffee Server', active = 'dashbo
     el('span', { class: 'addr-prompt', text: '❯' }),
     el('span', { class: 'addr-path', html: `<span class="addr-host">server</span><span class="addr-sep">/</span><span class="addr-page">${escapeHtml(address.replace(/^server\//, ''))}</span>` }),
   );
-  header.append(logoLink, addr);
+  left.append(logoLink, addr);
+  header.append(left);
 
-  // Primary nav — inline in the toolbar
+  // Zona central: nav primária
   const nav = el('nav', { class: 'toolbar-nav', attrs: { 'aria-label': 'Navegação principal' } });
   NAV_ITEMS.forEach((item) => {
     const link = el('a', {
@@ -68,6 +72,7 @@ export function renderHeader(target, { title = 'Coffee Server', active = 'dashbo
   });
   header.append(nav);
 
+  // Zona direita: status + usuário
   const actions = el('div', { class: 'header-actions' });
 
   const status = el('span', { class: 'header-status', attrs: { title: 'Conexão com o servidor' } });

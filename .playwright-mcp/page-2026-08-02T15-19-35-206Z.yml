@@ -1,0 +1,486 @@
+- generic [ref=f5e2]:
+  - banner [ref=f5e3]:
+    - banner [ref=f5e4]:
+      - generic [ref=f5e5]:
+        - link "Dashboard" [ref=f5e6] [cursor=pointer]:
+          - /url: ./dashboard.html
+          - img "Coffee Server logo" [ref=f5e7]
+          - generic [ref=f5e8]: Coffee Server
+        - link "❯ server/home" [ref=f5e9] [cursor=pointer]:
+          - /url: ./dashboard.html
+          - generic [ref=f5e10]: ❯
+          - generic [ref=f5e11]: server/home
+      - navigation "Navegação principal" [ref=f5e12]:
+        - link "Dashboard" [ref=f5e13] [cursor=pointer]:
+          - /url: ./dashboard.html
+          - generic [ref=f5e14]: ▤
+        - link "Máquinas" [ref=f5e16] [cursor=pointer]:
+          - /url: ./dashboard.html#machines
+          - generic [ref=f5e17]: ▦
+        - link "Containers" [ref=f5e19] [cursor=pointer]:
+          - /url: ./dashboard.html#containers
+          - generic [ref=f5e20]: ▣
+        - link "MCP" [ref=f5e22] [cursor=pointer]:
+          - /url: ./mcp.html
+          - generic [ref=f5e23]: ◆
+      - generic [ref=f5e25]:
+        - generic "Conexão com o servidor" [ref=f5e26]: online
+        - button "⬢ quitto" [ref=f5e30] [cursor=pointer]
+  - navigation "Navegação principal"
+  - main [ref=f5e32]:
+    - generic [ref=f5e33]:
+      - generic [ref=f5e34]:
+        - generic [ref=f5e35]:
+          - heading "❯ Dashboard" [level=1] [ref=f5e36]:
+            - generic [ref=f5e37]: ❯
+            - text: Dashboard
+          - paragraph [ref=f5e38]: Painel de controle do servidor e serviços conectados.
+        - generic [ref=f5e39]:
+          - button "↻ atualizar" [ref=f5e40] [cursor=pointer]
+          - link "MCP" [ref=f5e41] [cursor=pointer]:
+            - /url: mcp.html
+      - generic [ref=f5e43]:
+        - generic [ref=f5e44]:
+          - generic [ref=f5e45]:
+            - generic [ref=f5e46]: ❯
+            - generic [ref=f5e47]: quitto@quittoserver:~$
+            - generic [ref=f5e48]: coffee server status
+          - generic [ref=f5e49]: healthy
+        - list [ref=f5e51]:
+          - 'listitem "postgres: up" [ref=f5e52]':
+            - generic [ref=f5e54]: postgres
+            - generic [ref=f5e55]: 21ms
+            - generic [ref=f5e56]: up
+          - 'listitem "redis: up" [ref=f5e57]':
+            - generic [ref=f5e59]: redis
+            - generic [ref=f5e60]: 3ms
+            - generic [ref=f5e61]: up
+          - 'listitem "mcp: online" [ref=f5e62]':
+            - generic [ref=f5e64]: mcp
+            - generic [ref=f5e65]: —
+            - generic [ref=f5e66]: online
+          - 'listitem "tailscale: up" [ref=f5e67]':
+            - generic [ref=f5e69]: tailscale
+            - generic [ref=f5e70]: 41ms
+            - generic [ref=f5e71]: up
+        - generic [ref=f5e76]: atividade · 24h
+      - region [ref=f5e77]:
+        - generic [ref=f5e78]:
+          - heading "❯ Usuário" [level=2] [ref=f5e79]:
+            - generic [ref=f5e80]: ❯
+            - text: Usuário
+          - generic [ref=f5e81]: "session: cookie httpOnly"
+        - generic [ref=f5e82]:
+          - generic [ref=f5e84]:
+            - generic [ref=f5e85]: ❯
+            - text: quitto
+          - generic [ref=f5e87]:
+            - generic [ref=f5e88]: quitto@coffee.local
+            - generic [ref=f5e89]:
+              - generic [ref=f5e90]: ADMIN
+              - generic [ref=f5e91]: uid 1000
+              - generic [ref=f5e92]: /bin/bash
+      - region [ref=f5e93]:
+        - generic [ref=f5e94]:
+          - heading "❯ Servidor" [level=2] [ref=f5e95]:
+            - generic [ref=f5e96]: ❯
+            - text: Servidor
+          - generic [ref=f5e97]: dados simulados
+        - generic [ref=f5e98]:
+          - generic [ref=f5e99]:
+            - generic [ref=f5e100]: máquinas online
+            - generic [ref=f5e101]: 2/4
+            - generic [ref=f5e102]:
+              - generic [ref=f5e103]: ▲
+              - generic [ref=f5e104]: homelab
+          - generic [ref=f5e105]:
+            - generic [ref=f5e106]: containers ativos
+            - generic [ref=f5e107]: "3"
+            - generic [ref=f5e108]:
+              - generic [ref=f5e109]: ▲
+              - generic [ref=f5e110]: 1 parado
+          - generic [ref=f5e111]:
+            - generic [ref=f5e112]: serviços MCP
+            - generic [ref=f5e113]: 3online
+            - generic [ref=f5e114]:
+              - generic [ref=f5e115]: ▲
+              - generic [ref=f5e116]: via /mcp
+          - generic [ref=f5e117]:
+            - generic [ref=f5e118]: uptime
+            - generic [ref=f5e119]: 22d 20h 0m
+            - generic [ref=f5e120]:
+              - generic [ref=f5e121]: ▲
+              - generic [ref=f5e122]: quittoserver
+      - region [ref=f5e123]:
+        - generic [ref=f5e124]:
+          - heading "❯ Sistema│Rede" [level=2] [ref=f5e125]:
+            - generic [ref=f5e126]: ❯
+            - text: Sistema│Rede
+          - generic [ref=f5e127]: quittoserver · tailscale
+        - generic [ref=f5e128]:
+          - generic [ref=f5e129]:
+            - generic [ref=f5e131]:
+              - generic [ref=f5e132]: ❯
+              - text: Sistema
+            - generic [ref=f5e133]:
+              - row "hostname quittoserver" [ref=f5e134]:
+                - generic [ref=f5e135]: hostname
+                - generic [ref=f5e136]: quittoserver
+              - row "os Ubuntu 24.04 LTS" [ref=f5e137]:
+                - generic [ref=f5e138]: os
+                - generic [ref=f5e139]: Ubuntu 24.04 LTS
+              - row "kernel 6.8.0-117-generic" [ref=f5e140]:
+                - generic [ref=f5e141]: kernel
+                - generic [ref=f5e142]: 6.8.0-117-generic
+              - row "cpu Intel Xeon E5-2650 v3 · 8 cores" [ref=f5e143]:
+                - generic [ref=f5e144]: cpu
+                - generic [ref=f5e145]: Intel Xeon E5-2650 v3 · 8 cores
+              - row "memória 817.2 MB / 1.9 GB" [ref=f5e146]:
+                - generic [ref=f5e147]: memória
+                - generic [ref=f5e148]: 817.2 MB / 1.9 GB
+              - generic [ref=f5e150]:
+                - generic [ref=f5e151]: cpu
+                - generic [ref=f5e152]: 27%
+              - generic [ref=f5e156]:
+                - generic [ref=f5e157]: memória
+                - generic [ref=f5e158]: 42%
+          - generic [ref=f5e161]:
+            - generic [ref=f5e163]:
+              - generic [ref=f5e164]: ❯
+              - text: Rede
+            - generic [ref=f5e165]:
+              - row "tailscale 100.73.31.49" [ref=f5e166]:
+                - generic [ref=f5e167]: tailscale
+                - generic [ref=f5e168]: 100.73.31.49
+              - row "node ts-node-4f8a2c" [ref=f5e169]:
+                - generic [ref=f5e170]: node
+                - generic [ref=f5e171]: ts-node-4f8a2c
+              - row "lan 192.168.1.10" [ref=f5e172]:
+                - generic [ref=f5e173]: lan
+                - generic [ref=f5e174]: 192.168.1.10
+              - row "gateway 192.168.1.1" [ref=f5e175]:
+                - generic [ref=f5e176]: gateway
+                - generic [ref=f5e177]: 192.168.1.1
+              - row "interfaces eth0, tailscale0" [ref=f5e178]:
+                - generic [ref=f5e179]: interfaces
+                - generic [ref=f5e180]: eth0, tailscale0
+              - row "rx 12%" [ref=f5e181]:
+                - generic [ref=f5e182]: rx
+                - generic [ref=f5e183]: 12%
+      - region [ref=f5e184]:
+        - generic [ref=f5e185]:
+          - heading "❯ Discos" [level=2] [ref=f5e186]:
+            - generic [ref=f5e187]: ❯
+            - text: Discos
+          - generic [ref=f5e188]: pior uso 93%
+        - generic [ref=f5e189]:
+          - generic [ref=f5e190]:
+            - generic [ref=f5e191]:
+              - generic [ref=f5e192]: /
+              - generic [ref=f5e193]: 62%
+            - generic [ref=f5e196]:
+              - generic [ref=f5e197]: 74.0 GB usados
+              - generic [ref=f5e198]: 120.0 GB total
+          - generic [ref=f5e199]:
+            - generic [ref=f5e200]:
+              - generic [ref=f5e201]: /home
+              - generic [ref=f5e202]: 35%
+            - generic [ref=f5e205]:
+              - generic [ref=f5e206]: 28.0 GB usados
+              - generic [ref=f5e207]: 80.0 GB total
+          - generic [ref=f5e208]:
+            - generic [ref=f5e209]:
+              - generic [ref=f5e210]: /mnt/mount/data
+              - generic [ref=f5e211]: 86%
+            - generic [ref=f5e214]:
+              - generic [ref=f5e215]: 430.0 GB usados
+              - generic [ref=f5e216]: 500.0 GB total
+          - generic [ref=f5e217]:
+            - generic [ref=f5e218]:
+              - generic [ref=f5e219]: /mnt/mount/data/backups
+              - generic [ref=f5e220]: 93%
+            - generic [ref=f5e223]:
+              - generic [ref=f5e224]: 465.0 GB usados
+              - generic [ref=f5e225]: 500.0 GB total
+      - region [ref=f5e226]:
+        - generic [ref=f5e227]:
+          - heading "❯ Containers" [level=2] [ref=f5e228]:
+            - generic [ref=f5e229]: ❯
+            - text: Containers
+          - generic [ref=f5e230]: 3 ativos
+        - table [ref=f5e232]:
+          - rowgroup [ref=f5e233]:
+            - row [ref=f5e234]:
+              - columnheader "Nome" [ref=f5e235]
+              - columnheader "Status" [ref=f5e236]
+              - columnheader "Estado" [ref=f5e237]
+              - columnheader "Porta" [ref=f5e238]
+              - columnheader "CPU / Mem" [ref=f5e239]
+              - columnheader "Ações" [ref=f5e240]
+          - rowgroup [ref=f5e241]:
+            - row [ref=f5e242]:
+              - cell "postgres postgres:17" [ref=f5e243]:
+                - generic [ref=f5e244]:
+                  - generic [ref=f5e245]: postgres
+                  - generic [ref=f5e246]: postgres:17
+              - cell "running" [ref=f5e247]
+              - cell "Up 12 days" [ref=f5e249]
+              - cell "5432/tcp" [ref=f5e250]
+              - cell "cpu 3% · mem 24%" [ref=f5e251]
+              - cell [ref=f5e252]:
+                - generic [ref=f5e253]:
+                  - button "restart" [ref=f5e254] [cursor=pointer]
+                  - button "stop" [ref=f5e255] [cursor=pointer]
+            - row [ref=f5e256]:
+              - cell "redis-cache redis:7-alpine" [ref=f5e257]:
+                - generic [ref=f5e258]:
+                  - generic [ref=f5e259]: redis-cache
+                  - generic [ref=f5e260]: redis:7-alpine
+              - cell "running" [ref=f5e261]
+              - cell "Up 12 days" [ref=f5e263]
+              - cell "6379/tcp" [ref=f5e264]
+              - cell "cpu 1% · mem 8%" [ref=f5e265]
+              - cell [ref=f5e266]:
+                - generic [ref=f5e267]:
+                  - button "restart" [ref=f5e268] [cursor=pointer]
+                  - button "stop" [ref=f5e269] [cursor=pointer]
+            - row [ref=f5e270]:
+              - cell "coffee-server quitto/coffee-server:0.0.1" [ref=f5e271]:
+                - generic [ref=f5e272]:
+                  - generic [ref=f5e273]: coffee-server
+                  - generic [ref=f5e274]: quitto/coffee-server:0.0.1
+              - cell "running" [ref=f5e275]
+              - cell "Up 3 hours" [ref=f5e277]
+              - cell "8080/tcp" [ref=f5e278]
+              - cell "cpu 15% · mem 32%" [ref=f5e279]
+              - cell [ref=f5e280]:
+                - generic [ref=f5e281]:
+                  - button "restart" [ref=f5e282] [cursor=pointer]
+                  - button "stop" [ref=f5e283] [cursor=pointer]
+            - row [ref=f5e284]:
+              - cell "portainer portainer/portainer-ce" [ref=f5e285]:
+                - generic [ref=f5e286]:
+                  - generic [ref=f5e287]: portainer
+                  - generic [ref=f5e288]: portainer/portainer-ce
+              - cell "stopped" [ref=f5e289]
+              - cell "Exited (0) 2 days ago" [ref=f5e291]
+              - cell "9000/tcp" [ref=f5e292]
+              - cell "cpu 0% · mem 0%" [ref=f5e293]
+              - cell [ref=f5e294]
+      - region [ref=f5e295]:
+        - generic [ref=f5e296]:
+          - heading "❯ Máquinas" [level=2] [ref=f5e297]:
+            - generic [ref=f5e298]: ❯
+            - text: Máquinas
+          - generic [ref=f5e299]: 4 registradas
+        - generic [ref=f5e300]:
+          - listitem [ref=f5e301]:
+            - generic [ref=f5e303]:
+              - generic [ref=f5e304]:
+                - generic [ref=f5e305]: quittoserver
+                - generic [ref=f5e306]: Ubuntu 24.04 LTS
+              - generic [ref=f5e307]: 100.73.31.49 · ts:ts-node-4f8a2c · up 22d 20h 0m
+            - generic [ref=f5e308]:
+              - button "Wake quittoserver" [ref=f5e309] [cursor=pointer]: ⏻
+              - button "Abrir quittoserver" [ref=f5e310] [cursor=pointer]: …
+          - listitem [ref=f5e311]:
+            - generic [ref=f5e313]:
+              - generic [ref=f5e314]:
+                - generic [ref=f5e315]: workstation
+                - generic [ref=f5e316]: Windows 11
+              - generic [ref=f5e317]: 100.73.31.22 · ts:ts-node-9b1d7e
+            - generic [ref=f5e318]:
+              - button "Wake workstation" [ref=f5e319] [cursor=pointer]: ⏻
+              - button "Abrir workstation" [ref=f5e320] [cursor=pointer]: …
+          - listitem [ref=f5e321]:
+            - generic [ref=f5e323]:
+              - generic [ref=f5e324]:
+                - generic [ref=f5e325]: media-box
+                - generic [ref=f5e326]: Ubuntu 22.04 LTS
+              - generic [ref=f5e327]: 100.73.31.77 · ts:ts-node-c2e5f0 · up 4d 2h 0m
+            - generic [ref=f5e328]:
+              - button "Wake media-box" [ref=f5e329] [cursor=pointer]: ⏻
+              - button "Abrir media-box" [ref=f5e330] [cursor=pointer]: …
+          - listitem [ref=f5e331]:
+            - generic [ref=f5e333]:
+              - generic [ref=f5e334]:
+                - generic [ref=f5e335]: lab-nuc
+                - generic [ref=f5e336]: Arch Linux
+              - generic [ref=f5e337]: no ip · ts:ts-node-3a6c9d
+            - button "Abrir lab-nuc" [ref=f5e339] [cursor=pointer]: …
+      - region [ref=f5e340]:
+        - generic [ref=f5e341]:
+          - heading "❯ Calendário│Criar projeto" [level=2] [ref=f5e342]:
+            - generic [ref=f5e343]: ❯
+            - text: Calendário│Criar projeto
+          - generic [ref=f5e344]: google calendar · simulado
+        - generic [ref=f5e345]:
+          - generic [ref=f5e346]:
+            - generic [ref=f5e348]:
+              - generic [ref=f5e349]: ❯
+              - text: Próximos eventos
+            - list [ref=f5e351]:
+              - listitem [ref=f5e352]:
+                - generic [ref=f5e353]:
+                  - generic [ref=f5e354]: seg
+                  - generic [ref=f5e355]: "27"
+                - generic [ref=f5e357]:
+                  - generic [ref=f5e358]: 09:00
+                  - generic [ref=f5e359]: Revisão semanal
+              - listitem [ref=f5e360]:
+                - generic [ref=f5e361]:
+                  - generic [ref=f5e362]: ter
+                  - generic [ref=f5e363]: "28"
+                - generic [ref=f5e365]:
+                  - generic [ref=f5e366]: 14:30
+                  - generic [ref=f5e367]: Google Tasks sync
+              - listitem [ref=f5e368]:
+                - generic [ref=f5e369]:
+                  - generic [ref=f5e370]: qua
+                  - generic [ref=f5e371]: "29"
+                - generic [ref=f5e372]: —
+              - listitem [ref=f5e374]:
+                - generic [ref=f5e375]:
+                  - generic [ref=f5e376]: qui
+                  - generic [ref=f5e377]: "30"
+                - generic [ref=f5e379]:
+                  - generic [ref=f5e380]: 19:00
+                  - generic [ref=f5e381]: Estudo Java · Spring Boot
+              - listitem [ref=f5e382]:
+                - generic [ref=f5e383]:
+                  - generic [ref=f5e384]: sex
+                  - generic [ref=f5e385]: "31"
+                - generic [ref=f5e386]: —
+              - listitem [ref=f5e388]:
+                - generic [ref=f5e389]:
+                  - generic [ref=f5e390]: sáb
+                  - generic [ref=f5e391]: "01"
+                - generic [ref=f5e393]:
+                  - generic [ref=f5e394]: 10:00
+                  - generic [ref=f5e395]: Backup manual
+              - listitem [ref=f5e396]:
+                - generic [ref=f5e397]:
+                  - generic [ref=f5e398]: dom
+                  - generic [ref=f5e399]: "02"
+                - generic [ref=f5e400]: —
+          - generic [ref=f5e402]:
+            - generic [ref=f5e404]:
+              - generic [ref=f5e405]: ❯
+              - text: Criar projeto
+            - generic [ref=f5e406]:
+              - generic [ref=f5e407]:
+                - generic [ref=f5e408]: Nome
+                - textbox "Nome" [ref=f5e409]:
+                  - /placeholder: "ex: coffe-sdk"
+              - generic [ref=f5e410]:
+                - generic [ref=f5e411]: Linguagem
+                - combobox "Linguagem" [ref=f5e412] [cursor=pointer]:
+                  - option "Java" [selected]
+                  - option "Python"
+                  - option "Rust"
+                  - option "TypeScript"
+                  - option "Go"
+                  - option "C#"
+                  - option "Lua"
+                  - option "Shell"
+                  - option "Kotlin"
+                  - option "C"
+              - generic [ref=f5e413]:
+                - generic [ref=f5e414]: Caminho (opcional)
+                - textbox "Caminho (opcional)" [ref=f5e415]:
+                  - /placeholder: ~/projetos/
+              - button "+ Criar projeto" [ref=f5e417] [cursor=pointer]
+              - paragraph [ref=f5e418]: Backend sem endpoint — criação simulada.
+      - region [ref=f5e419]:
+        - generic [ref=f5e420]:
+          - heading "❯ MCP Manager" [level=2] [ref=f5e421]:
+            - generic [ref=f5e422]: ❯
+            - text: MCP Manager
+          - link "ver todos →" [ref=f5e423] [cursor=pointer]:
+            - /url: mcp.html
+        - generic [ref=f5e424]:
+          - generic [ref=f5e425]:
+            - generic [ref=f5e426]:
+              - generic [ref=f5e427]: Google Calendar
+              - generic [ref=f5e429]: online
+            - paragraph [ref=f5e430]: List and create events on the linked Google Calendar.
+            - generic [ref=f5e431]:
+              - generic [ref=f5e432]: calendar.list_events
+              - generic [ref=f5e433]: calendar.create_event
+              - generic [ref=f5e434]: calendar.debug_auth
+            - generic [ref=f5e435]: 128 calls · last 1d ago
+          - generic [ref=f5e437]:
+            - generic [ref=f5e438]:
+              - generic [ref=f5e439]: Machines
+              - generic [ref=f5e441]: online
+            - paragraph [ref=f5e442]: Query machine status, Wake-on-LAN and Tailscale state.
+            - generic [ref=f5e443]:
+              - generic [ref=f5e444]: machine.list
+              - generic [ref=f5e445]: machine.status
+              - generic [ref=f5e446]: machine.wake
+            - generic [ref=f5e447]: 41 calls · last 1d ago
+          - generic [ref=f5e449]:
+            - generic [ref=f5e450]:
+              - generic [ref=f5e451]: Server Health
+              - generic [ref=f5e453]: online
+            - paragraph [ref=f5e454]: Health check of server services (DB, Redis, disk, uptime).
+            - generic [ref=f5e455]:
+              - generic [ref=f5e456]: health.check
+              - generic [ref=f5e457]: status.overview
+              - generic [ref=f5e458]: status.dependencies
+            - generic [ref=f5e459]: 23 calls · last 1d ago
+          - generic [ref=f5e461]:
+            - generic [ref=f5e462]:
+              - generic [ref=f5e463]: Backup
+              - generic [ref=f5e465]: planned
+            - paragraph [ref=f5e466]: List, create and restore backups (planned).
+            - generic [ref=f5e467]:
+              - generic [ref=f5e468]: backup.list
+              - generic [ref=f5e469]: backup.create
+              - generic [ref=f5e470]: backup.restore
+            - generic [ref=f5e471]: 0 calls · never called
+      - region [ref=f5e473]:
+        - generic [ref=f5e474]:
+          - heading "❯ Logs ao vivo" [level=2] [ref=f5e475]:
+            - generic [ref=f5e476]: ❯
+            - text: Logs ao vivo
+          - generic [ref=f5e477]: feed simulado · 3s
+        - generic [ref=f5e479]:
+          - generic [ref=f5e480]:
+            - generic [ref=f5e481]: 11:57:35
+            - generic [ref=f5e482]: "[info]"
+            - generic [ref=f5e483]: mcp server coffee-mcp-server registrado em /mcp
+          - generic [ref=f5e484]:
+            - generic [ref=f5e485]: 12:01:35
+            - generic [ref=f5e486]: "[success]"
+            - generic [ref=f5e487]: health.check → postgres up · 34ms
+          - generic [ref=f5e488]:
+            - generic [ref=f5e489]: 12:04:35
+            - generic [ref=f5e490]: "[warn]"
+            - generic [ref=f5e491]: disco /mnt/mount/data/backups em 93%
+          - generic [ref=f5e492]:
+            - generic [ref=f5e493]: 12:07:35
+            - generic [ref=f5e494]: "[success]"
+            - generic [ref=f5e495]: calendar.list_events · 3 eventos · 214ms
+          - generic [ref=f5e496]:
+            - generic [ref=f5e497]: 12:10:35
+            - generic [ref=f5e498]: "[error]"
+            - generic [ref=f5e499]: backup.list falhou — endpoint não implementado
+          - generic [ref=f5e500]:
+            - generic [ref=f5e501]: 12:13:35
+            - generic [ref=f5e502]: "[info]"
+            - generic [ref=f5e503]: sessão validada via cookie httpOnly
+          - generic [ref=f5e504]:
+            - generic [ref=f5e505]: 12:15:35
+            - generic [ref=f5e506]: "[warn]"
+            - generic [ref=f5e507]: tailscale latency elevada · 41ms
+          - generic [ref=f5e508]:
+            - generic [ref=f5e509]: 12:17:35
+            - generic [ref=f5e510]: "[success]"
+            - generic [ref=f5e511]: machine.status → quittoserver online · 88ms
+  - contentinfo [ref=f5e512]:
+    - contentinfo [ref=f5e513]:
+      - generic [ref=f5e514]: disconnected
+      - generic [ref=f5e517]:
+        - generic [ref=f5e518]: Coffee Server v0.0.1
+        - generic [ref=f5e519]: uptime 22d 20h 0m

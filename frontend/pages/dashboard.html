@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard — Coffee Server</title>
   <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
-  <meta name="description" content="Visão geral do Coffee Server">
+  <meta name="description" content="Painel de controle do Coffee Server — servidor, rede, discos, containers, máquinas, calendário, MCP e logs">
   <link rel="stylesheet" href="../styles/main.css">
 </head>
 <body>
@@ -23,7 +23,7 @@
           <div class="page-header">
             <div>
               <h1 class="page-title"><span class="terminal-prefix">❯ </span>Dashboard</h1>
-              <p class="page-subtitle">Visão geral do servidor e serviços conectados.</p>
+              <p class="page-subtitle">Painel de controle do servidor e serviços conectados.</p>
             </div>
             <div class="page-actions">
               <button class="btn btn-secondary" type="button" data-refresh>
@@ -33,13 +33,10 @@
             </div>
           </div>
 
-          <!-- Terminal strip (mock activity) -->
-          <div class="terminal-strip" data-terminal>
-            <span class="term-prompt">quitto@quittoserver:~$</span> <span class="term-cmd">coffee server status</span><br>
-            <span class="term-ok">✔</span> postgres <span class="term-dim">up</span> · <span class="term-ok">✔</span> redis <span class="term-dim">up</span> · <span class="term-ok">✔</span> mcp <span class="term-dim">online</span>
-          </div>
+          <!-- Console strip (Server Status — rendered by components/ServerStatus.js) -->
+          <div data-server-status></div>
 
-          <!-- User Overview -->
+          <!-- Usuário -->
           <section class="section" aria-labelledby="user-section">
             <div class="section-header">
               <h2 class="section-title" id="user-section"><span class="terminal-prefix">❯ </span>Usuário</h2>
@@ -62,48 +59,39 @@
             </div>
           </section>
 
-          <!-- Infrastructure Overview -->
-          <section class="section" aria-labelledby="infra-section">
+          <!-- Sistema + Rede (split layout) -->
+          <section class="section" aria-labelledby="system-section">
             <div class="section-header">
-              <h2 class="section-title" id="infra-section"><span class="terminal-prefix">❯ </span>Infraestrutura</h2>
+              <h2 class="section-title" id="system-section"><span class="terminal-prefix">❯ </span>Sistema│Rede</h2>
+              <span class="section-meta" data-system-meta>quittoserver · tailscale</span>
             </div>
-            <div class="card" data-infra-card>
-              <div class="infra-grid">
-                <div class="infra-item">
-                  <div class="infra-header">
-                    <span>CPU</span><span class="infra-value" data-infra-cpu-label>—</span>
-                  </div>
-                  <div class="progress"><div class="progress-fill blue" data-infra-cpu style="width: 0%"></div></div>
+            <div class="dashboard-split">
+              <div class="card" data-system-card>
+                <div class="card-header">
+                  <span class="card-title"><span class="terminal-prefix">❯ </span>Sistema</span>
                 </div>
-                <div class="infra-item">
-                  <div class="infra-header">
-                    <span>Memória</span><span class="infra-value" data-infra-mem-label>—</span>
-                  </div>
-                  <div class="progress"><div class="progress-fill blue" data-infra-mem style="width: 0%"></div></div>
+                <div class="info-grid">
+                  <!-- Populated by dashboard.js -->
                 </div>
-                <div class="infra-item">
-                  <div class="infra-header">
-                    <span>Armazenamento</span><span class="infra-value" data-infra-disk-label>—</span>
-                  </div>
-                  <div class="progress"><div class="progress-fill coffee" data-infra-disk style="width: 0%"></div></div>
+              </div>
+              <div class="card" data-network-card>
+                <div class="card-header">
+                  <span class="card-title"><span class="terminal-prefix">❯ </span>Rede</span>
                 </div>
-                <div class="infra-item">
-                  <div class="infra-header">
-                    <span>Rede</span><span class="infra-value" data-infra-net-label>—</span>
-                  </div>
-                  <div class="progress"><div class="progress-fill blue" data-infra-net style="width: 0%"></div></div>
+                <div class="info-grid">
+                  <!-- Populated by dashboard.js -->
                 </div>
               </div>
             </div>
           </section>
 
-          <!-- Machines -->
-          <section class="section" id="machines" aria-labelledby="machines-section">
+          <!-- Discos -->
+          <section class="section" aria-labelledby="disks-section">
             <div class="section-header">
-              <h2 class="section-title" id="machines-section"><span class="terminal-prefix">❯ </span>Máquinas</h2>
-              <span class="section-meta" data-machines-count>0 registradas</span>
+              <h2 class="section-title" id="disks-section"><span class="terminal-prefix">❯ </span>Discos</h2>
+              <span class="section-meta" data-disks-meta>uso do armazenamento</span>
             </div>
-            <div class="machine-list" data-machines-list>
+            <div class="disks-grid" data-disks-grid>
               <!-- Populated by dashboard.js -->
             </div>
           </section>
@@ -133,6 +121,64 @@
             </div>
           </section>
 
+          <!-- Máquinas -->
+          <section class="section" id="machines" aria-labelledby="machines-section">
+            <div class="section-header">
+              <h2 class="section-title" id="machines-section"><span class="terminal-prefix">❯ </span>Máquinas</h2>
+              <span class="section-meta" data-machines-count>0 registradas</span>
+            </div>
+            <div class="machine-list" data-machines-list>
+              <!-- Populated by dashboard.js -->
+            </div>
+          </section>
+
+          <!-- Calendário + Criar projeto (split layout) -->
+          <section class="section" aria-labelledby="calendar-section">
+            <div class="section-header">
+              <h2 class="section-title" id="calendar-section"><span class="terminal-prefix">❯ </span>Calendário│Criar projeto</h2>
+              <span class="section-meta">google calendar · simulado</span>
+            </div>
+            <div class="dashboard-split">
+              <div class="card" data-calendar-card>
+                <div class="card-header">
+                  <span class="card-title"><span class="terminal-prefix">❯ </span>Próximos eventos</span>
+                </div>
+                <div class="calendar-week" data-calendar-week role="list">
+                  <!-- Populated by dashboard.js -->
+                </div>
+              </div>
+              <div class="card" data-project-card>
+                <div class="card-header">
+                  <span class="card-title"><span class="terminal-prefix">❯ </span>Criar projeto</span>
+                </div>
+                <form class="project-form" data-project-form novalidate>
+                  <div class="input-group">
+                    <label for="project-name">Nome</label>
+                    <input class="input" type="text" id="project-name" name="name"
+                           placeholder="ex: coffe-sdk" autocomplete="off" required>
+                  </div>
+                  <div class="input-group">
+                    <label for="project-language">Linguagem</label>
+                    <select class="select" id="project-language" name="language">
+                      <!-- Populated by dashboard.js (mockLanguages) -->
+                    </select>
+                  </div>
+                  <div class="input-group">
+                    <label for="project-path">Caminho <span class="section-meta">(opcional)</span></label>
+                    <input class="input" type="text" id="project-path" name="path"
+                           placeholder="~/projetos/" autocomplete="off" spellcheck="false">
+                  </div>
+                  <div class="project-form-actions">
+                    <button class="btn btn-primary btn-block" type="submit" data-project-submit>
+                      + Criar projeto
+                    </button>
+                  </div>
+                  <p class="input-hint" data-project-hint>Backend sem endpoint — criação simulada.</p>
+                </form>
+              </div>
+            </div>
+          </section>
+
           <!-- MCP Manager Preview -->
           <section class="section" id="mcp-preview" aria-labelledby="mcp-preview-section">
             <div class="section-header">
@@ -141,6 +187,19 @@
             </div>
             <div class="mcp-grid" data-mcp-preview>
               <!-- Populated by dashboard.js -->
+            </div>
+          </section>
+
+          <!-- Logs ao vivo -->
+          <section class="section" aria-labelledby="logs-section">
+            <div class="section-header">
+              <h2 class="section-title" id="logs-section"><span class="terminal-prefix">❯ </span>Logs ao vivo</h2>
+              <span class="section-meta" data-logs-meta>feed simulado · 3s</span>
+            </div>
+            <div class="card log-card">
+              <div class="log-list" data-live-logs aria-live="polite">
+                <!-- Populated by dashboard.js -->
+              </div>
             </div>
           </section>
         </div>

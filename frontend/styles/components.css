@@ -10,23 +10,20 @@
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: var(--card-padding);
-  transition: background var(--duration-fast) var(--easing-standard),
-              border-color var(--duration-fast) var(--easing-standard),
-              transform var(--duration-normal) var(--easing-standard);
-}
-
-.card:hover {
-  background: var(--bg-hover);
-  border-color: var(--border-strong);
+  transition: border-color var(--duration-fast) var(--easing-standard);
 }
 
 .card-interactive {
   cursor: pointer;
+  transition: border-color var(--duration-fast) var(--easing-standard),
+              transform var(--duration-normal) var(--easing-standard),
+              background var(--duration-fast) var(--easing-standard);
 }
 
 .card-interactive:hover {
+  background: var(--bg-hover);
+  border-color: var(--border-strong);
   transform: translateY(-2px);
-  border-color: var(--blue-secondary);
 }
 
 .card-header {
@@ -36,7 +33,7 @@
   gap: var(--space-3);
   margin-bottom: var(--space-3);
   padding-bottom: var(--space-2);
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .card-title {
@@ -66,7 +63,7 @@
   gap: var(--space-2);
   margin-top: var(--space-4);
   padding-top: var(--space-3);
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--border-subtle);
 }
 
 .card-danger { border-color: var(--error); }
@@ -566,9 +563,14 @@
   border-radius: var(--radius-sm);
   font-size: var(--text-lg);
   line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   transition: color var(--duration-fast) var(--easing-standard),
               background var(--duration-fast) var(--easing-standard);
 }
+
+.modal-close .icon { width: 16px; height: 16px; }
 
 .modal-close:hover { color: var(--text-primary); background: var(--bg-hover); }
 
@@ -636,7 +638,12 @@
   font-size: var(--text-lg);
   line-height: 1;
   padding: 0 var(--space-1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
+
+.toast-close .icon { width: 14px; height: 14px; }
 
 .toast-close:hover { opacity: 1; }
 

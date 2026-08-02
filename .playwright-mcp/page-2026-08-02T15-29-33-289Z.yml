@@ -1,0 +1,166 @@
+- generic [ref=f5e2]:
+  - banner [ref=f5e3]:
+    - banner [ref=f5e4]:
+      - generic [ref=f5e5]:
+        - link "Dashboard" [ref=f5e6] [cursor=pointer]:
+          - /url: ./dashboard.html
+          - img "Coffee Server logo" [ref=f5e7]
+          - generic [ref=f5e8]: Coffee Server
+        - link "❯ server/mcp" [ref=f5e9] [cursor=pointer]:
+          - /url: ./dashboard.html
+          - generic [ref=f5e10]: ❯
+          - generic [ref=f5e11]: server/mcp
+      - navigation "Navegação principal" [ref=f5e12]:
+        - link "Dashboard" [ref=f5e13] [cursor=pointer]:
+          - /url: ./dashboard.html
+          - generic [ref=f5e14]: ▤
+        - link "Máquinas" [ref=f5e16] [cursor=pointer]:
+          - /url: ./dashboard.html#machines
+          - generic [ref=f5e17]: ▦
+        - link "Containers" [ref=f5e19] [cursor=pointer]:
+          - /url: ./dashboard.html#containers
+          - generic [ref=f5e20]: ▣
+        - link "MCP" [ref=f5e22] [cursor=pointer]:
+          - /url: ./mcp.html
+          - generic [ref=f5e23]: ◆
+      - generic [ref=f5e25]:
+        - generic "Conexão com o servidor" [ref=f5e26]: online
+        - button "⬢ quitto" [ref=f5e30] [cursor=pointer]
+  - navigation "Navegação principal"
+  - main [ref=f5e32]:
+    - generic [ref=f5e33]:
+      - generic [ref=f5e34]:
+        - generic [ref=f5e35]:
+          - heading "❯ MCP Manager" [level=1] [ref=f5e36]:
+            - generic [ref=f5e37]: ❯
+            - text: MCP Manager
+          - paragraph [ref=f5e38]: Servidores e ferramentas expostos para agentes de IA.
+        - generic [ref=f5e39]:
+          - link "← dashboard" [ref=f5e40] [cursor=pointer]:
+            - /url: dashboard.html
+          - button "↻ verificar" [ref=f5e41] [cursor=pointer]
+      - generic [ref=f5e43]:
+        - generic [ref=f5e44]:
+          - generic [ref=f5e45]:
+            - generic [ref=f5e46]: ❯
+            - generic [ref=f5e47]: // coffee-mcp-server · WebMVC (HTTP) · endpoint /mcp
+            - generic [ref=f5e48]: coffee mcp status
+          - generic [ref=f5e49]: healthy
+        - list [ref=f5e51]:
+          - 'listitem "google-calendar: online" [ref=f5e52]':
+            - generic [ref=f5e54]: google-calendar
+            - generic [ref=f5e55]: 128 calls
+            - generic [ref=f5e56]: online
+          - 'listitem "machines: online" [ref=f5e57]':
+            - generic [ref=f5e59]: machines
+            - generic [ref=f5e60]: 41 calls
+            - generic [ref=f5e61]: online
+          - 'listitem "server-health: online" [ref=f5e62]':
+            - generic [ref=f5e64]: server-health
+            - generic [ref=f5e65]: 23 calls
+            - generic [ref=f5e66]: online
+          - 'listitem "backup: planned" [ref=f5e67]':
+            - generic [ref=f5e69]: backup
+            - generic [ref=f5e70]: —
+            - generic [ref=f5e71]: planned
+        - generic [ref=f5e76]: protocolo MCP · online
+      - region [ref=f5e77]:
+        - generic [ref=f5e78]:
+          - heading "❯ Servidores" [level=2] [ref=f5e79]:
+            - generic [ref=f5e80]: ❯
+            - text: Servidores
+          - generic [ref=f5e81]: 3 online
+        - generic [ref=f5e82]:
+          - generic [ref=f5e83]:
+            - generic [ref=f5e84]:
+              - generic [ref=f5e85]: Google Calendar
+              - generic [ref=f5e87]: online
+            - paragraph [ref=f5e88]: List and create events on the linked Google Calendar.
+            - generic [ref=f5e89]:
+              - generic [ref=f5e90]: calendar.list_events
+              - generic [ref=f5e91]: calendar.create_event
+              - generic [ref=f5e92]: calendar.debug_auth
+            - generic [ref=f5e93]:
+              - generic [ref=f5e94]: 128 calls · last 1d ago
+              - button "abrir" [ref=f5e95] [cursor=pointer]
+          - generic [ref=f5e96]:
+            - generic [ref=f5e97]:
+              - generic [ref=f5e98]: Machines
+              - generic [ref=f5e100]: online
+            - paragraph [ref=f5e101]: Query machine status, Wake-on-LAN and Tailscale state.
+            - generic [ref=f5e102]:
+              - generic [ref=f5e103]: machine.list
+              - generic [ref=f5e104]: machine.status
+              - generic [ref=f5e105]: machine.wake
+            - generic [ref=f5e106]:
+              - generic [ref=f5e107]: 41 calls · last 1d ago
+              - button "abrir" [ref=f5e108] [cursor=pointer]
+          - generic [ref=f5e109]:
+            - generic [ref=f5e110]:
+              - generic [ref=f5e111]: Server Health
+              - generic [ref=f5e113]: online
+            - paragraph [ref=f5e114]: Health check of server services (DB, Redis, disk, uptime).
+            - generic [ref=f5e115]:
+              - generic [ref=f5e116]: health.check
+              - generic [ref=f5e117]: status.overview
+              - generic [ref=f5e118]: status.dependencies
+            - generic [ref=f5e119]:
+              - generic [ref=f5e120]: 23 calls · last 1d ago
+              - button "abrir" [ref=f5e121] [cursor=pointer]
+          - generic [ref=f5e122]:
+            - generic [ref=f5e123]:
+              - generic [ref=f5e124]: Backup
+              - generic [ref=f5e126]: planned
+            - paragraph [ref=f5e127]: List, create and restore backups (planned).
+            - generic [ref=f5e128]:
+              - generic [ref=f5e129]: backup.list
+              - generic [ref=f5e130]: backup.create
+              - generic [ref=f5e131]: backup.restore
+            - generic [ref=f5e132]:
+              - generic [ref=f5e133]: 0 calls · never called
+              - button "abrir" [ref=f5e134] [cursor=pointer]
+      - region [ref=f5e135]:
+        - generic [ref=f5e136]:
+          - heading "❯ Log de chamadas" [level=2] [ref=f5e137]:
+            - generic [ref=f5e138]: ❯
+            - text: Log de chamadas
+          - generic [ref=f5e139]: últimas chamadas
+        - table [ref=f5e141]:
+          - rowgroup [ref=f5e142]:
+            - row [ref=f5e143]:
+              - columnheader "Hora" [ref=f5e144]
+              - columnheader "Servidor" [ref=f5e145]
+              - columnheader "Ferramenta" [ref=f5e146]
+              - columnheader "Status" [ref=f5e147]
+              - columnheader "Latência" [ref=f5e148]
+          - rowgroup [ref=f5e149]:
+            - row [ref=f5e150]:
+              - cell "09:42:11" [ref=f5e151]
+              - cell "calendar" [ref=f5e152]
+              - cell "list_events" [ref=f5e153]
+              - cell "ok" [ref=f5e154]
+              - cell "214ms" [ref=f5e156]
+            - row [ref=f5e157]:
+              - cell "09:15:03" [ref=f5e158]
+              - cell "machines" [ref=f5e159]
+              - cell "machine.status" [ref=f5e160]
+              - cell "ok" [ref=f5e161]
+              - cell "88ms" [ref=f5e163]
+            - row [ref=f5e164]:
+              - cell "08:50:47" [ref=f5e165]
+              - cell "health" [ref=f5e166]
+              - cell "health.check" [ref=f5e167]
+              - cell "ok" [ref=f5e168]
+              - cell "34ms" [ref=f5e170]
+            - row [ref=f5e171]:
+              - cell "08:12:29" [ref=f5e172]
+              - cell "calendar" [ref=f5e173]
+              - cell "debug_auth" [ref=f5e174]
+              - cell "err" [ref=f5e175]
+              - cell "—" [ref=f5e177]
+  - contentinfo [ref=f5e178]:
+    - contentinfo [ref=f5e179]:
+      - generic [ref=f5e180]: disconnected
+      - generic [ref=f5e183]:
+        - generic [ref=f5e184]: Coffee Server v0.0.1
+        - generic [ref=f5e185]: uptime 22d 20h 0m

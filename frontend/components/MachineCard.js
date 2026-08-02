@@ -4,6 +4,7 @@
  */
 
 import { el } from '../utils/dom.js';
+import { icon } from '../utils/icons.js';
 import { formatBytes, formatDuration } from '../utils/format.js';
 
 /**
@@ -44,8 +45,8 @@ export function machineCard(machine, { onWake = null, onOpen = null } = {}) {
     const wakeBtn = el('button', {
       class: 'icon-btn',
       attrs: { type: 'button', 'aria-label': `Wake ${machine.hostname}`, title: 'Wake on LAN' },
-      text: '⏻',
     });
+    wakeBtn.append(icon('power', { size: 16, title: 'Wake on LAN' }));
     wakeBtn.addEventListener('click', (event) => {
       event.stopPropagation();
       onWake(machine);
@@ -57,8 +58,8 @@ export function machineCard(machine, { onWake = null, onOpen = null } = {}) {
     const openBtn = el('button', {
       class: 'icon-btn',
       attrs: { type: 'button', 'aria-label': `Abrir ${machine.hostname}`, title: 'Detalhes' },
-      text: '…',
     });
+    openBtn.append(icon('arrow-up-right', { size: 16, title: 'Detalhes' }));
     openBtn.addEventListener('click', (event) => {
       event.stopPropagation();
       onOpen(machine);

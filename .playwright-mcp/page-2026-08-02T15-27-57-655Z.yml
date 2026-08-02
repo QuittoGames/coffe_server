@@ -1,0 +1,30 @@
+- main [ref=f1e2]:
+  - generic [ref=f1e3]:
+    - generic [ref=f1e4]:
+      - img "Coffee Server logo" [ref=f1e5]
+      - heading "Coffee Server" [level=1] [ref=f1e6]
+      - paragraph [ref=f1e7]: // controle central do homelab
+    - generic [ref=f1e8]:
+      - heading "❯ autenticar" [level=2] [ref=f1e9]:
+        - generic [ref=f1e10]: ❯
+        - text: autenticar
+      - generic [ref=f1e11]:
+        - generic [ref=f1e12]:
+          - generic [ref=f1e13]: Usuário
+          - textbox "Usuário" [active] [ref=f1e14]:
+            - /placeholder: quitto
+        - generic [ref=f1e15]:
+          - generic [ref=f1e16]: Senha
+          - textbox "Senha" [ref=f1e17]:
+            - /placeholder: ••••••••
+        - button "Entrar" [ref=f1e18] [cursor=pointer]
+      - generic [ref=f1e19]: ou
+      - link "Entrar com Google" [ref=f1e21] [cursor=pointer]:
+        - /url: /oauth2/authorization/google
+        - generic [ref=f1e22]: G
+        - text: Entrar com Google
+    - paragraph [ref=f1e23]:
+      - text: A sessão é protegida por cookie
+      - code [ref=f1e24]: HttpOnly
+      - text: ·
+      - code [ref=f1e25]: v0.0.1

@@ -7,4 +7,8 @@ public record SecurityUser(
     String name,
     Role role
 ) {
+    @Override
+    public String toString() {
+        return name;
+    }
 }

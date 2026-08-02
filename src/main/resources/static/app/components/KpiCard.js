@@ -22,10 +22,8 @@ export function kpiCard({ label, value, unit = '', trendText = '', trend = 'flat
   item.append(el('div', { class: 'kpi-label', text: label }));
 
   const valueNode = el('div', { class: 'kpi-value' });
-  valueNode.append(
-    el('span', { class: valueClass ? `stat-value ${valueClass}` : '', text: String(value ?? '—') }),
-    unit ? el('span', { class: 'kpi-unit', text: unit }) : null,
-  );
+  valueNode.append(el('span', { class: valueClass ? `stat-value ${valueClass}` : '', text: String(value ?? '—') }));
+  if (unit) valueNode.append(el('span', { class: 'kpi-unit', text: unit }));
   item.appendChild(valueNode);
 
   if (trendText) {

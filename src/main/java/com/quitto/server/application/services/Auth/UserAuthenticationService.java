@@ -25,7 +25,6 @@ public class UserAuthenticationService {
     }
 
     public String register(String name , String password , String email){
-        if (password.length() < 8){return null;}
         User user = authenticationService.register(name, password, email);
         return tokenService.generateToken(user.getId());
     }

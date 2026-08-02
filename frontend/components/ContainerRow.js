@@ -4,6 +4,7 @@
  */
 
 import { el } from '../utils/dom.js';
+import { icon } from '../utils/icons.js';
 
 /**
  * Build a table row for a container.
@@ -48,6 +49,7 @@ export function containerRow(container, { onRestart = null, onStop = null } = {}
       attrs: { type: 'button' },
       text: 'restart',
     });
+    restartBtn.prepend(icon('rotate-ccw', { size: 14, title: 'Reiniciar' }));
     restartBtn.addEventListener('click', () => onRestart(container));
     actions.appendChild(restartBtn);
   }
@@ -57,6 +59,7 @@ export function containerRow(container, { onRestart = null, onStop = null } = {}
       attrs: { type: 'button' },
       text: 'stop',
     });
+    stopBtn.prepend(icon('square', { size: 14, title: 'Parar' }));
     stopBtn.addEventListener('click', () => onStop(container));
     actions.appendChild(stopBtn);
   }

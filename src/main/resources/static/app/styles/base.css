@@ -30,7 +30,7 @@ body {
   font-family: var(--font-ui);
   font-size: var(--text-base);
   font-weight: var(--font-normal);
-  line-height: 1.6;
+  line-height: 1.5;
   color: var(--text-primary);
   background: var(--bg-base);
   min-height: 100vh;
@@ -109,7 +109,7 @@ h1, h2, h3, h4, h5, h6 {
 
 h1 { font-size: var(--text-3xl); font-weight: var(--font-bold); }
 h2 { font-size: var(--text-2xl); }
-h3 { font-size: var(--text-xl); }
+h3 { font-size: var(--text-xl); font-weight: var(--font-semibold); }
 h4 { font-size: var(--text-lg); text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); }
 h5 { font-size: var(--text-base); text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); }
 h6 { font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 1px; color: var(--text-dim); }
@@ -132,8 +132,8 @@ h1::before, h2::before {
 h1::before { background: var(--coffee-medium); }
 h2::before { background: var(--coffee-accent); }
 
-/* Code-style heading prefix */
-h3::before, h4::before, h5::before, h6::before {
+/* Code-style heading prefix (eyebrows técnicos — h4+ apenas) */
+h4::before, h5::before, h6::before {
   content: '// ';
   color: var(--text-dim);
   font-weight: var(--font-normal);

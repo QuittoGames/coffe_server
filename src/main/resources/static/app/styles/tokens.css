@@ -9,16 +9,17 @@
   /* ==========================================
      BASE SURFACES (Depth Hierarchy)
      ========================================== */
-  --bg-base:        #070A0F;   /* Canvas principal — fundo da página */
-  --bg-elevated:    #0D121E;   /* Cards, painéis, sidebars — 1 nível acima */
-  --bg-hover:       #131A26;   /* Hover de cards e linhas */
-  --bg-active:      #1B2433;   /* Estado ativo/pressionado */
-  --bg-input:       #090E15;   /* Background de inputs */
+  --bg-base:        #0A0C12;   /* Canvas principal — fundo azulado elegante */
+  --bg-elevated:    #10151F;   /* Cards, painéis, sidebars — 1 nível acima (blue-tinted) */
+  --bg-hover:       #151B27;   /* Hover de cards e linhas */
+  --bg-active:      #1C2536;   /* Estado ativo/pressionado */
+  --bg-input:       #0B0F16;   /* Background de inputs */
+  --bg-console:     #070B11;   /* Painel de console/instrumentos (mais escuro que elevado) */
 
   /* BORDAS */
-  --border:         #1A2433;   /* Divisores sutis, bordas padrão */
-  --border-strong:  #364156;   /* Borda ativa, foco, destaque estrutural */
-  --border-subtle:  #121926;   /* Bordas muito sutis */
+  --border:         #1C2436;   /* Divisores sutis, bordas padrão */
+  --border-strong:  #3A4A63;   /* Borda ativa, foco, destaque estrutural */
+  --border-subtle:  #141B29;   /* Bordas muito sutis */
 
   /* ==========================================
      COFFEE WARM (Brand Identity)
@@ -69,8 +70,8 @@
   /* ==========================================
      TYPOGRAPHY
      ========================================== */
-  --font-ui:         'Consolas','JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Victor Mono', monospace;
-  --font-mono:       'Consolas','JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+  --font-ui:         'Segoe UI', system-ui, -apple-system, 'Inter', sans-serif;
+  --font-mono:       'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
 
   /* Type Scale */
   --text-xs:         0.70rem;   /* 11.2px — tags, badges, metadados */
@@ -228,6 +229,19 @@
   /* Sidebar */
   --sidebar-item-height: 40px;
   --sidebar-icon-size:   20px;
+
+  /* Console / instrument panel (Server Status) */
+  --console-padding:     var(--space-4);
+  --console-radius:      var(--radius-lg);
+  --console-accent:      var(--blue-accent);
+  --console-led-size:    6px;
+  --console-line:        var(--border);
+
+  /* Chart / sparkline */
+  --chart-stroke:        var(--blue-accent);
+  --chart-fill:          rgba(59, 130, 246, 0.12);
+  --chart-grid:          var(--border-subtle);
+  --chart-muted:         var(--text-dim);
 }
 
 /* ==========================================================================
@@ -237,11 +251,12 @@
 @media (prefers-color-scheme: light) {
   :root {
     /* Force dark mode tokens even if OS prefers light */
-    --bg-base:        #070A0F;
-    --bg-elevated:    #0D121E;
-    --bg-hover:       #131A26;
-    --bg-active:      #1B2433;
-    --bg-input:       #090E15;
+    --bg-base:        #0A0C12;
+    --bg-elevated:    #10151F;
+    --bg-hover:       #151B27;
+    --bg-active:      #1C2536;
+    --bg-input:       #0B0F16;
+    --bg-console:     #070B11;
     --text-primary:   #F9FAFB;
     --text-secondary: #D1D5DB;
     --text-muted:     #9CA3AF;

@@ -4,6 +4,7 @@
  */
 
 import { el } from '../utils/dom.js';
+import { icon } from '../utils/icons.js';
 import { timeAgo } from '../utils/format.js';
 
 /**
@@ -45,6 +46,7 @@ export function mcpCard(server, { onOpen = null } = {}) {
 
   if (onOpen) {
     const openBtn = el('button', { class: 'btn btn-sm btn-ghost', attrs: { type: 'button' }, text: 'abrir' });
+    openBtn.prepend(icon('arrow-up-right', { size: 14, title: 'Abrir' }));
     openBtn.addEventListener('click', () => onOpen(server));
     footer.appendChild(openBtn);
   }

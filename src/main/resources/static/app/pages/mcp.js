@@ -5,9 +5,10 @@
 
 import { onReady, qs, el } from '../utils/dom.js';
 import { protectPage } from '../auth/session.js';
-import { renderHeader, updateHeaderStatus } from '../components/Header.js';
+import { renderHeader } from '../components/Header.js';
 import { renderStatusBar, updateStatusBarState } from '../components/StatusBar.js';
 import { renderMiniPanel } from '../components/MiniPanel.js';
+import { renderServerStatus } from '../components/ServerStatus.js';
 import { setupToastListener } from '../components/Toast.js';
 import { mcpCard } from '../components/McpCard.js';
 import { setupWsListeners, startWs } from '../websocket/connection.js';
@@ -18,11 +19,21 @@ function renderServerInfo() {
   const root = qs('[data-mcp-server-info]');
   if (!root) return;
   const info = mockMCP.serverInfo;
-  root.innerHTML = `
-    <span class="term-dim">// ${info.name} · ${info.transport} · endpoint ${info.endpoint}</span><br>
-    <span class="term-ok">✔</span> protocolo <span class="term-cmd">${info.protocol}</span> ·
-    <span class="term-ok">✔</span> status <span class="term-cmd">${info.status}</span>
-  `;
+
+  const services = mockMCP.servers.map((s) => ({
+    name: s.name.toLowerCase().replace(/\s+/g, '-'),
+    state: s.status,
+    latency: s.calls > 0 ? `${s.calls} calls` : '—',
+    led: s.status === 'online' ? 'ok' : s.status === 'planned' ? 'warn' : 'err',
+  }));
+
+  renderServerStatus(root, {
+    prompt: `// ${info.name} · ${info.transport} · endpoint ${info.endpoint}`,
+    command: `coffee mcp status`,
+    services,
+    activity: [4, 8, 6, 14, 20, 16, 24, 30, 22, 36, 40, 32, 46, 52, 44, 60, 68, 62, 74],
+    activityLabel: `protocolo ${info.protocol} · ${info.status}`,
+  });
 }
 
 function renderMcpGrid() {
@@ -36,6 +47,8 @@ function renderMcpGrid() {
         import('../components/Modal.js').then(({ openModal }) =>
           openModal({
             title: server.name,
+            // trustHtml: body é template estático com valores do mock (confiável hoje).
+            trustHtml: true,
             body: `
               <div class="flex flex-col gap-2">
                 <span class="text-muted">Provedor: <code>${server.provider}</code></span>
@@ -57,11 +70,13 @@ function renderMcpLog() {
   body.replaceChildren(...mockMCPLog.map((entry) => {
     const tr = el('tr');
     const ok = entry.status === 'ok';
+    const statusCell = el('td', { class: 'mono' });
+    statusCell.append(el('span', { class: `badge ${ok ? 'badge-online' : 'badge-offline'}`, text: entry.status }));
     tr.append(
       el('td', { class: 'mono', text: entry.time }),
       el('td', { text: entry.server }),
       el('td', { class: 'mono', text: entry.tool }),
-      el('td', { html: `<span class="badge ${ok ? 'badge-online' : 'badge-offline'}">${entry.status}</span>` }),
+      statusCell,
       el('td', { class: 'mono', text: entry.ms > 0 ? `${entry.ms}ms` : '—' }),
     );
     return tr;

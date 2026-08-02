@@ -26,16 +26,13 @@
               <p class="page-subtitle">Servidores e ferramentas expostos para agentes de IA.</p>
             </div>
             <div class="page-actions">
-              <a class="btn btn-secondary" href="dashboard.html">← dashboard</a>
-              <button class="btn btn-primary" type="button" data-mcp-refresh>↻ verificar</button>
+              <a class="btn btn-secondary" href="dashboard.html">dashboard</a>
+              <button class="btn btn-primary" type="button" data-mcp-refresh>verificar</button>
             </div>
           </div>
 
-          <!-- Server info strip -->
-          <div class="terminal-strip" data-mcp-server-info>
-            <span class="term-dim">// coffee-mcp-server · WebMVC (HTTP) · endpoint /mcp</span><br>
-            <span class="term-ok">✔</span> protocolo <span class="term-cmd">MCP</span> · <span class="term-ok">✔</span> status <span class="term-cmd">online</span>
-          </div>
+          <!-- Console strip (MCP server info — rendered by components/ServerStatus.js) -->
+          <div data-mcp-server-info></div>
 
           <!-- MCP servers grid -->
           <section class="section" aria-labelledby="mcp-servers-section">

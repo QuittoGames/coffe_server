@@ -4,6 +4,7 @@
  */
 
 import { el } from '../utils/dom.js';
+import { icon } from '../utils/icons.js';
 
 /**
  * Build a KPI stat card.
@@ -22,15 +23,17 @@ export function kpiCard({ label, value, unit = '', trendText = '', trend = 'flat
   item.append(el('div', { class: 'kpi-label', text: label }));
 
   const valueNode = el('div', { class: 'kpi-value' });
-  valueNode.append(
-    el('span', { class: valueClass ? `stat-value ${valueClass}` : '', text: String(value ?? '—') }),
-    unit ? el('span', { class: 'kpi-unit', text: unit }) : null,
-  );
+  valueNode.append(el('span', { class: valueClass ? `stat-value ${valueClass}` : '', text: String(value ?? '—') }));
+  if (unit) valueNode.append(el('span', { class: 'kpi-unit', text: unit }));
   item.appendChild(valueNode);
 
   if (trendText) {
     const trendNode = el('div', { class: `kpi-trend ${trend === 'up' ? 'up' : trend === 'down' ? 'down' : ''}` });
-    trendNode.append(el('span', { text: trend === 'up' ? '▲' : trend === 'down' ? '▼' : '•' }), el('span', { text: trendText }));
+    const trendIcon =
+      trend === 'up' ? icon('arrow-up', { size: 12 }) :
+      trend === 'down' ? icon('arrow-down', { size: 12 }) :
+      icon('minus', { size: 12 });
+    trendNode.append(trendIcon, el('span', { text: trendText }));
     item.appendChild(trendNode);
   }
 

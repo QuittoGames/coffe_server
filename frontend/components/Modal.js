@@ -4,6 +4,7 @@
  */
 
 import { el, qs, onReady } from '../utils/dom.js';
+import { icon } from '../utils/icons.js';
 
 let lastFocused = null;
 
@@ -11,12 +12,13 @@ let lastFocused = null;
  * Open a modal with custom content.
  * @param {Object} options
  * @param {string} options.title
- * @param {HTMLElement|string} options.body - node or HTML string
+ * @param {HTMLElement|string} options.body - node, or string rendered as TEXT by default
+ * @param {boolean} options.trustHtml - set TRUE only when body is a trusted HTML string
  * @param {HTMLElement[]} options.footer - footer buttons
  * @param {Function} options.onClose
  * @returns {HTMLElement} the modal node
  */
-export function openModal({ title, body, footer = [], onClose = null }) {
+export function openModal({ title, body, trustHtml = false, footer = [], onClose = null }) {
   lastFocused = document.activeElement;
 
   const overlay = el('div', { class: 'modal-overlay', attrs: { role: 'presentation' } });
@@ -33,14 +35,17 @@ export function openModal({ title, body, footer = [], onClose = null }) {
   const closeBtn = el('button', {
     class: 'modal-close',
     attrs: { 'aria-label': 'Fechar', type: 'button' },
-    text: '×',
   });
+  closeBtn.append(icon('x', { size: 16 }));
   closeBtn.addEventListener('click', () => closeModal());
   header.append(titleNode, closeBtn);
 
   const bodyNode = el('div', { class: 'modal-body' });
-  if (typeof body === 'string') bodyNode.innerHTML = body;
-  else if (body) bodyNode.appendChild(body);
+  if (typeof body === 'string') {
+    // Texto por padrão; HTML só quando trustHtml é explicitamente true.
+    if (trustHtml) bodyNode.innerHTML = body;
+    else bodyNode.textContent = body;
+  } else if (body) bodyNode.appendChild(body);
 
   modal.append(header, bodyNode);
 
