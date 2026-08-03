@@ -326,529 +326,494 @@
 # coffe_server — TODO
 
 <blockquote>
-<strong>Readiness:</strong> 🟡 6/10 · <strong>Revisão completa em 2026-08-01</strong> — architecture, security, code quality. <br>
+<strong>Readiness:</strong> 🟢 7.5/10 · <strong>Revisão completa em 2026-08-03</strong> — arquitetura, segurança, qualidade de código e frontend. <br>
 Autenticação é <strong>cookie-only</strong>: o JWT não vem mais no body de login/register, só no HttpOnly cookie. <br>
-Rate limiting distribuído ativo na security chain (Bucket4j + Redis) com conexões lazy. <br>
-Abstração Redis ampliada (DatabaseProperties + getAdpterConnector) com properties <code>coffee.redis.*</code>. <br>
+Rate limiting ativo na security chain (Bucket4j + Redis) com conexões lazy e filtro condicional. <br>
+Abstração Redis completa (Fase 8 concluída — inclui <code>@EnableConfigurationProperties</code> no <code>RedisConfig</code>). <br>
+Frontend migrado: <code>frontend/</code> removido, dashboard liquid-glass em <code>src/main/resources/static/app/</code> (servido em <code>/app</code>). <br>
+TLS habilitado (<code>server.ssl</code>, PKCS12, HTTP/2); <code>client-auth=none</code> → mTLS ainda não ativo. <br>
+392 testes passando via CI/CD (5 jobs, Java 21, Postgres 17). <br>
+CORS ainda ausente no <code>SecurityConfig</code>; Testcontainers + JaCoCo no <code>pom.xml</code>.
 </blockquote>
-
----
-
-## 🔥 Fase 1 — Bloqueantes (PRIORIDADE MÁXIMA)
-
-<span class="badge badge-phase1">Fazer AGORA</span>
-<span class="badge badge-fire">8 itens</span>
-
-<div class="progress-bar"><div class="progress-fill fire" style="width: 63%"></div></div>
-
-Esses bugs **impedem features novas** ou causam falhas em produção. Cada item resolvido aqui desbloqueia o resto.
-
-### 🐛 Bugs Críticos
-
-- [x] **`MachineEntity` construtor ignora `userId`** — O parâmetro `userId` nunca é atribuído ao campo `@ManyToOne user`. `MachineMapper.toInfra()` passa `machine.getUserId()` mas o valor é silenciosamente descartado. Causa `ConstraintViolationException` (NOT NULL).
-  <span class="tag">MachineEntity.java:62-65</span>
-
-- [x] **`MachineRepositoryAdapter.setOwner()` retorna `new User()` vazio** — Perde todos os dados do owner. Método na interface `MachineRepository` deveria ser removido ou implementado corretamente.
-  <span class="tag">MachineRepositoryAdapter.java:85-87</span>
-
-- [ ] **OAuth2 authority com espaço** — `"ROLE_ "` produz `"ROLE_ USER"` em vez de `"ROLE_USER"`. Nenhum usuário OAuth2 consegue acessar rotas protegidas.
-  <span class="tag">OAuth2UserProvisioningService.java:41</span>
-
-- [ ] **OAuth2UserProvisioningService usa `JpaUserRepository` direto** — Bypassa toda a camada de domínio. Deveria usar `UserRepository` (porta do domínio).
-  <span class="tag">OAuth2UserProvisioningService.java:20-23</span>
-
-- [ ] **OAuth2 cria usuário sem passwordHash** — `UserEntity.password_hash` é `nullable = false`. Novo usuário OAuth2 criado via `new UserEntity()` sem `setPasswordHash()` causa `ConstraintViolationException`.
-  <span class="tag">OAuth2UserProvisioningService.java:35-38</span>
-
-- [x] **`JwtAuthenticationFilter` não retorna 401 em caso de falha** — `filterChain.doFilter()` é chamado incondicionalmente mesmo quando a autenticação falha. A requisição prossegue sem autenticação em vez de retornar 401.
-  <span class="tag">JwtAuthenticationFilter.java:77</span>
-
-- [x] **`User.toString()` vaza `passwordHash`** — BCrypt hash exposto em logs e mensagens de debug.
-  <span class="tag">User.java:97-99</span>
-
-### 🔴 Segurança Imediata
-
-- [x] **Adicionar rate limiting em `/auth/login` e `/auth/register`** — RateLimitFilter na security chain com Bucket4j distribuído via Redis; conexão Redis criada de forma lazy (boot não depende do Redis no ar).
-  <span class="tag">RateLimitFilter.java · Bucket4jRateLimiter.java</span>
-
----
-
-## 🟡 Fase 2 — Refatorações e Correções
-
-<span class="badge badge-phase2">Fazer junto com features</span>
-<span class="badge badge-high">16 itens</span>
-
-<div class="progress-bar"><div class="progress-fill high" style="width: 0%"></div></div>
-
-### Clean Architecture
-
-- [ ] **Mover `TokenResolverManager` para `application/services/Auth/Token/`** — É orquestrador (use case), não infraestrutura.
-  <span class="tag">infrastructure/services/Auth/Token/TokenResolverManager.java</span>
-
-- [ ] **`MachineService` lança `UsernameNotFoundException` (Spring)** — Vazamento de framework na camada de aplicação. Criar `UserNotFoundException` no domínio.
-  <span class="tag">MachineService.java:28</span>
-
-- [x] **Mover `MachineNotFoundException` de `shared/exception/` para `domain/exception/`**
-  <span class="tag">shared/exception/MachineNotFoundException.java</span>
-
-### Injection
-
-- [ ] **Converter field injection para constructor injection**:
-  - `UserRepositoryAdapter.java` — `@Autowired JpaUserRepository`
-  - `GoogleCalendarService.java` — `@Autowired GoogleCalendarClient`
-  - `GoogleCalendarTools.java` — `@Autowired GoogleCalendarService`, `@Autowired GoogleAuthService`
-
-### Exception Handling
-
-- [ ] **Adicionar `@ExceptionHandler` no `AuthExceptionHandler`** — Para `IllegalArgumentException`, `MachineNotFoundException`, `JWTVerificationException`, `InvalidTokenException`.
-  <span class="tag">AuthExceptionHandler.java</span>
-
-- [ ] **Remover catch genérico `Exception` e `System.out/err`** — Em `GoogleCalendarTools` e `CalendarController`. Substituir por SLF4J + erro estruturado.
-  <span class="tag">GoogleCalendarTools.java / CalendarController.java</span>
-
-### Service Gaps
-
-- [ ] **Implementar `UserService` com CRUD básico** — Só tem construtor vazio.
-  <span class="tag">UserService.java</span>
-
-- [ ] **`GoogleCalendarService.createEvent()` implementar de verdade** — Retorna `""` vazio (stub).
-  <span class="tag">GoogleCalendarService.java:19-21</span>
-
-### Persistência Incompleta
-
-- [ ] **Completar `LinuxUser` e `Groups` persistence** — Entities existem, faltam: Spring Data repos, mappers, adapters, domain repository interfaces.
-  <span class="tag">infrastructure/db/LinuxUser/</span>
-
-- [ ] **Completar `ExternalAccount` persistence** — Entity existe, faltam: Spring Data repo, mapper, adapter, domain repository interface.
-  <span class="tag">infrastructure/db/User/Entity/ExternalAccountEntity.java</span>
-
-### Segurança
-
-- [ ] **Adicionar CORS configuration** — Bean `CorsConfigurationSource` com origins explícitas.
-  <span class="tag">SecurityConfig.java</span>
-
-- [ ] **Adicionar validação de senha** — Min 8 chars, maiúscula, minúscula, número.
-  <span class="tag">AuthenticationController.java:62</span>
-
-- [ ] **Adicionar SameSite=Strict nos cookies** — Atualmente `SameSite("Lax")`. Mudar para `Strict` e adicionar campo opcional no `CookieDomain`.
-  <span class="tag">CookieMapper.java:18 / CookieDomain.java</span>
-
-- [ ] **`CalendarController` proteger endpoints** — Remover `@PreAuthorize("permitAll()")` e proteger por endpoint ou role.
-  <span class="tag">CalendarController.java:18</span>
-
-### Resource Leaks
-
-- [ ] **`GoogleCalendarClient.getCalendar()` cachear HTTP transport** — Novo `GoogleNetHttpTransport.newTrustedTransport()` criado em toda chamada (resource leak: threads, file descriptors).
-  <span class="tag">GoogleCalendarClient.java:34-35</span>
-
----
-
-## 🟠 Fase 3 — Próximas Features
-
-<span class="badge badge-phase3">Próximos passos</span>
-<span class="badge badge-med">7 features</span>
-
-<div class="progress-bar"><div class="progress-fill med" style="width: 0%"></div></div>
-
-### Rate Limiting
-
-- [ ] Adicionar dependência `spring-boot-starter-webmvc-test` (já existe) + configurar bucket4j ou resilience4j
-- [ ] Criar filter/ interceptor para rate limiting em `/auth/login` e `/auth/register`
-- [ ] Configurar limites: N tentativas por minuto por IP
-- [ ] Retornar `429 Too Many Requests` com headers de rate limit
-
-### MCP Services
-
-- [ ] Completar `GoogleCalendarService.createEvent()` — implementar chamada real à API
-- [ ] Adicionar `@Tool` para criar eventos no Google Calendar
-- [ ] Adicionar MCP tools para gerenciamento de máquinas (status, WOL)
-- [ ] Adicionar MCP tool para health check do servidor
-- [ ] Garantir que MCP tools sejam corretamente descobertas pelo Spring AI (`@Component` já adicionado)
-
-### OAuth2 External
-
-- [ ] Adicionar suporte a GitHub OAuth2 (Provider enum já existe)
-- [ ] Criar `OAuth2UserProvisioningService` genérico (não só Google)
-- [ ] Corrigir `OAuth2UserProvisioningService` para usar `UserRepository` (porta do domínio)
-- [ ] Vincular `ExternalAccount` ao usuário no banco durante OAuth2
-
-### Coffee-SDK Connect
-
-- [ ] Definir interface de conexão com SDK próprio (REST local ou Unix socket)
-- [ ] Criar health client do SDK: `coffee server status` → CPU, RAM, Disk, Docker, Postgres, serviços
-- [ ] Expor endpoints no servidor para o SDK consumir
-- [ ] Documentar formato de resposta do SDK
-
-### Frontend
-
-- [ ] Construir dashboard administrativo com Thymeleaf (preservar paleta de cores CSS existente)
-- [ ] Página de login funcional (já existe template)
-- [ ] Página de gerenciamento de máquinas
-- [ ] Página de visualização de backups
-- [ ] Design system: usar a paleta coffee + blue já definida no CSS
-
-### Backup Controllers
-
-- [ ] Usar Coffee-SDK para ler diretório `/mnt/mount/data/backups` (produção)
-- [ ] Listar backups disponíveis
-- [ ] Criar backup (via SDK ou script)
-- [ ] Restaurar backup
-- [ ] Agendar backups recorrentes
-- [ ] Domain model: `Backup`, `BackupSchedule`, `BackupStatus`
-
-### UnixUserService
-
-- [ ] Usar Coffee-SDK para parsear `/etc/passwd` e `/etc/group` do servidor
-- [ ] Sincronizar usuários e grupos Unix com o banco
-- [ ] Vincular `User` do sistema com `LinuxUser`
-- [ ] Interface de domínio: `LinuxUserRepository`
-- [ ] Completar infraestrutura JPA de `LinuxUser` e `Groups`
-
----
-
-## 🔵 Fase 4 — Observabilidade
-
-<span class="badge badge-phase3" style="background:#1a2a4a; color:#60A5FA; border-color: #3B82F6;">Nova</span>
-<span class="badge badge-med">5 itens</span>
-
-<div class="progress-bar"><div class="progress-fill med" style="width: 0%"></div></div>
-
-### Logs Estruturados
-
-- [ ] Adicionar MDC (Mapped Diagnostic Context) com request ID, user ID, session ID em cada requisição
-- [ ] Substituir `System.out.println` e `System.err.println` por SLF4J em todo o codebase
-- [ ] Configurar logback-spring.xml com formato estruturado (JSON ou padrão coffee)
-
-### Métricas
-
-- [ ] Coletar métricas de uso dos endpoints (Spring Actuator + Micrometer)
-- [ ] Métricas de autenticação: tentativas de login, sucessos, falhas
-- [ ] Métricas de performance: latency dos endpoints, taxa de erro
-
-### Health Checks
-
-- [ ] Criar endpoint `/api/health` com status detalhado:
-  - Banco de dados (PostgreSQL / H2)
-  - Google Calendar API
-  - Disk usage (espaço em /mnt/mount/data/backups)
-  - Docker (se aplicável)
-  - Tailscale (se configurado)
-- [ ] Configurar grupos de health check no Actuator
-
-### Diagnóstico
-
-- [ ] Endpoint `/api/status` com informações do servidor:
-  - Uptime
-  - Versão do server
-  - Perfil ativo (dev/prod)
-  - Dependências externas (UP/DOWN)
-- [ ] Endpoint `/api/debug/auth` (já existe em CalendarController) — mover para rota apropriada
-
-### Audit Logging
-
-- [ ] Logar eventos importantes com estrutura padronizada:
-  - Login (sucesso/falha)
-  - Registro de usuário
-  - Criação de máquina
-  - Alteração de owner
-  - Operações de backup
-  - Ações MCP
-- [ ] Incluir em cada evento: timestamp, user ID, ação, target, resultado, IP
-
----
-
-## 🟣 Fase 5 — Sistema de Permissões
-
-<span class="badge badge-phase3" style="background:#2a1a3a; color:#C084FC; border-color: #A855F7;">Nova</span>
-<span class="badge badge-med">4 itens</span>
-
-<div class="progress-bar"><div class="progress-fill med" style="width: 0%"></div></div>
-
-### Roles
-
-- [ ] Expandir `Role` enum: `ADMIN`, `DEVELOPER`, `USER`, `MACHINE`, `API`, `MCP`
-- [ ] Cada role com conjunto padrão de permissões
-
-### Permissions (granulares)
-
-- [ ] Modelar sistema de permissões no domínio:
-  - `machine.read`
-  - `machine.execute` (WOL, restart)
-  - `service.restart`
-  - `backup.create`
-  - `backup.restore`
-  - `user.manage`
-- [ ] Tabela `permissions` no banco
-- [ ] Relacionamento N:N entre roles e permissions
-
-### Scopes
-
-- [ ] Adicionar conceito de scope para tokens JWT
-- [ ] Validação de scope no `JwtAuthenticationFilter`
-- [ ] Endpoints expõem required scopes via annotation
-
-### Integração
-
-- [ ] `@PreAuthorize` com permisssões (ex: `hasPermission('machine.execute')`)
-- [ ] Seeds no `data-h2.sql` com roles + permissions padrão
-- [ ] Endpoint `/api/permissions` para consulta
-
----
-
-## ⚫ Fase 6 — Auditoria
-
-<span class="badge badge-phase3" style="background:#1a1a1a; color:#F9FAFB; border-color: #6B7280;">Nova</span>
-<span class="badge badge-low">3 itens</span>
-
-<div class="progress-bar"><div class="progress-fill low" style="width: 0%"></div></div>
-
-### Audit Model
-
-- [ ] Domain model `AuditLog`:
-  - `id`, `userId`, `username`, `action`, `target`, `targetId`, `result` (SUCCESS/FAILURE), `details`, `ipAddress`, `timestamp`
-- [ ] Interface `AuditRepository` no domínio
-
-### Audit Infrastructure
-
-- [ ] Entity JPA `AuditLogEntity`
-- [ ] Mapper + Adapter + Spring Data Repository
-- [ ] Serviço de auditoria (sync ou async)
-
-### Audit Middleware
-
-- [ ] Criar `@Auditable` annotation para marcar endpoints auditáveis
-- [ ] Aspect/interceptor para log automático
-- [ ] Endpoint `/api/audit/logs` (admin only)
-
----
-
-## ⚪ Fase 7 — Jobs Assíncronos
-
-<span class="badge badge-phase3" style="background:#1a2a1a; color:#4ADE80; border-color: #22C55E;">Nova</span>
-<span class="badge badge-low">3 itens</span>
-
-<div class="progress-bar"><div class="progress-fill low" style="width: 0%"></div></div>
-
-### Job Model
-
-- [ ] Domain model `Job`:
-  - `id`, `type` (BACKUP, RESTORE, SYNC), `status` (PENDING, RUNNING, COMPLETED, FAILED), `progress` (0-100), `result`, `createdAt`, `completedAt`, `userId`
-- [ ] Interface `JobRepository` no domínio
-
-### Job Infrastructure
-
-- [ ] Entity JPA + Mapper + Adapter + Repository
-- [ ] Serviço de job com execução assíncrona (`@Async` ou `TaskExecutor`)
-- [ ] Callback de progresso
-
-### Job API
-
-- [ ] `POST /api/jobs` — criar job (retorna `202 Accepted` + job ID)
-- [ ] `GET /api/jobs/{id}` — status do job
-- [ ] `GET /api/jobs` — listar jobs do usuário
-- [ ] Exemplo: `POST /backup/create` → `202 { jobId: "82ad91" }` → `GET /jobs/82ad91` → `{ status: "running", progress: 65% }`
-
----
-
-## 🟤 Fase 8 — Redis Abstraction (Ports & Adapters)
-
-<span class="badge badge-phase3" style="background:#3C2415; color:#E8D5C4; border-color: #A67B5B;">Nova</span>
-<span class="badge badge-med">14 itens</span>
-
-<div class="progress-bar"><div class="progress-fill med" style="width: 93%"></div></div>
-
-### ✅ Concluído
-
-- [x] **`Connection.java` — Domain port enriquecida** — Adicionados métodos `isOpen()` e `close()` (antes era interface vazia).
-  <span class="tag">domain/Database/Connection.java</span>
-
-- [x] **`DatabaseClientProvider.java` — Import corrigido** — Trocado `java.sql.Connection` (JDBC) por `Connection` do domínio. Fix crítico que impedia compilação.
-  <span class="tag">domain/interfaces/Database/DatabaseClientProvider.java</span>
-
-- [x] **`RedisClientConnectionAdpter.java` — Adapter refatorado** — Agora recebe `StatefulRedisConnection` (não só `RedisAsyncCommands`), implementa `isOpen()` e `close()`.
-  <span class="tag">infrastructure/Adpter/in/RedisClientConnectionAdpter.java</span>
-
-- [x] **`RedisClientProvider.java` — Provider reescrito** — Implementa `get(String name)` corretamente, lê `RedisProperties`, cria conexões Lettuce, encapsula via adapter.
-  <span class="tag">infrastructure/services/Provaider/redis/RedisClientProvider.java</span>
-
-- [x] **`RedisClientConnection.java` removido — `RedisProperties` agora usa `RedisClientInstace` do domínio** — `getInstances()` retorna `List<RedisClientInstace>`. `RedisClientInstace` estende `DatabaseClient` (já tem name, host, port, enabled), eliminando duplicata de infra POJO.
-  <span class="tag">RedisClientConnection.java removido · RedisProperties.java · RedisClientProvider.java</span>
-
-- [x] **`StringByteArrayCodec.java` — Package corrigido** — Movido de `ratelimit` para `config.redis.Codec` e API ajustada para o `RedisCodec` real do Lettuce 6.8.2.
-  <span class="tag">infrastructure/config/redis/Codec/StringByteArrayCodec.java</span>
-
-- [x] **`Bucket4jConfig.java` — Rate limit config** — Bucket4j configurado com `LettuceBasedProxyManager`.
-  <span class="tag">infrastructure/config/ratelimit/Bucket4jConfig.java</span>
-
-- [x] **`RedisArryCodec.java` — Interface de codec** — Extends Lettuce `RedisCodec<String, byte[]>`.
-  <span class="tag">infrastructure/interfaces/Codec/RedisArryCodec.java</span>
-
-- [x] **`DatabaseProperties.java` — Interface de domínio para config de banco** — Define `getInstances()`; `RedisProperties` agora a implementa, desacoplando a porta de propriedades.
-  <span class="tag">domain/Database/DatabaseProperties.java · RedisProperties.java</span>
-
-- [x] **`DatabaseClientProvider` enriquecido** — Porta agora recebe `P extends DatabaseProperties` e expõe `getAdpterConnector(name)` + `getProvaiders(properties)`, substituindo `get(name)`.
-  <span class="tag">domain/interfaces/Database/DatabaseClientProvider.java</span>
-
-- [x] **`RedisClientProvider` — Conexões lazy** — Clientes Lettuce criados no construtor (baratos, sem rede); conexões reais sob demanda no primeiro uso e cacheadas em `ConcurrentHashMap`. Boot não depende do Redis no ar.
-  <span class="tag">infrastructure/services/Provaider/redis/RedisClientProvider.java</span>
-
-- [x] **`Bucket4jConfig` conectado à abstração** — Cria bean `RateLimit` (`Bucket4jRateLimiter`) via `RedisClientProvider` + `PolicyProvider`, com proxy manager lazy. `Bucket4jPolicyProvider` implementa a `PolicyProvider`.
-  <span class="tag">Bucket4jConfig.java · Bucket4jPolicyProvider.java · Bucket4jRateLimiter.java</span>
-
-- [x] **Properties `coffee.redis.*` e `coffee.ratelimit.enabled` adicionadas** — Instâncias `cache` e `rate-limit` declaradas no `application.properties`, `application-h2.properties` e `application-test.properties`.
-  <span class="tag">application.properties · application-h2.properties · application-test.properties</span>
-
-### 📝 Pendente
-
-- [ ] **Registrar `@EnableConfigurationProperties(RedisProperties.class)** — Sem isso o Spring não faz o binding das properties. Atualmente `properties.getInstances()` retorna `null`.
-  <span class="tag">RedisConfig.java / ServerApplication.java</span>
-
-- [ ] **Configurar TLS/SSL nas conexões Redis** — Usar `rediss://` ou suporte a `RedisURI.Builder` com SSL.
-  <span class="tag">RedisClientProvider.java</span>
-
-- [ ] **Adicionar suporte a senha Redis** — Campo `password` em `RedisClientInstace` (domain model) e `RedisClientProvider`. Prover ao criar URI.
-  <span class="tag">RedisClientInstace.java · RedisClientProvider.java</span>
-
-- [ ] **@PreDestroy para fechar conexões** — `RedisClientProvider` precisa fechar todas as conexões no shutdown pra evitar vazamento de threads Netty.
-  <span class="tag">RedisClientProvider.java</span>
-
----
-
-## 🔒 Segurança — mTLS e Autenticação Unificada
-
-<span class="badge badge-phase1" style="background:#8B0000; color:white; border-color:#FF4444;">Pesquisa + Decisão</span>
-<span class="badge badge-fire">4 itens</span>
-
-<div class="progress-bar"><div class="progress-fill fire" style="width: 0%"></div></div>
-
-O feedback aponta que a autenticação atual (JWT + cookie + OAuth2 + ACL por driver) está confusa. A sugestão é simplificar para **um método único reforçado com mTLS**.
-
-### Pesquisa Necessária
-
-- [ ] **Pesquisar implementação de mTLS no Spring Boot 4.x** — Entender como configurar mutual TLS com certificados client/server, truststore/keystore, e integração com `SecurityFilterChain`.
-  - Por que: mTLS elimina necessidade de JWT para autenticação mútua serviço-a-serviço; handshake TLS garante identidade de ambas as partes
-  - Abordagem: `server.ssl.*` properties + `SecurityConfig` com `X509AuthenticationFilter` ou custom filter
-
-- [ ] **Avaliar trade-offs: mTLS vs JWT para este cenário** — Comparar complexidade operacional (rotação de certs, CA privada), latência do handshake, suporte a clientes diversos (browser, CLI, agents MCP).
-  - Por que: mTLS é excelente para service-to-service, mas browsers não suportam bem client certs; MCP agents podem ou não suportar
-  - Decisão: provavelmente **híbrido** — mTLS para comunicação servidor↔SDK/CLI, JWT/OAuth2 para browsers e MCP
-
-- [ ] **Definir estratégia de certificado para homelab** — CA própria (step-ca, smallstep, cfssl), certificados de curta duração (24h-7d), renovação automática via cert-manager ou script.
-  - Por que: sem CA gerenciada, mTLS vira pesadelo operacional
-  - Abordagem: `step-ca` + `step` CLI para emissão/renovação; distribuir certs via SDK
-
-### Implementação (após decisão)
-
-- [ ] **Criar `MtlsAuthenticationFilter` ou configurar `X509AuthenticationFilter`** — Extrair subject do certificado cliente, mapear para `User`/`Machine` do domínio, popular `SecurityContext`.
-  - Dependência: decisão da pesquisa acima
-  - Localização: `infrastructure/security/Filter/`
-
----
-
-## 🌐 API — Versionamento e Contratos
-
-<span class="badge badge-phase2">Planejamento</span>
-<span class="badge badge-high">3 itens</span>
-
-<div class="progress-bar"><div class="progress-fill high" style="width: 0%"></div></div>
-
-### Estratégia de Versionamento
-
-- [ ] **Definir estratégia de versionamento de API** — URL path (`/api/v1/...`), header (`Accept: application/vnd.coffe.v1+json`), ou query param. Documentar decisão no `docs/architecture/api-versioning.md`.
-  - Por que: evita breaking changes futuros; clientes (SDK, MCP, Web) precisam saber como evoluir
-  - Recomendação inicial: **URL path** (`/api/v1/`) — simples, visível, compatível com cache/CDN
-
-- [ ] **Aplicar versionamento nos controllers existentes** — `AuthenticationController`, `APIController`, `CalendarController`, `MachineController` (futuro).
-  - Exemplo: `@RequestMapping("/api/v1/auth")`
-  - Manter `/api/test` como health check sem versão (ou `/api/v1/health`)
-
-- [ ] **Criar DTOs versionados ou usar OpenAPI para contratos** — Separar `v1` DTOs de `v2` quando houver breaking change; gerar spec OpenAPI automaticamente (`springdoc-openapi`).
-  - Por que: contratos claros facilitam geração de cliente (SDK Rust/Python, TypeScript)
-
----
-
-## 🧱 Arquitetura — Modularização Maven (MCP + SDK)
-
-<span class="badge badge-phase2">Pesquisa + Execução</span>
-<span class="badge badge-high">5 itens</span>
-
-<div class="progress-bar"><div class="progress-fill high" style="width: 0%"></div></div>
-
-O feedback sugere avaliar módulos Maven separados para MCP e SDK. Isso alinha com a estratégia SDK documentada no relatório de arquitetura.
-
-### Pesquisa
-
-- [ ] **Pesquisar estrutura multi-module Maven para Spring Boot 4.x** — Best practices: `pom.xml` pai com `<packaging>pom</packaging>`, modules com dependências bem definidas, build order, profiles.
-  - Referência: Spring Boot multi-module samples, Gradle vs Maven trade-offs
-
-- [ ] **Avaliar separação: `coffe-mcp` vs `coffe-server`** — MCP tools (`GoogelCalenderTools`, `CalendarController`, `GoogleCalendarService`) podem virar módulo independente que o server importa? Vantagem: agents MCP podem usar só o JAR do MCP sem subir o server todo.
-
-### Estrutura Proposta (após pesquisa)
-
-- [ ] **Criar módulo `server-domain` (JAR puro)** — Domain models, interfaces (ports), value objects, enums, exceptions. **Zero dependências**.
-  - Consumido por: `server-application`, `server-infrastructure`, `server-mcp`, `coffe-sdk` (externo)
-
-- [ ] **Criar módulo `server-mcp` (JAR)** — MCP tools, services, controllers relacionados a MCP. Depende de `server-domain` + `spring-ai-mcp`.
-  - Permite: agents consumirem `server-mcp` como library; server importa como dependency
-
-- [ ] **Criar módulo `server-infrastructure` (JAR)** — JPA adapters, security (JWT, mTLS), external clients (Google, GitHub), Redis. Depende de `server-domain` + `server-application`.
-
-- [ ] **Criar módulo `server-boot` (executável)** — `ServerApplication`, `application.properties`, templates, static. Depende de TODOS os módulos acima. É o artefato de deploy.
-
----
-
-## 📋 Decisões Arquiteturais a Revisar
-
-> Esta seção centraliza decisões de design que o feedback trouxe e que impactam múltiplas áreas. Cada decisão deve ser documentada em `docs/architecture/adr/` (Architecture Decision Records) após definição.
-
-| # | Decisão | Status | Impacto | ADR Sugerido |
-|---|---------|--------|---------|--------------|
-| ADR-001 | **Estratégia de autenticação: JWT + mTLS híbrido vs JWT only vs mTLS only** | ✅ **Decidido: JWT + mTLS híbrido** | SecurityConfig, FilterChain, SDK clients, MCP agents | `adr-001-auth-strategy.md` |
-| ADR-002 | **Versionamento de API: URL path (`/api/v1/`) vs Header vs Query** | 🔴 Pendente | Todos Controllers, OpenAPI, SDK clients | `adr-002-api-versioning.md` |
-| ADR-003 | **Modularização Maven: multi-module vs single-module** | 🔴 Pendente | Build, deploy, dependency graph, SDK extraction | `adr-003-maven-modules.md` |
-| ADR-004 | **mTLS para homelab: CA própria (step-ca) vs certs auto-assinados vs managed (Let's Encrypt + ACME)** | 🔴 Pendente | Infra, cert rotation, client provisioning | `adr-004-mtls-ca.md` |
-| ADR-005 | **MCP como módulo separado vs integrado no server** | 🔴 Pendente | Deploy, agent consumption, versionamento independente | `adr-005-mcp-module.md` |
 
 ---
 
 ## 📊 Progresso Geral
 
 <div class="section-summary">
-  <div class="stat-card">
-    <strong>5</strong> / 8<br><span class="tag">🔥 Fase 1</span>
-  </div>
-  <div class="stat-card">
-    <strong>1</strong> / 16<br><span class="tag badge-high">Fase 2</span>
-  </div>
-  <div class="stat-card">
-    <strong>0</strong> / 7<br><span class="tag badge-med">Fase 3</span>
-  </div>
-  <div class="stat-card">
-    <strong>0</strong> / 5<br><span class="tag">Fase 4</span>
-  </div>
-  <div class="stat-card">
-    <strong>0</strong> / 4<br><span class="tag">Fase 5</span>
-  </div>
-  <div class="stat-card">
-    <strong>0</strong> / 3<br><span class="tag">Fase 6</span>
-  </div>
-  <div class="stat-card">
-    <strong>0</strong> / 3<br><span class="tag">Fase 7</span>
-  </div>
-  <div class="stat-card">
-    <strong>13</strong> / 14<br><span class="tag">Fase 8</span>
-  </div>
-  <div class="stat-card">
-    <strong>19</strong> / 60<br><span class="tag">Total</span>
-  </div>
+  <div class="stat-card"><strong>8</strong> / 10<br><span class="tag">🧱 Arquitetura</span></div>
+  <div class="stat-card"><strong>10</strong> / 18<br><span class="tag">🖥️ Backend</span></div>
+  <div class="stat-card"><strong>6</strong> / 8<br><span class="tag">🎨 Frontend</span></div>
+  <div class="stat-card"><strong>7</strong> / 12<br><span class="tag">🔒 Segurança</span></div>
+  <div class="stat-card"><strong>3</strong> / 6<br><span class="tag">🔌 APIs</span></div>
+  <div class="stat-card"><strong>5</strong> / 8<br><span class="tag">🗄️ Banco de Dados</span></div>
+  <div class="stat-card"><strong>6</strong> / 8<br><span class="tag">⚙️ Infraestrutura</span></div>
+  <div class="stat-card"><strong>4</strong> / 8<br><span class="tag">📈 Observabilidade</span></div>
+  <div class="stat-card"><strong>7</strong> / 8<br><span class="tag">📚 Documentação</span></div>
+  <div class="stat-card"><strong>3</strong> / 6<br><span class="tag">🚀 Performance</span></div>
+  <div class="stat-card"><strong>8</strong> / 10<br><span class="tag">🧪 Testes</span></div>
+  <div class="stat-card"><strong>4</strong> / 7<br><span class="tag">♻️ Refatoração</span></div>
+  <div class="stat-card"><strong>3</strong> / 5<br><span class="tag">🤖 MCP</span></div>
+  <div class="stat-card"><strong>1</strong> / 5<br><span class="tag">📦 Modularização</span></div>
+  <div class="stat-card"><strong>5</strong> / 8<br><span class="tag">🚀 Melhorias Futuras</span></div>
 </div>
 
-<hr>
+> Status: `✅ Concluído` · `🚧 Em andamento` · `📝 TODO` · `⛔ Bloqueado`
+> Prioridade: `🔥 Alta` · `🟡 Média` · `🟢 Baixa`
+
+---
+
+## 🧱 Arquitetura
+
+<span class="badge badge-phase2">Fundação</span>
+
+- [x] **CookieSystem refatorado para o domínio** — `CookieManager` + `CookieFactory` como portas em `domain/interfaces/Cookies/`; `HttpCookieWriter` como SPI na application; `CookieMapper`/`HttpCookieWriterManeger` na infra. Eliminou a violação de `CookieService` na infraestrutura.
+  <span class="tag">commit 141eb1d · domain/interfaces/Cookies/</span>
+- [x] **MachineNotFoundException movido para `domain/exception/`** — exceção de domínio, não mais em `shared/`.
+  <span class="tag">commit 363334f · domain/exception/MachineNotFoundException.java</span>
+- [x] **Typos em classes públicas corrigidos** — `Provider` (era `Provaider`), `ExternalAccount`, `JwtTokenResolver`, `BCryptPasswordService`, `GoogleCalendarTools`, `GoogleCalendarService` etc. Renomeados sem quebrar migração (a partir da correção de acoplamento).
+  <span class="tag">commits e4b55f1 · bba8d2d · 0ab7bd6</span>
+- [ ] **Mover `TokenResolverManager` de infra para application** — é orquestrador (use case), não implementação concreta. Hoje vive em `infrastructure/services/Auth/Token/`. Impacto: deixa o chain de resolução testável sem contexto Spring.
+  <span class="tag">🟡 Média · infrastructure/services/Auth/Token/TokenResolverManager.java</span>
+- [ ] **`OAuth2UserProvisioningService` usa `JpaUserRepository` direto** — bypassa a porta `UserRepository` do domínio (Dependency Inversion). Trocar para injetar a porta e mapear `UserEntity` → `User`. A autoridade `"ROLE_"+role` e o `passwordHash` UUID já foram corrigidos.
+  <span class="tag">🔥 Alta · infrastructure/services/OAuth/OAuth2UserProvisioningService.java:20-23</span>
+- [ ] **Enriquecer domínio (models anêmicos)** — mover regras para os models: `Machine.wakeOnLan()`, `ExternalAccount.refreshTokenIfExpired()`, `User` validando email/role. Reduce lógica espalhada em services.
+  <span class="tag">🟢 Baixa · domain/models/</span>
+- [ ] **`Domain/Database` + `domain/interfaces/Database` — renomear diretórios com typos** — `Adpter`, `Provaider`, `Arry`, `Ratelimit` seguem como nomes de pacote/arquivo. Nomes de classe já corrigidos; pacotes só em nova versão (breaking de import).
+  <span class="tag">🟢 Baixa · pacotes infra</span>
+- [ ] **ADRs documentados** — registrar decisões `ADR-003` (maven modules) e `ADR-005` (MCP module) quando decididas.
+  <span class="tag">🟡 Média · docs/architecture/adr/</span>
+
+---
+
+## 🖥️ Backend
+
+<span class="badge badge-phase1">Núcleo do servidor</span>
+
+### ✅ Concluído
+
+- [x] **Autenticação cookie-only** — login/register não devolvem JWT no body; token só no HttpOnly cookie (`access_token`). Frontend usa cookie e lê sessão via `/api/test`.
+  <span class="tag">commit c4d575e · AuthenticationController.java</span>
+- [x] **Endpoint `/auth/logout`** — revoga o cookie com `Max-Age=0`.
+  <span class="tag">commit f87e29b · AuthenticationController.java:69-75</span>
+- [x] **`MachineEntity` userId mapping corrigido** — `userId` agora é atribuído ao `@ManyToOne user`; elimina `ConstraintViolationException`.
+  <span class="tag">commit 160ae3e · MachineEntity.java:62-69</span>
+- [x] **`MachineRepositoryAdapter.setOwner()` implementado** — usa `updateOwner(machineId, userId)` do JPA em vez de retornar `new User()` vazio.
+  <span class="tag">commit 160ae3e · MachineRepositoryAdapter.java:84-90</span>
+- [x] **`JwtTokenService.extractIdSubject` retorna `Optional<Long>`** — sem `null` no contrato.
+  <span class="tag">commit 3a574f6 · JwtTokenService.java:57-76</span>
+- [x] **`User.toString()` sem vazar `passwordHash`** — BCrypt hash não exposto em logs.
+  <span class="tag">commit 2d36b5f · User.java:98-102</span>
+- [x] **`User.changePassword` valida tamanho mínimo (8)** — lança `InvalidPasswordException` (domínio).
+  <span class="tag">commit ff95760 · User.java:58-61</span>
+- [x] **401 em falha de autenticação** — `SecurityConfig` configura `authenticationEntryPoint` → 401; filter limpa contexto.
+  <span class="tag">commit 3a574f6 · SecurityConfig.java:76-80</span>
+
+### 📝 Pendências
+
+- [ ] **`UserService` é esqueleto** — só construtor, sem métodos. Implementar CRUD básico (listar, atualizar perfil/role, habilitar/desabilitar) usando a porta `UserRepository`.
+  <span class="tag">🟡 Média · application/services/Users/UserService.java</span>
+- [ ] **`MachineService` lança `UsernameNotFoundException` (Spring)** — vazamento de framework na camada de aplicação. Criar `UserNotFoundException` no domínio e usar `Optional` para resolver o usuário.
+  <span class="tag">🟡 Média · MachineService.java:28</span>
+- [ ] **Wake-on-LAN não implementado** — `Machine` tem `wolEnabled`/`macAddress`, mas nenhum magic packet é enviado. Implementar service de WoL (UDP broadcast porta 9) + rota.
+  <span class="tag">🟡 Média · domain/models/Machine/</span>
+- [ ] **Tailscale sem integração real** — campo `tailscaleNodeKey` existe; consumir API/serviço Tailscale para status e chave dos nós.
+  <span class="tag">🟢 Baixa · domain/models/Machine/</span>
+- [ ] **Validação de senha inconsistente no register** — `AuthenticationController.register` valida apenas `length 1..500`; reusar a mesma política do `changePassword` (mínimo 8, composição) via DTO/validação de domínio.
+  <span class="tag">🟡 Média · AuthenticationController.java:53</span>
+- [ ] **DTOs com Bean Validation real** — `@NotBlank`, `@Email`, `@Size` nos DTOs de auth; hoje a validação é manual no controller. Dependency `spring-boot-starter-validation` já presente (pom.xml:148-151) — só falta aplicar nos DTOs.
+  <span class="tag">🟡 Média · application/dto/Auth/ · pom.xml:148-151</span>
+
+---
+
+## 🎨 Frontend
+
+<span class="badge badge-phase3">Dashboard liquid-glass</span>
+
+> O frontend vive em `src/main/resources/static/app/` e é servido diretamente pelo Spring Boot em `/app/**`. Detalhes completos em **`src/main/resources/static/app/TODO.md`**.
+
+### ✅ Concluído
+
+- [x] **Dashboard liquid-glass reescrito** — header toolbar glass, seções (Usuário → Servidor → Sistema│Rede → Discos → Containers → Máquinas → Calendário → MCP → Logs ao vivo), KPIs sem `null`, modal de máquina, refresh, logs simulados.
+  <span class="tag">commits 3932bf4 · 803b452 · static/app/</span>
+- [x] **`frontend/` antigo removido** — migração concluída para `static/app/`; nada copiado em build.
+  <span class="tag">static/app/ · HomeController redirects</span>
+- [x] **Páginas de login e dashboard funcional** — `HomeController` redireciona `/` → `/app/index.html` e `/login` → `/app/pages/login.html`.
+  <span class="tag">HomeController.java:9-18</span>
+- [x] **XSS eliminado no Modal e badges MCP** — `trustHtml` explícito, `textContent` por padrão; revisado por security-tester + Playwright.
+  <span class="tag">static/app/components/Modal.js · pages/mcp.js</span>
+- [x] **Responsividade 1280 / 640 / 480** — header em grid de 3 zonas, nav ícones-only em <600px.
+  <span class="tag">static/app/styles/layout.css</span>
+- [x] **Design system tokens coffee + blue** — `tokens.css` com `--glass-*`, z-index header 250.
+  <span class="tag">static/app/styles/tokens.css</span>
+
+### 🚧 Em andamento
+
+- [ ] **Centralização do header** — grid 3 zonas já aplicado; falta re-validar com usuário curto/longo e screenshots finais.
+  <span class="tag">🚧 Em andamento · static/app/TODO.md</span>
+
+### 📝 Pendências
+
+- [ ] **WebSocket real (`/ws`)** — hoje `wss://localhost:8080/ws` retorna 404; decidir entre status push real ou remover tentativa.
+  <span class="tag">🟡 Média · static/app/websocket/</span>
+- [ ] **Logs ao vivo com dados reais** — substituir `randomLogEntry()` quando backend expuser eventos MCP ou `/api/audit/logs`.
+  <span class="tag">🟢 Baixa · static/app/mock/logs.js</span>
+- [ ] **Data provider por página** — trocar os 9 mocks no topo de `dashboard.js` por fetch com fallback mock quando `/api/info/*` existir.
+  <span class="tag">🟢 Baixa · static/app/pages/dashboard.js</span>
+- [ ] **`smoke-spring.mjs` defasado** — usa credenciais inexistentes; atualizar para `admin_teste`/`Senha123!`.
+  <span class="tag">🟢 Baixa · scripts de verificação</span>
+
+---
+
+## 🔒 Segurança
+
+<span class="badge badge-fire">Crítico</span>
+
+### ✅ Concluído
+
+- [x] **Rate limiting em `/auth/login` e `/auth/register`** — `RateLimitFilter` na chain (Bucket4j distribuído via Redis, filtro condicional via `coffee.ratelimit.enabled`), conexões lazy, boot não depende do Redis.
+  <span class="tag">commits 7038077 · 6fe2e71 · 899ab83 · Filter/Ratelimit/</span>
+- [x] **TLS habilitado** — `server.ssl.enabled=true`, keystore PKCS12, HTTP/2 ativo.
+  <span class="tag">application.properties:42-47</span>
+- [x] **OAuth2 authority corrigida** — `"ROLE_"+role` (sem espaço) → usuários OAuth2 acessam rotas protegidas.
+  <span class="tag">OAuth2UserProvisioningService.java:43</span>
+- [x] **OAuth2 cria usuário com passwordHash** — UUID randômico evita `ConstraintViolationException` (`password_hash NOT NULL`).
+  <span class="tag">OAuth2UserProvisioningService.java:38</span>
+- [x] **`JwtTokenService.verifyToken` null-safe** — não estoura em token ausente/malformado.
+  <span class="tag">commit 3a574f6 · JwtTokenService.java:40-55</span>
+- [x] **Logout revoga cookie** — `/auth/logout` com `Max-Age=0`.
+  <span class="tag">AuthenticationController.java:69-75</span>
+- [x] **`.env` fora do tracking** — credenciais não commitadas (commit 8645845).
+  <span class="tag">.gitignore · .env</span>
+
+### 📝 Pendências
+
+- [ ] **CORS configuration** — confirmado na auditoria: `SecurityConfig.securityFilterChain` não define nenhum `CorsConfigurationSource` (apenas `.csrf(disable)` + filters). Necessário para clientes web fora de `/app` (ex.: PS3, CLI browser).
+  <span class="tag">🔥 Alta · SecurityConfig.java:40-89</span>
+- [ ] **`RateLimitFilter` engole exceções silenciosamente** — `catch (IllegalArgumentException | Exception)` vazios; logar (SLF4J) e diferenciar política por rota (`LOGIN` vs `REGISTER` vs `API`), hoje força sempre `RateLimitPolicy.API`.
+  <span class="tag">🟡 Média · RateLimitFilter.java:52-57</span>
+- [ ] **SameSite=Strict nos cookies** — `CookieMapper` usa `"Lax"`; migrar para `Strict` e expor como campo opcional no `CookieDomain` (default seguro).
+  <span class="tag">🟡 Média · infrastructure/Mappers/Cookies/CookieMapper.java:18</span>
+- [ ] **mTLS (client-auth=none → require)** — TLS server-side pronto; falta CA própria (ADR-004), emissão de certs client e `X509AuthenticationFilter`. Decisão híbrida JWT + mTLS (ADR-001) já tomada.
+  <span class="tag">⛔ Bloqueado (aguarda decisão de CA) · application.properties:47</span>
+- [ ] **Permissões granulares / scopes (Fase 5)** — `Role` hoje é `ADMIN/USER/MCP/API`; modelar `permissions`, tabela N:N, scopes no JWT e `@PreAuthorize` por permissão.
+  <span class="tag">🟡 Média · domain/enums/Role.java</span>
+
+---
+
+## 🔌 APIs
+
+<span class="badge badge-phase2">Contratos REST + MCP</span>
+
+### ✅ Concluído
+
+- [x] **`/api/test` health/sessão** — endpoint público que ecoa o usuário autenticado; usado pelo frontend como check de sessão.
+  <span class="tag">APIController.java</span>
+- [x] **MCP server configurado** — `spring.ai.mcp.server.*` (base `/mcp`, timeout 300s), rota protegida com `hasAuthority("MCP")`.
+  <span class="tag">application.properties:56-59 · SecurityConfig.java:50</span>
+- [x] **Login/Register/Logout REST** — endpoints funcionais com cookies.
+  <span class="tag">AuthenticationController.java</span>
+
+### 📝 Pendências
+
+- [ ] **Versionamento de API** — hoje rotas são `/auth/*`, `/api/test`, `/api/calendar/*` sem `/api/v1`. Definir ADR-002 (recomendação: URL path) e aplicar nos controllers.
+  <span class="tag">🔥 Alta · todos controllers</span>
+- [ ] **`CalendarController` exposto sem proteção** — `@PreAuthorize("permitAll()")` no nível da classe deixa `/api/calendar/events` e `/api/calendar/debug/auth` abertos; proteger por endpoint/role.
+  <span class="tag">🔥 Alta · mcp/tools/CalendarController.java:18</span>
+- [ ] **`System.out/err` em produção** — `CalendarController` e `GoogleCalendarTools` usam prints; trocar por SLF4J com contexto estruturado.
+  <span class="tag">🟡 Média · CalendarController.java:31,43,46</span>
+
+---
+
+## 🗄️ Banco de Dados
+
+<span class="badge badge-phase1">PostgreSQL 17 (prod) / H2 (dev)</span>
+
+### ✅ Concluído
+
+- [x] **Scripts SQL `docs/sql/`** — ordem de criação `00_init` → `06_roles` (groups, user, linux_user, machine, external_account, roles).
+  <span class="tag">docs/sql/*.sql</span>
+- [x] **Profiles H2/test com seed** — `data-h2.sql` (admin_teste + user `t`) e `test-data.sql`; `ddl-auto=create-drop`.
+  <span class="tag">application-h2.properties · test/application-test.properties</span>
+- [x] **Persistence User + Machine completa** — entity, mapper, adapter e Spring Data repo para ambos.
+  <span class="tag">infrastructure/db/User/ · db/Machine/</span>
+- [x] **Entidades LinuxUser e Groups criadas** — model + entity; relacionamentos M:1 com groups.
+  <span class="tag">infrastructure/db/LinuxUser/Entity/</span>
+- [x] **Entidade ExternalAccount criada** — model + entity para OAuth externo.
+  <span class="tag">infrastructure/db/User/Entity/ExternalAccountEntity.java</span>
+
+### 📝 Pendências
+
+- [ ] **Persistence `LinuxUser`/`Groups` incompleta** — entities existem, faltam: Spring Data repos, mappers, adapters e portas de domínio (`LinuxUserRepository`).
+  <span class="tag">🔥 Alta · infrastructure/db/LinuxUser/</span>
+- [ ] **Persistence `ExternalAccount` incompleta** — entity existe, faltam repo, mapper, adapter e porta de domínio.
+  <span class="tag">🔥 Alta · infrastructure/db/User/Entity/ExternalAccountEntity.java</span>
+- [ ] **Vincular `ExternalAccount` durante OAuth2** — o login Google não persiste a conta externa nem o token de refresh do usuário.
+  <span class="tag">🟡 Média · OAuth2UserProvisioningService.java</span>
+
+---
+
+## ⚙️ Infraestrutura
+
+<span class="badge badge-phase2">Adapters + Integrações externas</span>
+
+### ✅ Concluído
+
+- [x] **Abstração Redis (Ports & Adapters) completa** — `Connection`, `DatabaseClientProvider`, `DatabaseProperties` no domínio; `RedisClientProvider` (lazy) + `RedisClientConnectionAdapter` + `StringByteArrayCodec` na infra. `@EnableConfigurationProperties(RedisProperties)` registrado no `RedisConfig`.
+  <span class="tag">commits 77ab29a · 067be32 · RedisConfig.java:7</span>
+- [x] **Bucket4j conectado à abstração** — `Bucket4jConfig` cria `RateLimit` via provider; `PolicyProvider` implementado.
+  <span class="tag">config/ratelimit/Bucket4jConfig.java</span>
+- [x] **Properties `coffee.redis.*` em todos os profiles** — instâncias `cache` e `rate-limit` (prod/h2/test).
+  <span class="tag">application*.properties</span>
+- [x] **Logging estruturado** — `logback-spring.xml` com rolling file appenders e separação de erros.
+  <span class="tag">commit c36aca6 · logback-spring.xml</span>
+- [x] **CI/CD GitHub Actions** — 5 jobs (build, testes, CodeQL, integração), Java 21 temurin, Postgres 17 service, profile `test`.
+  <span class="tag">.github/workflows/ci-cd.yml</span>
+- [x] **`security-lab` docker-compose** — ambiente isolado para testes de segurança.
+  <span class="tag">security-lab/docker-compose.yml</span>
+
+### 📝 Pendências
+
+- [ ] **`@PreDestroy` para fechar conexões Redis** — `RedisClientProvider` precisa fechar clients/connections no shutdown para evitar vazamento de threads Netty.
+  <span class="tag">🔥 Alta · RedisClientProvider.java</span>
+- [ ] **TLS/SSL nas conexões Redis** — hoje `redis://` sem TLS; usar `RedisURI.Builder` com `.withSsl(true)`.
+  <span class="tag">🟡 Média · RedisClientProvider.java:45-47</span>
+- [ ] **Senha Redis** — campo `password` em `RedisClientInstace` (domínio) + provider.
+  <span class="tag">🟡 Média · domain/Database/redis/RedisClientInstace.java</span>
+
+---
+
+## 📈 Observabilidade
+
+<span class="badge badge-phase3">Monitoramento</span>
+
+### ✅ Concluído
+
+- [x] **Actuator no classpath** — `spring-boot-starter-actuator` presente.
+  <span class="tag">pom.xml</span>
+- [x] **Logs coloridos + rolling** — `CoffeColorConverter` + appenders de arquivo com separação de erro.
+  <span class="tag">config/logger/ · logback-spring.xml</span>
+- [x] **CI/CD reports** — jobs de teste e CodeQL no pipeline.
+  <span class="tag">ci-cd.yml</span>
+- [x] **Levels de log por package** — `com.quitto=DEBUG`, security TRACE (dev).
+  <span class="tag">application.properties:49-53</span>
+
+### 📝 Pendências
+
+- [ ] **MDC (request ID / user ID / session ID)** — adicionar filtro que popula MDC em cada requisição para correlação de logs.
+  <span class="tag">🔥 Alta · infra security</span>
+- [ ] **Métricas de autenticação e endpoints** — Micrometer: tentativas de login (sucesso/falha), latência e taxa de erro por rota.
+  <span class="tag">🟡 Média · Micrometer</span>
+- [ ] **`/api/health` detalhado** — status do banco (Postgres/H2), Google Calendar, disk (`/mnt/mount/data/backups`), Docker, Tailscale.
+  <span class="tag">🟡 Média · Actuator + custom indicators</span>
+- [ ] **Audit logging (Fase 6)** — `AuditLog` model + `@Auditable` annotation + endpoint `/api/audit/logs` (admin) para eventos sensíveis.
+  <span class="tag">🟢 Baixa · domain + aspect</span>
+
+---
+
+## 📚 Documentação
+
+<span class="badge badge-phase2">Docs viva</span>
+
+### ✅ Concluído
+
+- [x] **`docs/architecture/arquiteture.md`** — documentação completa de arquitetura (camadas, fluxos, glossário).
+  <span class="tag">docs/architecture/</span>
+- [x] **`docs/architecture/redis-abstraction.md`** — doc da abstração Redis (Ports & Adapters).
+  <span class="tag">docs/architecture/</span>
+- [x] **`docs/audits/`** — `relatorio-completo.md` + `backend-audit.md` com análise de arquitetura/segurança.
+  <span class="tag">docs/audits/</span>
+- [x] **`docs/UX/VISUAL-IDENTITY.md`** — design system coffee + blue (tokens, componentes, acessibilidade).
+  <span class="tag">docs/UX/</span>
+- [x] **`README.md`** — badges e visão geral.
+  <span class="tag">README.md</span>
+- [x] **`arquiture.drawio`** — diagrama de arquitetura sob `docs/architecture/`.
+  <span class="tag">docs/architecture/arquiture.drawio</span>
+- [x] **`.agents/AGENTS.md` + `IA_README.md`** — contexto de arquitetura para agentes.
+  <span class="tag">.agents/</span>
+
+### 📝 Pendências
+
+- [ ] **ADR-001 autenticação (JWT + mTLS híbrido)** — decisão tomada, falta registrar o ADR escrito em `docs/architecture/adr/`.
+  <span class="tag">🟡 Média · docs/architecture/adr/</span>
+- [ ] **README principal por fazer** — atualmente é mínimo; documentar setup, profiles, endpoints e fluxo MCP.
+  <span class="tag">🟢 Baixa · README.md</span>
+
+---
+
+## 🚀 Performance
+
+<span class="badge badge-phase3">Otimizações</span>
+
+### ✅ Concluído
+
+- [x] **HTTP/2 + TLS** — `server.http2.enabled=true`.
+  <span class="tag">application.properties:5</span>
+- [x] **Pool Lettuce configurado** — `max-active=16`, `max-idle=8`, `min-idle=2`.
+  <span class="tag">application.properties:74-78</span>
+- [x] **Conexões Redis lazy** — clientes Lettuce baratos no construtor, conexões sob demanda cacheadas.
+  <span class="tag">RedisClientProvider.java</span>
+
+### 📝 Pendências
+
+- [ ] **Cachear `GoogleNetHttpTransport`** — `newTrustedTransport()` é criado em toda chamada de `getCalendar()` (resource leak: threads/fds). Cachear o transporte e reutilizar.
+  <span class="tag">🔥 Alta · external/GoogleCalendarClient.java:35</span>
+- [ ] **Caching de consultas com Redis** — a instância `cache` já está declarada; usar para sessões/serviços quando necessário.
+  <span class="tag">🟢 Baixa · infra</span>
+- [ ] **`JwtTokenService` lê `@Value` field (KEY)** — mover para constructor injection (imutabilidade, testabilidade).
+  <span class="tag">🟢 Baixa · JwtTokenService.java:21-22</span>
+
+---
+
+## 🧪 Testes
+
+<span class="badge badge-phase1">Qualidade</span>
+
+### ✅ Concluído
+
+- [x] **392 testes passando** — `TestSuite` + unit (domínio/app/infra) + integração (auth/login/register/cookies) + security + MCP + Redis.
+  <span class="tag">commit e4aa9c8 · src/test/java/com/quitto/server/</span>
+- [x] **Testes unitários de domínio** — `UserTest`, `MachineTest`, `ExternalAccountTest`, `LinuxUserTest`, `GroupsTest`, `CookieDomainTest`.
+  <span class="tag">unit/domain/</span>
+- [x] **Testes de infraestrutura** — `JwtTokenServiceTest`, `TokenResolverTest`, `TokenResolverManagerTest`, `RedisAbstractionTest`, `CookieManagerAdapterTest`, `HttpCookieServiceTest`.
+  <span class="tag">unit/infrastructure/</span>
+- [x] **Testes de aplicação** — `UserAuthenticationServiceTest`, `AuthenticationControllerTest`.
+  <span class="tag">unit/application/</span>
+- [x] **Testes de integração** — `LoginIntegrationTest`, `RegisterIntegrationTest`, `AuthenticationIntegrationTest`, `CookieSystemIntegrationTest`.
+  <span class="tag">integration/</span>
+- [x] **Testes de segurança** — `SecurityTest` (rotas protegidas) e `McpToolTest`.
+  <span class="tag">security/ · mcp/</span>
+- [x] **CI roda testes** — job no pipeline com perfil `test` e Postgres.
+  <span class="tag">ci-cd.yml</span>
+- [x] **Profile `test` isolado** — `application-test.properties` com H2 + `test-data.sql`.
+- [x] **Testcontainers + JaCoCo no build** — dependências `testcontainers`/`postgresql`/`junit-jupiter` (BOM 1.20.4) e plugin JaCoCo 0.8.15 (threshold 0.00, sem enforcement) no `pom.xml`.
+  <span class="tag">pom.xml:185-200 · 236-277</span>
+  <span class="tag">test/resources/</span>
+
+### 📝 Pendências
+
+- [ ] **Testes para o rate limiting** — `RateLimitFilter`/`Bucket4jRateLimiter` sem cobertura direta (testar 429 e policy).
+  <span class="tag">🟡 Média · security/</span>
+- [ ] **Testes para `OAuth2UserProvisioningService`** — sem teste do auto-provisionamento (criação com UUID, authority `ROLE_*`).
+  <span class="tag">🟡 Média · services/OAuth/</span>
+
+---
+
+## ♻️ Refatoração
+
+<span class="badge badge-phase2">Qualidade de código</span>
+
+### ✅ Concluído
+
+- [x] **Constructor injection generalizada** — `SecurityConfig`, `MachineRepositoryAdapter`, `OAuth2UserProvisioningService`, `CookieManagerAdapter`, `HttpCookieWriterManeger` etc.
+  <span class="tag">commits 0ab7bd6 · 899ab83</span>
+- [x] **Bean duplicado `TokenService` removido** — `JwtTokenAdapter` deixou de ser `@Component`.
+  <span class="tag">commit 0ab7bd6</span>
+- [x] **Imports mortos removidos** — limpeza em `dashboard.js`, `mcp.js`, CSS e classes Java.
+  <span class="tag">commits e4aa9c8 · 94456b9</span>
+- [x] **`Optional` no lugar de `null`** — `extractIdSubject`, resolvers, repositories.
+  <span class="tag">domain + infra</span>
+
+### 📝 Pendências
+
+- [ ] **Field injection em `GoogleCalendarService` e `GoogleCalendarTools`** — `@Autowired` em campos públicos; trocar para constructor injection.
+  <span class="tag">🔥 Alta · mcp/services + mcp/tools</span>
+- [ ] **`System.out/err` → SLF4J** — `CalendarController`, `GoogleCalendarTools` (ver Observabilidade).
+  <span class="tag">🟡 Média · mcp/</span>
+- [ ] **`RateLimit` interface na camada certa** — hoje em `infrastructure/interfaces/Ratelimit/`; como contrato de negócio deveria viver no domínio (`domain/interfaces/`).
+  <span class="tag">🟢 Baixa · infra interfaces</span>
+
+---
+
+## 🤖 MCP
+
+<span class="badge badge-phase1">Agentes de IA</span>
+
+### ✅ Concluído
+
+- [x] **`GoogleCalendarTools` com `@Component`** — `@Tool listEvents()` descoberto pelo Spring AI.
+  <span class="tag">mcp/tools/GoogleCalendarTools.java:18</span>
+- [x] **MCP server exposto em `/mcp`** — WebMVC transport, `ROLE_MCP` protegida.
+  <span class="tag">application.properties:56-59 · SecurityConfig.java:50</span>
+- [x] **`listEvents` funcional** — via `GoogleCalendarClient` + `GoogleAuthService`.
+  <span class="tag">GoogleCalendarService.java:23-33</span>
+
+### 📝 Pendências
+
+- [ ] **`GoogleCalendarService.createEvent()` é stub** — retorna `""`. Implementar chamada real à API e expor `@Tool` para criar eventos.
+  <span class="tag">🔥 Alta · GoogleCalendarService.java:19-21</span>
+- [ ] **MCP tools de máquinas** — status e Wake-on-LAN via `@Tool` (precisa de WoL implementado no backend).
+  <span class="tag">🟡 Média · mcp/tools/</span>
+- [ ] **MCP tool de health check do servidor** — expor `/api/health` como tool.
+  <span class="tag">🟢 Baixa · mcp/tools/</span>
+
+---
+
+## 📦 Modularização Maven
+
+<span class="badge badge-phase2">Evolução para multi-module</span>
+
+### ✅ Concluído
+
+- [x] **Domínio 100% puro** — `domain/` sem imports de Spring/Jakarta/Lettuce; extraível como JAR.
+  <span class="tag">domain/</span>
+
+### 📝 Pendências
+
+- [ ] **Estrutura multi-module** — `server-domain` (puro), `server-application`, `server-infrastructure`, `server-mcp`, `server-boot` (executável). Definir ADR-003.
+  <span class="tag">🔥 Alta · ADR-003</span>
+- [ ] **`server-mcp` como módulo independente** — agentes consumirem só o JAR do MCP sem subir o server todo. Definir ADR-005.
+  <span class="tag">🟡 Média · ADR-005</span>
+- [ ] **Publicar `server-domain` no Maven Local/GitHub Packages** — consumível por CLI (Rust/Python) e PS3.
+  <span class="tag">🟢 Baixa · packaging</span>
+
+---
+
+## 🚀 Melhorias Futuras
+
+<span class="badge badge-phase3">Backlog</span>
+
+### ✅ Concluído (parte do escopo)
+
+- [x] **Seed de usuários** — `admin_teste` (ADMIN) e `t` (USER) no H2/test.
+  <span class="tag">data-h2.sql · test-data.sql</span>
+- [x] **Logout** — sessão revogável via cookie.
+  <span class="tag">AuthenticationController.java</span>
+- [x] **Certificados públicos no repo** — `chore(certs)` para TLS.
+  <span class="tag">commit a4f7840</span>
+
+### 📝 Pendências
+
+- [ ] **OAuth2 GitHub** — `Provider.GITHUB` já existe; adicionar registration e provisionamento genérico.
+  <span class="tag">🟡 Média · application.properties</span>
+- [ ] **Jobs assíncronos (Fase 7)** — model `Job` (BACKUP/RESTORE/SYNC), execução `@Async`, `POST /api/jobs` → 202 + polling.
+  <span class="tag">🟡 Média · domain + application</span>
+- [ ] **Backup controllers via Coffee-SDK** — ler `/mnt/mount/data/backups`, listar/criar/restaurar, agendar.
+  <span class="tag">🟢 Baixa · domain</span>
+- [ ] **UnixUserService (Linux)** — parsear `/etc/passwd` + `/etc/group`, sincronizar com o banco, vincular `User` ↔ `LinuxUser`.
+  <span class="tag">🟢 Baixa · application</span>
+- [ ] **API Key resolver** — novo `TokenResolver` para `X-API-Key` (extensível via chain).
+  <span class="tag">🟢 Baixa · infra/security/Filter/Token/</span>
+
+---
+
+## 📋 Decisões Arquiteturais a Revisar
+
+> Cada decisão deve ser registrada em `docs/architecture/adr/` após definição.
+
+| # | Decisão | Status | Impacto |
+|---|---------|--------|---------|
+| ADR-001 | **Estratégia de autenticação: JWT + mTLS híbrido vs JWT only vs mTLS only** | ✅ **Decidido: JWT + mTLS híbrido** (falta escrever o ADR) | SecurityConfig, FilterChain, SDK clients |
+| ADR-002 | **Versionamento de API: URL path (`/api/v1/`) vs Header vs Query** | 🔴 Pendente | Todos Controllers, SDK clients |
+| ADR-003 | **Modularização Maven: multi-module vs single-module** | 🔴 Pendente | Build, deploy, SDK extraction |
+| ADR-004 | **mTLS para homelab: CA própria (step-ca) vs certs auto-assinados vs managed** | 🔴 Pendente | Infra, cert rotation |
+| ADR-005 | **MCP como módulo separado vs integrado no server** | 🔴 Pendente | Deploy, agent consumption |
+
+---
 
 <blockquote>
-<strong>📅 Gerado em:</strong> 2026-08-01 · <strong>Baseado em análise completa do código-fonte</strong><br>
-<strong>🎯 Meta:</strong> Completar Fase 1 antes de começar qualquer feature nova. Bugs críticos de Machine, OAuth2 e JWT Filter impedem produção.<br>
-<strong>✅ O que já foi feito desde o último audit:</strong> CookieSystem refatorado (CookieManager + CookieFactory no domínio), typos corrigidos (JwtTokenResolver, BCryptPasswordService, Provider, ExternalAccount, GoogleCalendarTools, etc.), JwtTokenService.extractIdSubject retorna Optional, verifyToken() safe. <br>
-MachineEntity userId mapping corrigido, MachineRepositoryAdapter.setOwner() implementado, JwtAuthenticationFilter retorna 401 em falha, User.toString() sem vazar passwordHash. <br>
-Autenticação cookie-only (JWT fora do body de login/register), rate limiting ativo na security chain (Bucket4j + Redis lazy), abstração Redis ampliada com DatabaseProperties + getAdpterConnector/getProvaiders, properties coffee.redis.* em todos os profiles, Bucket4jConfig conectado via RedisClientProvider + Bucket4jPolicyProvider.
+<strong>📅 Gerado em:</strong> 2026-08-03 · <strong>Baseado em auditoria completa do código-fonte</strong> (docs, backend, frontend, infra, testes, CI).<br>
+<strong>🎯 Meta:</strong> Fechar os 🔥 Alta (OAuth2 via porta de domínio, CORS, persistência LinuxUser/ExternalAccount, `createEvent`, `@PreDestroy` Redis, transporte Google cacheado, versionamento de API, multi-module) antes de escalar features novas.<br>
+<strong>✅ Desde o último audit:</strong> CookieSystem no domínio, typos corrigidos, `Optional` em `extractIdSubject`, 401 em falha de auth, `setOwner` implementado, rate limiting ativo, abstração Redis completa (14/14), TLS + HTTP/2, dashboard liquid-glass em `/app`, CI/CD com 392 testes.<br>
+<strong>🧭 Frontend:</strong> backlog detalhado vive em <code>src/main/resources/static/app/TODO.md</code>.
 </blockquote>

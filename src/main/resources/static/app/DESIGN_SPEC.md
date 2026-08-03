@@ -589,7 +589,7 @@ O Coffee Server Dashboard **não é um SaaS genérico** — é uma **ferramenta 
 ## 15. File Structure
 
 ```
-frontend/
+src/main/resources/static/app/
 ├── index.html                 # Entry point (redirects to login or dashboard)
 ├── pages/
 │   ├── login.html             # Login page

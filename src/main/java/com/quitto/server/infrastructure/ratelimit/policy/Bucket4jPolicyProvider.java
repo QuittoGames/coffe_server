@@ -4,6 +4,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 import com.quitto.server.domain.enums.RateLimitPolicy;
+import com.quitto.server.infrastructure.config.ratelimit.Bucket4jConfig;
 import com.quitto.server.infrastructure.interfaces.Ratelimit.PolicyProvider;
 
 import io.github.bucket4j.BucketConfiguration;
@@ -27,14 +28,23 @@ import io.github.bucket4j.BucketConfiguration;
 )
 public class Bucket4jPolicyProvider implements PolicyProvider {
 
-    private final BucketConfiguration defaultConfiguration;
+    private final Bucket4jConfig config;
 
-    public Bucket4jPolicyProvider(BucketConfiguration defaultConfiguration) {
-        this.defaultConfiguration = defaultConfiguration;
+    public Bucket4jPolicyProvider(Bucket4jConfig config) {
+        this.config = config;
     }
 
     @Override
     public BucketConfiguration getConfiguration(RateLimitPolicy policy) {
-        return defaultConfiguration;
+        switch (policy) {
+            case LOGIN:
+                return config.loginBuckeConfig();
+            case API:
+                return config.apiBucketConfig();
+            case  UPLOAD:
+                return config.uploadBucketConfig();
+            default:
+                return config.apiBucketConfig();
+        }
     }
 }

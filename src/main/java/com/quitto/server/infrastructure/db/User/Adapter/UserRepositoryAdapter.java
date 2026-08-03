@@ -1,5 +1,6 @@
 package com.quitto.server.infrastructure.db.User.Adapter;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,5 +65,17 @@ public class UserRepositoryAdapter implements UserRepository {
             return Optional.empty();
         }
         return Optional.of(UserMapper.toDomain(userEntity.get()));
+    }
+
+    @Override
+    public List<User> findAll(){
+        return repository.findAll().stream()
+                .map(UserMapper::toDomain)
+                .toList();
+    }
+
+    @Override
+    public void deleteById(Long id){
+        repository.deleteById(id);
     }
 }

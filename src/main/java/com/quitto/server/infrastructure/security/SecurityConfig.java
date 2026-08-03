@@ -70,13 +70,21 @@ public class SecurityConfig {
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class); // Object Filter before of class
 
         if (rateLimitFilter != null) {
-            http.addFilterAfter(rateLimitFilter, JwtAuthenticationFilter.class);
+            http.addFilterAfter(rateLimitFilter, JwtAuthenticationFilter.class); // Object Filter before of class
         }
 
         http.exceptionHandling(ex -> ex
             .authenticationEntryPoint((req, res, authException) -> {
                 res.setStatus(401);
             })
+        )
+
+        // HSTS
+        .headers(header -> header
+            .httpStrictTransportSecurity(hsts -> hsts
+                .includeSubDomains(true)
+                .maxAgeInSeconds(31536000)
+            )
         )
 
         .oauth2Login(oauth -> oauth

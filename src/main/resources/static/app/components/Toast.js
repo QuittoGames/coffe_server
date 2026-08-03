@@ -4,6 +4,7 @@
  */
 
 import { el } from '../utils/dom.js';
+import { icon } from '../utils/icons.js';
 import { EVENTS } from '../utils/constants.js';
 
 let container = null;
@@ -29,8 +30,8 @@ export function toast(message, type = 'info', { duration = TOAST_DURATION_MS } =
   const close = el('button', {
     class: 'toast-close',
     attrs: { 'aria-label': 'Fechar' },
-    text: '×',
   });
+  close.append(icon('x', { size: 16 }));
   close.addEventListener('click', () => dismiss(node));
   node.append(text, close);
 

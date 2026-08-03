@@ -39,7 +39,7 @@
 - [x] **Logs ao vivo** — 12 → 13 entradas no tick de 3s
 - [x] **Modal de máquina** — lazy import OK, detalhes (IP/MAC/Tailscale/WOL) renderizados, ESC fecha
 - [x] **Refresh** — estado `.loading` e re-render OK
-- [x] **Sync** — `robocopy` + `process-resources` OK; única divergência de console são os erros de WebSocket (esperado: servidor estático não expõe `/ws`)
+- [x] **Validação** — servido diretamente de `static/app/`; única divergência de console são os erros de WebSocket (esperado: servidor estático não expõe `/ws`)
 
 ### 6. Revisão por subagentes (2026-08-02)
 - [x] **refactoring-engineer** — imports mortos removidos (`qsa`, `updateHeaderStatus`, `togglePanel` em dashboard.js; `updateHeaderStatus` em mcp.js); grid do calendário duplicado corrigido (dias vão direto ao container); ~60 linhas de CSS morto removidas (`.activity-*`, `.terminal-strip`/`.term-*`, `.grid-kpi`); logs ao vivo param de fato no `visibilitychange` e restart chama `stopLiveLogs` primeiro
@@ -56,9 +56,9 @@
 ### 1. Redesign do header como toolbar liquid glass
 - [x] **Toolbar central substituindo o mini-panel de navegação** — Logo + endereço fake do servidor + nav primária inline + status + menu do usuário
 - [x] **API `renderHeader` reescrita** — `{ title, active, address }` substitui `path`; navegação embutida no header
-  - <span class="tag">frontend/components/Header.js</span>
+  - <span class="tag">components/Header.js</span>
 - [x] **MiniPanel virou no-op** — Nav movida para o header; `.mini-panel { display: none; }` por compatibilidade
-  - <span class="tag">frontend/components/MiniPanel.js</span>
+  - <span class="tag">components/MiniPanel.js</span>
 - [x] **Fake server address** — Pill `❯ server/home` (ou `server/mcp`), prompt `❯` azul piscando (`addrBlink`), host/page coloridos, hover com `--coffee-glow`
 - [x] **Nav inline** — `.toolbar-nav` com links pill (Dashboard/Máquinas/Containers/MCP), ícone + label, estado `.active` com glow azul
 - [x] **Status pill** — `online/offline` com dot, atualizado via `updateHeaderStatus`
@@ -125,4 +125,4 @@
 
 ---
 
-> **Nota de sincronização:** Editar sempre em `frontend/` e sincronizar com `src/main/resources/static/app/` via `robocopy frontend src\main\resources\static\app /E` + `.\mvnw.cmd -q process-resources`. Ambos espelhados com 0 diffs de hash.
+> **Nota de estrutura:** O frontend vive em `src/main/resources/static/app/` e é servido diretamente pelo Spring Boot em `/app/**` — sem etapa de cópia/sincronização manual. Editar sempre nesta pasta.

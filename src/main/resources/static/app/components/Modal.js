@@ -4,6 +4,7 @@
  */
 
 import { el, qs, onReady } from '../utils/dom.js';
+import { icon } from '../utils/icons.js';
 
 let lastFocused = null;
 
@@ -34,8 +35,8 @@ export function openModal({ title, body, trustHtml = false, footer = [], onClose
   const closeBtn = el('button', {
     class: 'modal-close',
     attrs: { 'aria-label': 'Fechar', type: 'button' },
-    text: '×',
   });
+  closeBtn.append(icon('x', { size: 16 }));
   closeBtn.addEventListener('click', () => closeModal());
   header.append(titleNode, closeBtn);
 

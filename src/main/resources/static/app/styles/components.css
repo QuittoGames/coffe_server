@@ -563,9 +563,14 @@
   border-radius: var(--radius-sm);
   font-size: var(--text-lg);
   line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   transition: color var(--duration-fast) var(--easing-standard),
               background var(--duration-fast) var(--easing-standard);
 }
+
+.modal-close .icon { width: 16px; height: 16px; }
 
 .modal-close:hover { color: var(--text-primary); background: var(--bg-hover); }
 
@@ -633,7 +638,12 @@
   font-size: var(--text-lg);
   line-height: 1;
   padding: 0 var(--space-1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
+
+.toast-close .icon { width: 14px; height: 14px; }
 
 .toast-close:hover { opacity: 1; }
 

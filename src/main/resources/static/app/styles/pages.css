@@ -228,6 +228,8 @@
   margin-top: var(--space-2);
 }
 
+.kpi-item .kpi-trend .icon { width: 12px; height: 12px; }
+
 .kpi-trend.up { color: var(--success); }
 .kpi-trend.down { color: var(--error); }
 

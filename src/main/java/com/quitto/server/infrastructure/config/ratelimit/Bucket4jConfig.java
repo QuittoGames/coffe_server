@@ -22,11 +22,27 @@ import io.github.bucket4j.BucketConfiguration;
 )
 public class Bucket4jConfig {
 
-    @Bean
-    public BucketConfiguration bucketConfiguration() {
+    @Bean("loginBucket")
+    public BucketConfiguration loginBuckeConfig() {
         return BucketConfiguration.builder()
-                .addLimit(Bandwidth.simple(100, Duration.ofMinutes(1)))
+            .addLimit(Bandwidth.simple(5, Duration.ofMinutes(1)))
+            .addLimit(Bandwidth.simple(5000, Duration.ofHours(1)))
+            .build();
+    }
+
+    @Bean("apiBucket")
+    public BucketConfiguration apiBucketConfig() {
+        return BucketConfiguration.builder()
+                .addLimit(Bandwidth.simple(5, Duration.ofMinutes(1)))
                 .build();
+    }
+
+    @Bean("uploadBucket")
+    public BucketConfiguration uploadBucketConfig() {
+        return BucketConfiguration.builder()
+            .addLimit(Bandwidth.simple(5, Duration.ofMinutes(1)))
+            .addLimit(Bandwidth.simple(100, Duration.ofHours(1)))
+            .build();
     }
 
     @Bean

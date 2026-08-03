@@ -4,14 +4,15 @@
  */
 
 import { el, qs, onReady } from '../utils/dom.js';
+import { icon } from '../utils/icons.js';
 import { getUser } from '../services/auth.js';
 import { setupLogoutButtons } from '../auth/logout.js';
 
 const NAV_ITEMS = [
-  { id: 'dashboard', label: 'Dashboard', icon: '▤', href: './dashboard.html' },
-  { id: 'machines', label: 'Máquinas', icon: '▦', href: './dashboard.html#machines' },
-  { id: 'containers', label: 'Containers', icon: '▣', href: './dashboard.html#containers' },
-  { id: 'mcp', label: 'MCP', icon: '◆', href: './mcp.html' },
+  { id: 'dashboard', label: 'Dashboard', icon: 'layout-dashboard', href: './dashboard.html' },
+  { id: 'machines', label: 'Máquinas', icon: 'server', href: './dashboard.html#machines' },
+  { id: 'containers', label: 'Containers', icon: 'box', href: './dashboard.html#containers' },
+  { id: 'mcp', label: 'MCP', icon: 'brain-circuit', href: './mcp.html' },
 ];
 
 /**
@@ -65,7 +66,7 @@ export function renderHeader(target, { title = 'Coffee Server', active = 'dashbo
       attrs: { href: item.href, 'aria-current': item.id === active ? 'page' : null },
     });
     link.append(
-      el('span', { class: 'toolbar-icon', attrs: { 'aria-hidden': 'true' }, text: item.icon }),
+      icon(item.icon, { size: 16, class: 'toolbar-icon' }),
       el('span', { class: 'toolbar-label', text: item.label }),
     );
     nav.appendChild(link);
@@ -87,13 +88,22 @@ export function renderHeader(target, { title = 'Coffee Server', active = 'dashbo
     const avatarBtn = el('button', {
       class: 'btn btn-sm btn-ghost',
       attrs: { type: 'button', 'aria-haspopup': 'menu', 'data-dropdown-toggle': '' },
-      html: `⬢ ${escapeHtml(user.name)}`,
     });
+    avatarBtn.append(
+      icon('user', { size: 16, class: 'btn-icon' }),
+      el('span', { text: user.name }),
+    );
 
     const menu = el('div', { class: 'dropdown-menu hidden', attrs: { role: 'menu' } });
+    const logoutItem = el('button', {
+      class: 'dropdown-item',
+      attrs: { type: 'button', role: 'menuitem', 'data-logout': '' },
+      text: 'Logout',
+    });
+    logoutItem.prepend(icon('log-out', { size: 16, title: 'Sair' }));
     menu.append(
       el('div', { class: 'dropdown-label', text: user.role ?? 'USER' }),
-      el('button', { class: 'dropdown-item', attrs: { type: 'button', role: 'menuitem', 'data-logout': '' }, text: 'Logout' }),
+      logoutItem,
     );
     userMenu.append(avatarBtn, menu);
     actions.appendChild(userMenu);
