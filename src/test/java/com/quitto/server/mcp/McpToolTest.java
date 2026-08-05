@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -46,6 +47,15 @@ class McpToolTest {
         tools = new GoogleCalendarTools();
         tools.service = calendarService;
         tools.authService = authService;
+    }
+
+    // Isolation: this test class manipulates the shared (static) SecurityContextHolder
+    // via ThreadLocal. On a reused surefire thread that leaked context survives into
+    // whichever @SpringBootTest class runs next (SecurityTest.malformedJwt_returns401
+    // failed with 403). Always restore an empty holder after each test.
+    @AfterEach
+    void tearDown() {
+        SecurityContextHolder.clearContext();
     }
 
     @Test
