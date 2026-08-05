@@ -1,8 +1,9 @@
-package com.quitto.server.infrastructure.services.Provaider.redis;
+package com.quitto.server.infrastructure.services.DatabaseProvaider.redis;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.dao.DataAccessResourceFailureException;
@@ -15,7 +16,10 @@ import com.quitto.server.infrastructure.config.redis.RedisProperties;
 import com.quitto.server.infrastructure.config.redis.Codec.StringByteArrayCodec;
 
 import io.lettuce.core.RedisClient;
+import io.lettuce.core.RedisURI;
 import io.lettuce.core.api.StatefulRedisConnection;
+
+import jakarta.annotation.PreDestroy;
 
 @Component
 @ConditionalOnProperty(prefix = "coffee.redis", name = "enabled", havingValue = "true", matchIfMissing = false)
@@ -42,12 +46,28 @@ public class RedisClientProvider implements DatabaseClientProvider<RedisClientCo
         for (RedisClientInstace clientConfig : properties.getInstances()) {
             clients.put(
                 clientConfig.getName(),
-                RedisClient.create(
-                    "redis://" + clientConfig.getHost() + ":" + clientConfig.getPort()
-                )
+                RedisClient.create(buildUri(clientConfig))
             );
         }
         return clients;
+    }
+
+    /**
+     * Monta a {@link RedisURI} da instância. Usa o Builder (em vez de string
+     * "redis://host:port") para suportar senha e TLS sem problemas de
+     * URL-encoding (ex.: senhas com '@' ou ':').
+     */
+    private RedisURI buildUri(RedisClientInstace config) {
+        RedisURI.Builder builder = RedisURI.Builder.redis(config.getHost(), config.getPort());
+
+        if (config.getPassword() != null && !config.getPassword().isBlank()) {
+            builder.withPassword(config.getPassword());
+        }
+        if (config.isUseSsl()) {
+            builder.withSsl(true);
+        }
+
+        return builder.build();
     }
 
     @Override
@@ -83,5 +103,12 @@ public class RedisClientProvider implements DatabaseClientProvider<RedisClientCo
         }
 
         return connection;
+    }
+
+    /** Fecha conexões e clients no shutdown do Spring para evitar vazamento de threads Netty. */
+    @PreDestroy
+    public void shutdown() {
+        connections.values().forEach(RedisClientConnectionAdapter::close);
+        clients.values().forEach(client -> client.shutdown(0, 1, TimeUnit.SECONDS));
     }
 }

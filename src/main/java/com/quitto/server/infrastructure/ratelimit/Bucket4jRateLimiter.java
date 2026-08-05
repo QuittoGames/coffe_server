@@ -3,7 +3,7 @@ package com.quitto.server.infrastructure.ratelimit;
 import com.quitto.server.domain.enums.RateLimitPolicy;
 import com.quitto.server.infrastructure.interfaces.Ratelimit.PolicyProvider;
 import com.quitto.server.infrastructure.interfaces.Ratelimit.RateLimit;
-import com.quitto.server.infrastructure.services.Provaider.redis.RedisClientProvider;
+import com.quitto.server.infrastructure.services.DatabaseProvaider.redis.RedisClientProvider;
 
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.BucketConfiguration;

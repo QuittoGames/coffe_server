@@ -116,6 +116,30 @@ class RedisAbstractionTest {
     }
 
     @Test
+    @DisplayName("RedisClientInstace password setter and getter")
+    void redisClientInstance_passwordSetterAndGetter() {
+        RedisClientInstace instance = new RedisClientInstace();
+
+        instance.setPassword("s3cret@with-special:chars");
+        assertEquals("s3cret@with-special:chars", instance.getPassword());
+
+        instance.setPassword("");
+        assertEquals("", instance.getPassword());
+    }
+
+    @Test
+    @DisplayName("RedisClientInstace useSsl setter and getter")
+    void redisClientInstance_useSslSetterAndGetter() {
+        RedisClientInstace instance = new RedisClientInstace();
+
+        assertFalse(instance.isUseSsl());
+        instance.setUseSsl(true);
+        assertTrue(instance.isUseSsl());
+        instance.setUseSsl(false);
+        assertFalse(instance.isUseSsl());
+    }
+
+    @Test
     @DisplayName("DatabaseClient base class works")
     void databaseClient_gettersAndSetters() {
         DatabaseClient client = new DatabaseClient();

@@ -1,5 +1,7 @@
 package com.quitto.server.infrastructure.Adapters.in;
 
+import java.util.Map;
+
 import com.quitto.server.domain.Database.Connection;
 
 import io.lettuce.core.api.StatefulRedisConnection;
@@ -33,5 +35,8 @@ public class RedisClientConnectionAdapter implements Connection {
         return connection;
     }
 
+    public void putHash(String key, Map<String, byte[]> values) {
+       commands.hset(key, values);
+    }
 
 }
