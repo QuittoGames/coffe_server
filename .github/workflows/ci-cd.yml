@@ -116,7 +116,6 @@ jobs:
           ./mvnw test \
             -Dspring.profiles.active=${{ env.SPRING_PROFILES_ACTIVE }} \
             -Dtest=com.quitto.server.TestSuite
-        continue-on-error: true
         env:
           DB_URL: jdbc:postgresql://localhost:5432/coffe_server_test
           DB_USERNAME: test_user
