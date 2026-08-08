@@ -90,7 +90,7 @@ public class RedisClientProvider implements DatabaseClientProvider<RedisClientCo
             new StringByteArrayCodec()
         );
 
-        return new RedisClientConnectionAdapter(connection);
+        return new RedisClientConnectionAdapter(connection,name);
     }
 
     public StatefulRedisConnection<String, byte[]> getConnection(String name) throws IllegalArgumentException,DataAccessResourceFailureException{

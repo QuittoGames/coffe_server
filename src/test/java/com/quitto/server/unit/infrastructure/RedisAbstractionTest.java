@@ -9,9 +9,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.quitto.server.domain.Database.Connection;
 import com.quitto.server.domain.Database.DatabaseClient;
-import com.quitto.server.domain.Database.DatabaseProperties;
+import com.quitto.server.domain.interfaces.Database.Connection;
+import com.quitto.server.domain.interfaces.Database.DatabaseProperties;
 import com.quitto.server.domain.Database.redis.RedisClientInstace;
 import com.quitto.server.domain.interfaces.Database.DatabaseClientProvider;
 

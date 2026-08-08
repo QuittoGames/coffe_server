@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import com.quitto.server.domain.Database.DatabaseProperties;
+import com.quitto.server.domain.interfaces.Database.DatabaseProperties;
 import com.quitto.server.domain.Database.redis.RedisClientInstace;
 
 @ConfigurationProperties(prefix = "coffee.redis")
