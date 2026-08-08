@@ -2,6 +2,11 @@ package com.quitto.server.domain.valueobject;
 
 import java.util.Objects;
 
+/**
+ * Value Object imutável que representa um cookie HTTP, independente de framework.
+ * Auto-validável (RFC 6265) e comparável por valor. Os factory methods {@code of(...)}
+ * criam cookies com defaults seguros (httpOnly + secure).
+ */
 public record CookieDomain(
     String name,
     String value,

@@ -2,6 +2,27 @@ package com.quitto.server.domain.models.Machine;
 
 import com.quitto.server.domain.models.User.User;
 
+/**
+ * Representa uma máquina gerenciada por um usuário no homelab.
+ *
+ * <p>Cada máquina carrega as informações necessárias para o gerenciamento
+ * remoto: identificação de rede (hostname, IP atual, endereço MAC), chave do
+ * nó no Tailscale e suporte a Wake-on-LAN ({@code wolEnabled} + MAC). O
+ * vínculo com o dono é feito pelo campo {@code userId}.</p>
+ *
+ * <p><strong>Decisões de projeto:</strong></p>
+ * <ul>
+ *   <li><strong>Igualdade por identidade:</strong> duas máquinas são iguais
+ *       se possuem o mesmo {@code id} maior que zero — não comparação por
+ *       valor.</li>
+ *   <li><strong>{@code changeOwner}:</strong> a transferência de propriedade
+ *       apenas atualiza o {@code userId} — a validação do dono é
+ *       responsabilidade das camadas de aplicação/infraestrutura.</li>
+ *   <li>O campo do sistema operacional chama-se {@code OS} (padronizado),
+ *       mas o parâmetro do construtor é {@code oS} — grafia histórica
+ *       preservada.</li>
+ * </ul>
+ */
 public class Machine {
     private Long id;
     private String hostname;

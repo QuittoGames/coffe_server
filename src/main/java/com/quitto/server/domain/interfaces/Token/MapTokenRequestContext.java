@@ -4,6 +4,11 @@ import com.quitto.server.domain.valueobject.CookieDomain;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * Implementação <strong>em memória</strong> de {@link TokenRequestContext},
+ * baseada em {@link Map}s. Serve para testes unitários e uso sem framework web.
+ * Mapas {@code null} passados ao construtor viram mapas vazios imutáveis.
+ */
 public class MapTokenRequestContext implements TokenRequestContext {
 
     private final Map<String, String> headers;

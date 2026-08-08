@@ -1,5 +1,15 @@
 package com.quitto.server.domain.models.LinuxAccount;
 
+/**
+ * Representa um grupo Unix do servidor (arquivo {@code /etc/group}).
+ *
+ * <p>Identificado pelo {@code GID} (Group ID). Usado no gerenciamento de
+ * permissões baseadas em grupos Linux, com estado ativo/inativo
+ * ({@code is_active}).</p>
+ *
+ * <p><strong>Igualdade por identidade:</strong> dois grupos são iguais se
+ * possuem o mesmo {@code GID} maior que zero — não comparação por valor.</p>
+ */
 public class Groups {
     private int GID;
     private String name;

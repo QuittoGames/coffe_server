@@ -1,5 +1,16 @@
 package com.quitto.server.domain.models.LinuxAccount;
 
+/**
+ * Representa uma conta de usuário Linux do servidor (arquivo
+ * {@code /etc/passwd}).
+ *
+ * <p>Contém os dados básicos de uma conta Unix: {@code uid}, nome de login,
+ * shell padrão e diretório home. O vínculo com um grupo é feito pelo campo
+ * {@code group} (relação M:1 com {@link Groups}).</p>
+ *
+ * <p><strong>Igualdade por identidade:</strong> dois usuários são iguais se
+ * possuem o mesmo {@code uid} maior que zero — não comparação por valor.</p>
+ */
 public class LinuxUser {
     private int uid;
     private String name;

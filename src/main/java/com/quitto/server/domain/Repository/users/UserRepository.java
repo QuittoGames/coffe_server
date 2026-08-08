@@ -4,6 +4,11 @@ import java.util.List;
 import java.util.Optional;
 import com.quitto.server.domain.models.User.User;
 
+/**
+ * Porta de persistência do agregado {@link User}. Implementada na infraestrutura
+ * (adapter JPA: {@code UserRepositoryAdapter} + {@code JpaUserRepository}).
+ * Buscas individuais retornam {@link Optional} — nunca {@code null}.
+ */
 public interface UserRepository {
 
     User save(User user);
