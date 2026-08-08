@@ -1,15 +1,15 @@
 <p align="center">
-  <br/>
   <code>coffe_server</code>
 </p>
 
 <p align="center">
-  Backend central de homelab — autenticação JWT, OAuth2 Google, gerenciamento de máquinas, integração Linux e servidor MCP para agentes de IA.
+  Backend central de homelab — autenticação JWT, OAuth2 Google, gerenciamento de máquinas, integração Linux, ecossistema de provedores de IA e servidor MCP para agentes de IA.
   <br/>
   <br/>
   <img src="https://img.shields.io/badge/Java-21-%23ED8B00?logo=openjdk&logoColor=white" alt="Java 21"/>
   <img src="https://img.shields.io/badge/Spring_Boot-4.0.6-%236DB33F?logo=spring&logoColor=white" alt="Spring Boot 4.0.6"/>
   <img src="https://img.shields.io/badge/PostgreSQL-17-%234169E1?logo=postgresql&logoColor=white" alt="PostgreSQL 17"/>
+  <img src="https://img.shields.io/badge/Redis-7-%23DC382D?logo=redis&logoColor=white" alt="Redis 7"/>
   <img src="https://img.shields.io/badge/MCP-Spring_AI_1.0.2-%23F36F2E?logo=openai&logoColor=white" alt="Spring AI MCP 1.0.2"/>
   <img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT License"/>
 </p>
@@ -25,6 +25,8 @@ O projeto nasceu da necessidade de um hub que unificasse:
 - Autenticação centralizada (JWT + OAuth2) para servir múltiplos frontends e agentes
 - Gerenciamento de máquinas da rede local (Tailscale, Wake-on-LAN)
 - Integração com serviços Google (Calendar, futuramente Tasks)
+- **Ecossistema de provedores de IA** — registro de 40+ provedores com seus modelos (OpenAI, Anthropic, Ollama e mais) para alimentar agentes
+- **Cache distribuído com Redis** — sessões de usuário e rate limiting em instâncias dedicadas
 - Exposição de ferramentas via MCP para agentes de IA (Claude, GPT, etc.)
 - Gerenciamento de usuários Linux no servidor
 
@@ -128,8 +130,10 @@ O sistema de resolução de token segue **Chain of Responsibility**. Cada `Token
 | **Segurança** | Spring Security + Auth0 java-jwt 4.5.2 | Autenticação e autorização robustas com JWT HMAC256 |
 | **Banco (prod)** | PostgreSQL 17 | Confiabilidade, recursos avançados e integração com o ambiente Linux |
 | **Banco (dev/test)** | H2 in-memory | Desenvolvimento ágil sem dependência de banco externo |
+| **Cache/RateLimit** | Redis 7 (Lettuce) | Instâncias dedicadas para cache de usuário e controle de taxa distribuído |
 | **ORM** | Spring Data JPA + Hibernate | Mapeamento objeto-relacional com repository pattern |
 | **OAuth2** | Spring Security OAuth2 Client + Google Auth Library 1.23.0 | Login social Google com auto-provisionamento de usuários |
+| **IA** | Ecossistema próprio (BaseProvider + 38 providers) | Registro de provedores + catálogo de modelos: OpenAI, Anthropic, Ollama, Google AI Studio e mais |
 | **IA/MCP** | Spring AI MCP Server WebMVC 1.0.2 | Exposição de ferramentas para agentes de IA via Model Context Protocol |
 | **Templates** | Thymeleaf | Páginas web simples para landing page e login |
 | **Build** | Maven | Gerenciamento de dependências e build reproduzível |
@@ -150,28 +154,33 @@ com.quitto.server/
 │   └── services/                        #   UserAuthenticationService, MachineService
 │
 ├── domain/                              # DOMÍNIO PURO (zero frameworks)
-│   ├── enums/                           #   Role, Provider
-│   ├── exception/                       #   AuthenticationException, InvalidTokenException
-│   ├── interfaces/                      #   PORTAS: TokenResolver, TokenService, AuthenticationService
-│   ├── models/                          #   User, Machine, LinuxUser, ExternalAccount
+│   ├── enums/                           #   Role, Provider, ServiceProvider (40+ provedores IA)
+│   ├── exception/                       #   AuthenticationException, ProviderException, InvalidTokenException
+│   ├── interfaces/                      #   PORTAS: TokenResolver, TokenService, AIProvider, AIRegistry
+│   ├── models/                          #   User, Machine, LinuxUser, ExternalAccount, AIModel (IA)
+│   ├── Database/                        #   Connection, DatabaseClient, RedisClientInstace
 │   ├── Repository/                      #   UserRepository, MachineRepository
 │   └── valueobject/                     #   CookieDomain
 │
 ├── infrastructure/                      # IMPLEMENTAÇÕES CONCRETAS
+│   ├── IA/                              #   BaseProvider + OpenAI/Anthropic/Ollama (38 providers)
 │   ├── db/                              #   Adaptadores JPA (Entity, Mapper, Adapter, Repository)
 │   ├── external/                        #   GoogleAuthService, GoogleCalendarClient
 │   ├── security/                        #   JwtAuthenticationFilter, SecurityConfig, SecurityUser
-│   └── services/                        #   SpringAuthenticationService, JwtTokenService, BCrypt
+│   ├── config/redis/                    #   RedisProperties, RedisConfig, StringByteArrayCodec
+│   ├── Adapters/in/                     #   RedisClientConnectionAdapter (Lettuce → Connection)
+│   └── services/                        #   SpringAuthenticationService, JwtTokenService, BCrypt,
+│                                       #   AIProviderRegistry, RedisClientProvider, CoffeAgentService
 │
 ├── mcp/                                 # CAMADA MCP (Spring AI)
 │   ├── services/                        #   GoogleCalendarService
 │   └── tools/                           #   GoogleCalendarTools, CalendarController
 │
 ├── shared/                              # CROSS-CUTTING
-│   └── exception/                       #   AuthExceptionHandler
+│   └── exception/                       #   AuthExceptionHandler, NotEnableExceptions
 │
 └── resources/
-    ├── application.properties           # Config principal (PostgreSQL + OAuth2 + JWT)
+    ├── application.properties           # Config principal (PostgreSQL + Redis + OAuth2 + JWT)
     ├── application-h2.properties        # Dev profile (H2)
     ├── data-h2.sql                      # Seed data
     ├── logback-spring.xml
@@ -185,7 +194,7 @@ com.quitto.server/
 |---|---|
 | `domain/` | Coração do sistema. Modelos, regras de negócio, interfaces (portas). Sem dependência de frameworks. |
 | `application/` | Orquestração. Controllers recebem requests, services orquestram use cases, DTOs transportam dados. |
-| `infrastructure/` | Implementação. Tudo que depende de bibliotecas externas — JPA, Spring Security, BCrypt, HTTP clients. |
+| `infrastructure/` | Implementação. Tudo que depende de bibliotecas externas — JPA, Spring Security, BCrypt, HTTP clients, Lettuce (Redis), providers de IA. |
 | `mcp/` | Camada de agentes de IA. Tools e serviços expostos via Model Context Protocol. |
 | `shared/` | Código transversal. Tratamento global de exceções, utilitários compartilhados. |
 
@@ -258,6 +267,10 @@ SERVER_API_KEY=sua_chave_jwt_super_secreta
 | `GOOGLE_CLIENT_ID` | Sim | Client ID do Google OAuth2 |
 | `GOOGLE_SECRET_API` | Sim | Client secret do Google OAuth2 |
 | `SERVER_API_KEY` | Sim | Chave secreta para assinatura JWT |
+| `REDIS_CACHE_PASSWORD` | Não | Senha da instância Redis `cache` |
+| `REDIS_CACHE_SSL` | Não | Habilita TLS na instância Redis `cache` |
+| `REDIS_RATELIMIT_PASSWORD` | Não | Senha da instância Redis `rate-limit` |
+| `REDIS_RATELIMIT_SSL` | Não | Habilita TLS na instância Redis `rate-limit` |
 
 ### Banco de dados
 
@@ -272,6 +285,8 @@ Scripts SQL disponíveis em `sql/`:
 | 5 | `04_machine.sql` | `machine` |
 | 6 | `05_external_account.sql` | `external_account` |
 | 7 | `06_roles.sql` | Roles PostgreSQL |
+
+O acesso ao Redis (cache de usuário + rate limiting) é abstraído via Ports & Adapters — o domínio define `Connection`/`DatabaseClientProvider`, e a infraestrutura implementa com Lettuce (`RedisClientProvider`, `RedisClientConnectionAdapter`). Detalhes em `docs/architecture/redis-abstraction.md`.
 
 ---
 

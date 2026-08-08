@@ -1,5 +1,5 @@
 ---
-description: Servidor pessoal multifuncional com Clean Architecture — autenticação JWT, OAuth2 Google, gerenciamento de máquinas, integração Linux, servidor MCP para agentes de IA, controle de backup e sistema multi-usuário com permissões.
+description: Servidor pessoal multifuncional com Clean Architecture — autenticação JWT, OAuth2 Google, gerenciamento de máquinas, integração Linux, ecossistema de provedores de IA (40+ providers), cache/rate-limit com Redis, servidor MCP para agentes de IA, controle de backup e sistema multi-usuário com permissões.
 ---
 
 # coffe_server
@@ -78,6 +78,8 @@ Usuários finais: Quitto (dev/admin), agentes de IA via MCP, usuários convidado
 | **Segurança** | Spring Security + Auth0 java-jwt 4.5.2 |
 | **Banco (prod)** | PostgreSQL (via Spring Data JPA + Hibernate) |
 | **Banco (dev/test)** | H2 in-memory |
+| **Cache/RateLimit** | Redis 7 (Lettuce) — instâncias `cache` e `rate-limit` |
+| **IA** | Ecossistema próprio — `BaseProvider` + 40+ provedores (OpenAI, Anthropic, Ollama…) |
 | **OAuth2** | Spring Security OAuth2 Client + Google Auth Library 1.23.0 |
 | **IA/MCP** | Spring AI MCP Server WebMVC 1.0.2 |
 | **Templates** | Thymeleaf |
@@ -102,31 +104,36 @@ src/main/java/com/quitto/server/
 │   └── services/                           #   UserAuthenticationService, MachineService, UserService
 │
 ├── domain/                                 # DOMÍNIO PURO (zero frameworks)
-│   ├── enums/                              #   Role, Provaider
-│   ├── exception/                          #   AuthenticationException, InvalidTokenException
-│   ├── interfaces/                         #   PORTAS: TokenResolver, TokenService, AuthenticationService...
-│   ├── models/                             #   User, Machine, LinuxUser, Groups, ExternalAccont
+│   ├── enums/                              #   Role, Provaider, ServiceProvider (40+ provedores IA)
+│   ├── exception/                          #   AuthenticationException, InvalidTokenException, ProviderException
+│   ├── interfaces/                         #   PORTAS: TokenResolver, TokenService, AuthenticationService, AIProvider, AIRegistry
+│   ├── models/                             #   User, Machine, LinuxUser, Groups, ExternalAccont, AIModel (IA)
+│   ├── Database/                           #   Connection, DatabaseClient, RedisClientInstace
 │   ├── Repository/                         #   UserRepository, MachineRepository
 │   └── valueobject/                        #   CookieDomain
 │
 ├── infrastructure/                         # IMPLEMENTAÇÕES CONCRETAS
+│   ├── IA/                                 #   BaseProvider + OpenAI/Anthropic/Ollama (38 providers)
 │   ├── config/logger/                      #   CoffeColorConverter
+│   ├── config/redis/                       #   RedisProperties, RedisConfig, StringByteArrayCodec
 │   ├── db/                                 #   Adaptadores JPA (Entity, Mapper, Adapter, Repository)
 │   │   ├── User/                           #     UserEntity, UserMapper, UserRepositoryAdapter
 │   │   ├── Machine/                        #     MachineEntity, MachineMapper, MachineRepositoryAdapter
 │   │   └── LinuxUser/                      #     GroupsEntity, LinuxUserEntity (sem adapter ainda)
+│   ├── Adapters/in/                        #   RedisClientConnectionAdapter (Lettuce → Connection)
 │   ├── external/                           #   GoogleAuthService, GoogleCalendarClient
 │   ├── interfaces/Cookies/                 #   ⚠ CookieService (devia estar no domínio)
 │   ├── security/                           #   JwtAuthenticationFilter, SecurityConfig, SecurityUser
-│   └── services/                           #   SpringAuthenticationService, JwtTokenService, BCrypt...
+│   └── services/                           #   SpringAuthenticationService, JwtTokenService, BCrypt,
+│                                           #   AIProviderRegistry, RedisClientProvider, CoffeAgentService
 │
 ├── mcp/                                    # CAMADA MCP (Spring AI)
 │   ├── services/                           #   GoogleCalenderService
 │   └── tools/                              #   GoogelCalenderTools, CalendarController
 │
-├── shared/exception/                       # AuthExceptionHandler, MachineNotFoundException
+├── shared/exception/                       # AuthExceptionHandler, MachineNotFoundException, NotEnableExceptions
 └── resources/
-    ├── application.properties              # Config principal (PostgreSQL + OAuth2 + JWT)
+    ├── application.properties              # Config principal (PostgreSQL + Redis + OAuth2 + JWT)
     ├── application-h2.properties           # Dev profile (H2)
     ├── data-h2.sql                         # Seed data (admin_teste)
     ├── logback-spring.xml
@@ -209,6 +216,29 @@ Agente de IA (Claude, GPT) → HTTP /mcp/** → GoogelCalenderTools ( @Tool )
   → GoogleAuthService → GoogleCalendarClient → GoogleCalenderService
 ```
 
+### 5.5 IA Providers (ecossistema de modelos)
+
+```
+Aplicação / MCP → ProvaiderIAService → AIProviderRegistry (provedor → List<AIModel>)
+  → CoffeAgentService.getEnvKey(providerName) → provider.setKey(secret)
+  → BaseProvider (concreto) → HTTP (Authorization: Bearer <key>) → API do provedor
+```
+
+- **Contrato**: cada `ServiceProvider` → um `AIProvider` registrado (registry 1:1 por enum); cada provider expõe sua lista de `AIModel` via `getModels()` (`AIRegistry.find(K)` devolve `Optional<List<V>>`)
+- **40+ provedores** agrupados: OpenAI-compatible, Big Tech, diretos, self-hosted (Ollama/VLLM) e outros
+- ⚠ `CoffeAgentService.getEnvKey()` retorna placeholder `"key_temp"` — secrets reais pendentes
+
+### 5.6 Redis (Cache + RateLimit)
+
+```
+Consumidor → DatabaseClientProvider.getAdpterConnector(name) → RedisClientConnectionAdapter
+  ├── "cache"       → sessões/dados de usuário (leitura rápida)
+  └── "rate-limit"  → contadores distribuídos por IP/rota
+```
+
+- Portas no domínio (`Connection`, `DatabaseClientProvider`) + adapters na infra (Lettuce)
+- `RedisClientProvider` é lazy e condicional (`coffee.redis.enabled=true`); `@PreDestroy` fecha conexões
+
 ---
 
 ## 6. Banco de Dados
@@ -226,6 +256,12 @@ Relacionamentos:
 ### Roles
 
 `ADMIN`, `USER`, `MCP`, `API`
+
+### Redis (cache + rate limit)
+
+- Duas instâncias: `cache` (sessões/dados de usuário) e `rate-limit` (contadores por IP/rota)
+- Abstração Ports & Adapters: `Connection`/`DatabaseClientProvider` no domínio, `RedisClientProvider`/`RedisClientConnectionAdapter` na infra
+- Propriedades: `coffee.redis.*` (host, port, password, ssl, enabled)
 
 ### Scripts SQL
 
@@ -358,6 +394,10 @@ DB_PASSWORD=***
 GOOGLE_CLIENT_ID=***
 GOOGLE_SECRET_API=***
 SERVER_API_KEY=***
+REDIS_CACHE_PASSWORD=***
+REDIS_CACHE_SSL=***
+REDIS_RATELIMIT_PASSWORD=***
+REDIS_RATELIMIT_SSL=***
 ```
 
 ### Profiles
@@ -372,10 +412,11 @@ SERVER_API_KEY=***
 
 ## 12. Recursos Úteis
 
-- **Documentação de arquitetura completa**: `doc/arquiteture.md`
+- **Documentação de arquitetura completa**: `docs/architecture/arquiteture.md`
+- **Abstração Redis (Ports & Adapters)**: `docs/architecture/redis-abstraction.md`
 - **Notas do agente Claude**: `.agents/IA_README.md` (OAuth2 Google não deve ser base para análise de arquitetura — será refatorado)
-- **Notas de planejamento**: `doc/plain.md` (visão geral, motivações, integrações futuras)
-- **README**: `README.md` (vazio — documentação por fazer)
+- **Notas de planejamento**: `docs/planning/plain.md` (visão geral, motivações, integrações futuras)
+- **README**: `README.md`
 - **Licença**: MIT (`LICENSE`)
 
 **OBS:**

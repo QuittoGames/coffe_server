@@ -463,10 +463,21 @@ The result is a highly maintainable architecture where:
     - 10.3 [Exception Handler](#103-exception-handler)
 11. [Integração Google OAuth2](#11-integração-google-oauth2)
 12. [Integração MCP / Spring AI](#12-integração-mcp--spring-ai)
-13. [Banco de Dados](#13-banco-de-dados)
+ 13. [Banco de Dados](#13-banco-de-dados)
+    - 13.1 [Schema PostgreSQL](#131-schema-postgresql)
+    - 13.2 [Redis (Cache + RateLimit)](#132-redis-cache--ratelimit)
 14. [Como Adicionar um Novo Fluxo de Autenticação](#14-como-adicionar-um-novo-fluxo-de-autenticação)
 15. [Boas Práticas & Convenções](#15-boas-práticas--convenções)
 16. [Glossário de Interfaces](#16-glossário-de-interfaces)
+17. [Ecossistema IA Provider Service](#17-ecossistema-ia-provider-service)
+    - 17.1 [Problema & Conceito](#171-problema--conceito)
+    - 17.2 [Portas de Domínio (AIProvider, AIRegistry, Model)](#172-portas-de-domínio-aiprovider-airegistry-model)
+    - 17.3 [Infraestrutura (BaseProvider, AIProviderRegistry, CoffeAgentService)](#173-infraestrutura-baseprovider-aiproviderregistry-coffeagentservice)
+    - 17.4 [Catálogo de Provedores (ServiceProvider)](#174-catálogo-de-provedores-serviceprovider)
+    - 17.5 [Fluxo de Uso](#175-fluxo-de-uso)
+18. [Database Integration (PostgreSQL + Redis)](#18-database-integration-postgresql--redis)
+    - 18.1 [Visão Geral](#181-visão-geral)
+    - 18.2 [Redis User Cache vs RateLimit](#182-redis-user-cache-vs-ratelimit)
 
 ---
 
@@ -566,16 +577,26 @@ com.quitto.server/
 ├── domain/                               # CAMADA DE DOMÍNIO (PURA)
 │   ├── enums/
 │   │   ├── Provaider.java               #   GOOGLE, GITHUB
-│   │   └── Role.java                    #   ADMIN, USER, MCP, API
+│   │   ├── Role.java                    #   ADMIN, USER, MCP, API
+│   │   └── ServiceProvider.java         #   Catálogo IA (40+ provedores)
 │   │
 │   ├── exception/
 │   │   ├── AuthenticationException.java  # Base para falhas de auth
-│   │   └── InvalidTokenException.java    # Token inválido/expirado
+│   │   ├── InvalidTokenException.java    # Token inválido/expirado
+│   │   ├── ProviderException.java        # Falha de provedor de IA
+│   │   ├── UserNotFoundException.java    # Usuário não encontrado
+│   │   ├── InvalidPasswordException.java # Senha fora das regras
+│   │   └── MachineNotFoundException.java # Máquina não encontrada
 │   │
 │   ├── interfaces/                       # PORTAS (contratos)
 │   │   ├── Auth/
 │   │   │   ├── AuthenticationService.java # authenticate / register
 │   │   │   └── PasswordService.java       # encode / matches
+│   │   ├── Database/
+│   │   │   └── DatabaseClientProvider.java # getAdpterConnector(name) → conexão
+│   │   ├── IA/
+│   │   │   ├── AIProvider.java           #   Porta de provedor de IA
+│   │   │   └── AIRegistry.java           #   Registro genérico (K → List<V>)
 │   │   └── Token/
 │   │       ├── TokenRequestContext.java   # getHeader / getCookie
 │   │       ├── TokenResolver.java         # resolve(RequestContext)
@@ -584,6 +605,8 @@ com.quitto.server/
 │   ├── models/
 │   │   ├── ExternalAccount/
 │   │   │   └── ExternalAccont.java       # Conta OAuth externa
+│   │   ├── IA/
+│   │   │   └── AIModel.java             #   Modelo de IA (providerModelId, name, stream…)
 │   │   ├── LinuxAcount/
 │   │   │   ├── Groups.java              # Grupo Linux
 │   │   │   └── LinuxUser.java           # Usuário Linux
@@ -591,6 +614,13 @@ com.quitto.server/
 │   │   │   └── Machine.java             # Máquina gerenciada
 │   │   └── User/
 │   │       └── User.java                # Agregado raiz do sistema
+│   │
+│   ├── Database/                         # CONEXÕES DE DADOS (modelos puros)
+│   │   ├── Connection.java              #   Porta de conexão (isOpen/close)
+│   │   ├── DatabaseClient.java          #   Config base de um cliente
+│   │   ├── DatabaseProperties.java      #   Propriedades de conexão
+│   │   └── redis/
+│   │       └── RedisClientInstace.java  #   Instância Redis (name, host, port…)
 │   │
 │   ├── Repository/                       # Portas de repositório
 │   │   ├── Machine/
@@ -602,9 +632,22 @@ com.quitto.server/
 │       └── CookieDomain.java            # Cookie imutável e validado
 │
 ├── infrastructure/                       # CAMADA DE INFRAESTRUTURA
+│   ├── IA/                               # PROVEDORES DE IA (HTTP clients)
+│   │   ├── BaseProvider.java            #   Base abstrata (HttpClient + Jackson)
+│   │   ├── OpenAIProvider.java          #   OpenAI
+│   │   ├── AnthropicProvider.java       #   Anthropic (Claude)
+│   │   ├── GoogleAIStudioProvider.java  #   Google AI Studio
+│   │   ├── OllamaProvider.java          #   Ollama (self-host)
+│   │   └── ... (+30 provedores)         #   ver ServiceProvider (seção 17.4)
+│   │
 │   ├── config/
-│   │   └── logger/
-│   │       └── CoffeColorConverter.java  # Logback colorido
+│   │   ├── logger/
+│   │   │   └── CoffeColorConverter.java  # Logback colorido
+│   │   └── redis/
+│   │       ├── RedisConfig.java          # @EnableConfigurationProperties
+│   │       ├── RedisProperties.java      # coffee.redis.* → instâncias
+│   │       └── Codec/
+│   │           └── StringByteArrayCodec.java  # Key=String, Value=byte[]
 │   │
 │   ├── db/                               # PERSISTÊNCIA (JPA)
 │   │   ├── LinuxUser/
@@ -631,12 +674,18 @@ com.quitto.server/
 │   │       └── Repository/
 │   │           └── JpaUserRepository.java
 │   │
+│   ├── Adapters/                         # ADAPTERS DE CONEXÃO (Lettuce)
+│   │   └── in/
+│   │       └── RedisClientConnectionAdapter.java  # Lettuce → Connection (domínio)
+│   │
 │   ├── external/
 │   │   ├── google/
 │   │   │   └── GoogleAuthService.java   # Obtém tokens OAuth2
 │   │   └── GoogleCalendarClient.java     # Cliente Google Calendar API
 │   │
 │   ├── interfaces/                       # ⚠ Interfaces que DEVERIAM estar no domínio
+│   │   ├── Codec/
+│   │   │   └── RedisArryCodec.java      #   Extends RedisCodec<String, byte[]>
 │   │   └── Cookies/
 │   │       └── CookieService.java
 │   │
@@ -663,6 +712,16 @@ com.quitto.server/
 │       │   └── UserDetailsServiceImpl.java        # UserDetailsService do Spring
 │       ├── BCrypt/
 │       │   └── BCryptPassowordService.java        # Implementa PasswordService
+│       ├── CoffeAgent/
+│       │   └── CoffeAgentService.java             # getEnvKey() — acesso a secrets
+│       ├── DatabaseProvaider/
+│       │   └── redis/
+│       │       └── RedisClientProvider.java       # Implementa DatabaseClientProvider
+│       ├── IA/
+│       │   └── Provaiders/
+│       │       ├── ProvaiderIAService.java        # Use case de IA
+│       │       └── Reagistry/
+│       │           └── AIProviderRegistry.java    # Implementa AIRegistry
 │       └── OAuth/
 │           └── OAuth2UserProvisioningService.java # Auto-provisionamento OAuth2
 │
@@ -676,7 +735,8 @@ com.quitto.server/
 ├── shared/                               # CROSS-CUTTING
 │   ├── exception/
 │   │   ├── AuthExceptionHandler.java     # @RestControllerAdvice
-│   │   └── MachineNotFoundException.java
+│   │   ├── MachineNotFoundException.java # (movido para domínio)
+│   │   └── NotEnableExceptions.java      # Provedor IA desabilitado
 │   └── (constants/, helpers/, utils/ vazios)
 │
 └── resources/
@@ -1558,6 +1618,35 @@ public class ExternalAccont {
 
 **Responsabilidade:** Vincular um usuário local a uma conta OAuth externa (Google, GitHub).
 
+#### AIModel (IA)
+
+**Localização:** `domain/models/IA/AIModel.java`
+
+```java
+public final class AIModel {
+    private final String providerModelId;
+    private final String name;
+    private final ServiceProvider provider;
+    private final boolean stream;
+    private final boolean tools;
+    private final boolean reasoning;
+}
+```
+
+**Responsabilidade:** Representa um modelo de IA oferecido por um provedor (ex.: `gpt-4o` da OpenAI, `claude-3-5-sonnet` da Anthropic).
+
+**Campos:**
+| Campo | Descrição |
+|---|---|
+| `providerModelId` | Identificador do modelo na API do provedor (ex.: `"deepseek-ai/deepseek-v4-pro"`); exposto via `getId()` |
+| `name` | Nome amigável do modelo |
+| `provider` | Enum `ServiceProvider` dono do modelo |
+| `stream` | Suporta streaming de resposta (`supportsStreaming()`) |
+| `tools` | Suporta chamada de ferramentas (`supportsTools()`) |
+| `reasoning` | Suporta raciocínio (`supportsReasoning()`) |
+
+O contrato `1:N` provedor → modelos (`AIProvider.getModels()` → `List<AIModel>`) é o coração do registro de IA (seção 17).
+
 #### LinuxUser e Groups
 
 ```java
@@ -1607,6 +1696,31 @@ public enum Provaider { GOOGLE, GITHUB }
 
 Provedores OAuth2 suportados.
 
+#### ServiceProvider
+
+**Localização:** `domain/enums/ServiceProvider.java`
+
+```java
+public enum ServiceProvider {
+    // OpenAI Compatible
+    OPENAI, OPENROUTER, NVIDIA, GROQ, TOGETHER_AI, FIREWORKS_AI,
+    SAMBANOVA, DEEPINFRA, HYPERBOLIC, NOVITA_AI, OPENAI_COMPATIBLE,
+    // Big Tech
+    GOOGLE_AI_STUDIO, GOOGLE_VERTEX_AI, AZURE_OPENAI, AWS_BEDROCK,
+    IBM_WATSONX, OCI_GENERATIVE_AI,
+    // Provedores diretos
+    ANTHROPIC, MISTRAL_AI, COHERE, XAI, DASHSCOPE, MOONSHOT_AI,
+    ZHIPU_AI, QIANFAN,
+    // Self-hosted
+    OLLAMA, VLLM, LM_STUDIO, LLAMACPP, TEXT_GENERATION_WEBUI,
+    // Outros
+    HUGGING_FACE, REPLICATE, PERPLEXITY, CEREBRAS, LEPTON_AI,
+    CLOUDFLARE_AI, CUSTOM
+}
+```
+
+Catálogo de provedores de IA (40+ constantes) agrupados por família: compatíveis com OpenAI, Big Tech, provedores diretos, self-hosted e outros. A lista completa e o fluxo de uso estão na seção 17.
+
 ### 8.4 Exceções de Domínio
 
 #### AuthenticationException
@@ -1624,6 +1738,16 @@ public class InvalidTokenException extends AuthenticationException { }
 ```
 
 Específica para tokens JWT inválidos ou expirados.
+
+#### ProviderException
+
+**Localização:** `domain/exception/ProviderException.java`
+
+```java
+public class ProviderException extends RuntimeException { }
+```
+
+Falha na comunicação ou resposta de um provedor de IA (HTTP 4xx/5xx, timeout, payload inválido). Lançada pelos providers da camada de infraestrutura.
 
 ### 8.5 Interfaces de Repositório
 
@@ -1856,7 +1980,15 @@ Agente de IA (Claude, GPT, etc.)
 
 ## 13. Banco de Dados
 
-### Schema (PostgreSQL)
+O banco de dados é dividido em dois sistemas complementares (ver seção 18):
+
+| Sistema | Papel | Dados |
+|---|---|---|
+| **PostgreSQL** (main RDS) | Banco principal | Dados de negócio: users, machines, external_accounts |
+| **Redis: User Cache** | Cache de sessão/dados de usuário | Leitura rápida, alívio do PostgreSQL |
+| **Redis: RateLimit** | Controle de taxa distribuído | Contadores de requisições por IP/rota |
+
+### 13.1 Schema (PostgreSQL)
 
 ```
 ┌───────────┐       ┌──────────────┐       ┌──────────┐
@@ -1900,6 +2032,17 @@ Agente de IA (Claude, GPT, etc.)
 │ expires_at          │
 └─────────────────────┘
 ```
+
+### 13.2 Redis (Cache + RateLimit)
+
+Duas instâncias Redis separadas, cada uma com um papel distinto:
+
+| Instância | Propósito | Uso típico |
+|---|---|---|
+| `coffee.redis.cache` | **User Cache** | Sessões, dados de usuário, leitura rápida |
+| `coffee.redis.rate-limit` | **RateLimit** | Contadores distribuídos por IP/rota |
+
+A abstração completa (Ports & Adapters, Lettuce, codecs) está documentada em **`docs/architecture/redis-abstraction.md`** e resumida na seção 18.
 
 ---
 
@@ -1998,9 +2141,323 @@ if (isJwt(token)) {
 | `CookieService` | ⚠ `infrastructure/interfaces/Cookies` | Criar/gerenciar cookies | `HttpCookieService` |
 | `UserRepository` | `domain/Repository/users` | Persistir/recuperar usuários | `UserRepositoryAdapter` |
 | `MachineRepository` | `domain/Repository/Machine` | Persistir/recuperar máquinas | `MachineRepositoryAdapter` |
+| `AIProvider` | `domain/interfaces/IA` | Porta de provedor de IA (setKey, getApiBaseURL, getModels…) | `BaseProvider` + 38 providers concretos |
+| `AIRegistry<K,V>` | `domain/interfaces/IA` | Registro genérico de catálogo (K → List<V>), pesquisável por chave ou nome | `AIProviderRegistry` |
+| `DatabaseClientProvider<T>` | `domain/interfaces/Database` | Obter conexão pelo nome | `RedisClientProvider` |
+| `Connection<T>` | `domain/Database` | Contrato de conexão (isOpen/close) | `RedisClientConnectionAdapter` |
+
+---
+
+## 17. Ecossistema IA Provider Service
+
+### 17.1 Problema & Conceito
+
+O coffe_server precisa expor **capacidades de IA** para os agentes do ecossistema (Claude, GPT, agentes locais via MCP). O problema: existem **dezenas de provedores** de modelos — OpenAI, Anthropic, Google AI Studio, Ollama (self-hosted), entre outros — cada um com API, base URL e formato de resposta próprios.
+
+A solução é uma **porta de domínio** (`AIProvider`) implementada por **adapters de infraestrutura** (`BaseProvider` + um provider concreto por serviço), registrados num **registry** (`AIProviderRegistry`) que indexa cada provedor (`ServiceProvider`) e expõe sua lista de modelos (`AIModel`).
+
+```
+domain/interfaces/IA/
+├── AIProvider.java     # Porta — contrato de um provedor de IA
+└── AIRegistry.java     # Porta — registro genérico (K → List<V>)
+
+domain/models/IA/
+└── AIModel.java        # Modelo de IA (providerModelId, name, provider, stream, tools, reasoning)
+
+domain/enums/
+└── ServiceProvider.java # Catálogo com 40+ provedores agrupados
+
+infrastructure/IA/
+├── BaseProvider.java   # Base abstrata (HttpClient + Jackson + hooks de auth/formato)
+├── OpenAIProvider.java # Provedor concreto: apenas getProvider/getName/getApiBaseURL
+├── AnthropicProvider.java
+└── ... (38 providers no total)
+
+infrastructure/services/IA/Provaiders/
+├── ProvaiderIAService.java        # Use case de IA (wraps o registry)
+└── Reagistry/
+    └── AIProviderRegistry.java    # Implementa AIRegistry<ServiceProvider, AIProvider>
+
+infrastructure/services/CoffeAgent/
+└── CoffeAgentService.java         # getEnvKey() — resolve secrets dos providers
+```
+
+### 17.2 Portas de Domínio (AIProvider, AIRegistry, AIModel)
+
+#### AIProvider (porta)
+
+**Localização:** `domain/interfaces/IA/AIProvider.java`
+
+```java
+public interface AIProvider {
+    void setKey(String apiKey);
+    ServiceProvider getProvider();
+    String getName();
+    String getApiBaseURL();
+    List<AIModel> getModels();
+    boolean isEnabled();
+    void turnOn();
+    void turnOff();
+}
+```
+
+| Método | Descrição |
+|---|---|
+| `setKey(String)` | Injeta o secret/API key do provedor |
+| `getProvider()` | Enum `ServiceProvider` que identifica o provedor |
+| `getName()` | Nome amigável do provedor |
+| `getApiBaseURL()` | URL base da API (ex.: `https://api.openai.com/v1`) |
+| `getModels()` | Lista de modelos disponíveis neste provedor (relação 1:N) |
+| `isEnabled()` / `turnOn()` / `turnOff()` | Ciclo de vida do provedor (habilitado/desabilitado) |
+
+#### AIRegistry (porta de catálogo)
+
+**Localização:** `domain/interfaces/IA/AIRegistry.java`
+
+```java
+public interface AIRegistry<K, V> {
+    Optional<List<V>> find(K key);        // busca por chave tipada
+    Optional<List<V>> find(String name);  // busca por nome (case-insensitive)
+    void register(K key, V value);
+    List<V> getAll();
+    int size();
+    boolean containsKey(K key);
+    boolean containsName(String name);
+}
+```
+
+O contrato é **genérico de catálogo** — cada chave (`K`, ex.: `ServiceProvider`) mapeia para uma lista de valores (`V`, ex.: `AIProvider`). O `find(K)` devolve a lista registrada na chave; o `find(String)` busca por nome (case-insensitive); o `getAll()` achata tudo com `flatMap`.
+
+#### AIModel (modelo)
+
+Detalhado na seção 8.1 — campos `providerModelId` (exposto via `getId()`), `name`, `provider` (enum `ServiceProvider`), `stream`, `tools`, `reasoning`. A relação `1:N` provedor → modelos é exposta por `AIProvider.getModels()`.
+
+### 17.3 Infraestrutura (BaseProvider, AIProviderRegistry, CoffeAgentService)
+
+#### BaseProvider (base abstrata)
+
+**Localização:** `infrastructure/IA/BaseProvider.java`
+
+Classe abstrata **puramente de infraestrutura** (importa `java.net.http.HttpClient`, Jackson). Centraliza:
+
+- `HttpClient` estático com `connectTimeout` de 10s e `Redirect.NORMAL`
+- `ObjectMapper` estático para serialização/deserialização JSON
+- Constante `AUTHORIZATION_BEARER = "Authorization: Bearer "` (header padrão)
+- Campo `protected String apiKey` — usado pelos providers para assinar requisições
+- Campo `private boolean enabled` — estado ligado/desligado
+- **Hooks** abstratos para que cada provider concreto customize autenticação e formato de resposta
+
+Os providers concretos herdam tudo isso e implementam apenas o que muda (URL base, nome, lista de modelos).
+
+#### Exemplo — OpenAIProvider
+
+**Localização:** `infrastructure/IA/OpenAIProvider.java`
+
+```java
+@Service
+public class OpenAIProvider extends BaseProvider {
+    @Override
+    public ServiceProvider getProvider() { return ServiceProvider.OPENAI; }
+
+    @Override
+    public String getName() { return "OpenAI"; }
+
+    @Override
+    public String getApiBaseURL() { return "https://api.openai.com/v1"; }
+}
+```
+
+Padrão: cada provider é um `@Service` minimalista (~24 linhas) que só configura identidade e URL. O `BaseProvider` carrega o peso (HTTP, JSON, auth).
+
+#### AIProviderRegistry (implementação do registry)
+
+**Localização:** `infrastructure/services/IA/Provaiders/Reagistry/AIProviderRegistry.java`
+
+```java
+@Service
+public class AIProviderRegistry implements AIRegistry<ServiceProvider, AIProvider> {
+    private final Map<ServiceProvider, AIProvider> registry;
+    private final CoffeAgentService agentService;
+
+    // load(providers):
+    //   provider.setKey(agentService.getEnvKey(provider.getProvider().name()))
+    //   provider.getModels()
+    //   → Collectors.toMap(AIProvider::getProvider, identity)
+
+    public AIProvider findProvaider(ServiceProvider provider) {
+        // null → IllegalArgumentException
+        // !isEnabled() → NotEnableExceptions
+    }
+}
+```
+
+**Fluxo de carga:**
+1. O Spring injeta a lista de todos os `AIProvider` (`@Service`) no construtor
+2. Para cada provider, `load()` chama `agentService.getEnvKey(providerName)` para resolver o secret
+3. `provider.setKey(secret)` injeta a chave no provider; `provider.getModels()` pré-carrega o catálogo
+4. Os providers são indexados num `Map<ServiceProvider, AIProvider>` via `Collectors.toMap` (1:1 — um provider por enum)
+
+**Busca por enumeração:** o método `findProvaider(ServiceProvider)` (fora da interface `AIRegistry`) devolve o provider registrado e habilitado — lança `IllegalArgumentException` se não houver provider para a chave e `NotEnableExceptions` (`shared/exception/NotEnableExceptions.java`) se o provider estiver desabilitado.
+
+#### CoffeAgentService (AgentService do diagrama)
+
+**Localização:** `infrastructure/services/CoffeAgent/CoffeAgentService.java`
+
+```java
+@Service
+public class CoffeAgentService {
+    public String getEnvKey(String providerName) {
+        // ⚠ STUB — hoje retorna "key_temp" (placeholder)
+        // Futuro: ler de variável de ambiente / .env (ex.: OPENAI_API_KEY)
+    }
+}
+```
+
+É a ponte entre o registry e os **secrets** do ambiente. Atualmente é um placeholder que retorna `"key_temp"` — a integração real com env vars está pendente.
+
+#### ProvaiderIAService (use case)
+
+**Localização:** `infrastructure/services/IA/Provaiders/ProvaiderIAService.java`
+
+`@Service` que envolve o registry e expõe operações de alto nível para a aplicação. `getModels()` é um stub vazio — a exposição real via MCP tools está pendente.
+
+### 17.4 Catálogo de Provedores (ServiceProvider)
+
+O enum `ServiceProvider` agrupa os provedores por família:
+
+| Família | Provedores |
+|---|---|
+| **OpenAI Compatible** | OPENAI, OPENROUTER, NVIDIA, GROQ, TOGETHER_AI, FIREWORKS_AI, SAMBANOVA, DEEPINFRA, HYPERBOLIC, NOVITA_AI, OPENAI_COMPATIBLE |
+| **Big Tech** | GOOGLE_AI_STUDIO, GOOGLE_VERTEX_AI, AZURE_OPENAI, AWS_BEDROCK, IBM_WATSONX, OCI_GENERATIVE_AI |
+| **Provedores diretos** | ANTHROPIC, MISTRAL_AI, COHERE, XAI, DASHSCOPE, MOONSHOT_AI, ZHIPU_AI, QIANFAN |
+| **Self-hosted** | OLLAMA, VLLM, LM_STUDIO, LLAMACPP, TEXT_GENERATION_WEBUI |
+| **Outros** | HUGGING_FACE, REPLICATE, PERPLEXITY, CEREBRAS, LEPTON_AI, CLOUDFLARE_AI, CUSTOM |
+
+Cada constante possui um provider concreto em `infrastructure/IA/` (ex.: `OllamaProvider`, `MistralAIProvider`, `XAIProvider`, `VllmProvider`, `TogetherAIProvider`, etc.).
+
+### 17.5 Fluxo de Uso
+
+```mermaid
+sequenceDiagram
+    participant App as Aplicação / MCP
+    participant Svc as ProvaiderIAService
+    participant Reg as AIProviderRegistry
+    participant Env as CoffeAgentService
+    participant P as BaseProvider (concreto)
+    participant API as API do provedor
+
+    App->>Svc: getModels() / request(model)
+    Svc->>Reg: find(provider)
+    Reg->>Env: getEnvKey(providerName)
+    Env-->>Reg: secret (ex.: "key_temp")
+    Reg->>P: setKey(secret)
+    Reg-->>Svc: Optional<List<AIProvider>>
+    Svc->>P: request(payload)
+    P->>API: HTTP (Authorization: Bearer <key>)
+    API-->>P: resposta (JSON)
+    P-->>Svc: resposta parseada
+    Svc-->>App: resultado
+```
+
+**Pontos de atenção (estado atual):**
+
+- `CoffeAgentService.getEnvKey()` retorna placeholder — providers não têm chaves reais ainda
+- `ProvaiderIAService.getModels()` é stub — sem exposição via MCP tools
+- `BaseProvider` tem hooks de auth/formato por provedor — implementação por provedor pendente
+
+---
+
+## 18. Database Integration (PostgreSQL + Redis)
+
+### 18.1 Visão Geral
+
+O coffe_server (Spring Boot Java) usa **dois bancos complementares**:
+
+```
+┌───────────────────────────────────────────────────────────────┐
+│                  coffe-server (Spring Boot Java)              │
+│                                                               │
+│  Domain: Connection / DatabaseClient / DatabaseClientProvider │
+│  Infra:  RedisClientProvider + RedisClientConnectionAdapter  │
+└───────────────┬───────────────────────────┬───────────────────┘
+                │                           │
+        PostgreSQL (main RDS)       Redis via Docker Instances
+        dados de negócio            ├── Redis: User Cache
+        users, machines,            └── Redis: RateLimit
+        external_accounts
+```
+
+| Banco | Papel | Dados | Localização do contrato |
+|---|---|---|---|
+| **PostgreSQL** (main RDS) | Banco principal (JPA/Hibernate) | users, machines, linux_user, groups, external_account | `infrastructure/db/` (adapters) |
+| **Redis: User Cache** | Cache de sessão/dados de usuário | Leitura rápida, alívio do PostgreSQL | abstração Redis (abaixo) |
+| **Redis: RateLimit** | Controle de taxa distribuído | Contadores por IP/rota | abstração Redis (abaixo) |
+
+As duas instâncias Redis rodam como **Docker Instances** separadas — cada uma com propósito isolado. Ambas são acessadas pela **mesma abstração Ports & Adapters**, sem acoplar o domínio ao Lettuce.
+
+### 18.2 Redis User Cache vs RateLimit
+
+A abstração Redis (documentação detalhada: `docs/architecture/redis-abstraction.md`) separa **portas no domínio** de **adapters na infraestrutura**:
+
+```
+DOMAIN  ◄──────  INFRASTRUCTURE  ◄──────  Lettuce / Netty
+──────           ──────────────           ─────────────────
+Connection       RedisClientConnectionAdapter    io.lettuce.core.*
+DatabaseClient   implements Connection
+DatabaseClientProvider  RedisClientProvider
+                 implements DatabaseClientProvider
+```
+
+**Componentes do domínio (puros):**
+
+| Componente | Arquivo | Papel |
+|---|---|---|
+| `Connection<T>` | `domain/Database/Connection.java` | Porta — `isOpen()` / `close()` |
+| `DatabaseClient` | `domain/Database/DatabaseClient.java` | Config base (name, host, port, enabled) |
+| `RedisClientInstace` | `domain/Database/redis/RedisClientInstace.java` | Extends `DatabaseClient` — instância Redis concreta, com `password` e `useSsl` |
+| `DatabaseProperties` | `domain/Database/DatabaseProperties.java` | Interface de config de banco (implementada pela infra) |
+| `DatabaseClientProvider<T extends Connection, P extends DatabaseProperties>` | `domain/interfaces/Database/DatabaseClientProvider.java` | Porta — `getAdpterConnector(name)` → conexão; `getProvaiders(P)` → mapa |
+
+**Componentes da infraestrutura (adapters):**
+
+| Componente | Arquivo | Papel |
+|---|---|---|
+| `RedisClientConnectionAdapter` | `infrastructure/Adapters/in/RedisClientConnectionAdapter.java` | Wrapper Lettuce → `Connection` do domínio; expõe `RedisAsyncCommands<String, byte[]>` e `putHash(key, values)` via `hset` |
+| `RedisClientProvider` | `infrastructure/services/DatabaseProvaider/redis/RedisClientProvider.java` | `@Component` condicional (`coffee.redis.enabled=true`); implementa `DatabaseClientProvider`; cria `RedisClient` Lettuce no construtor; conexões **lazy** cacheadas (`ConcurrentHashMap`); `buildUri()` com senha/TLS (`RedisURI.Builder`); `getConnection(name)` valida `isOpen()`; `@PreDestroy shutdown()` fecha tudo |
+| `RedisProperties` | `infrastructure/config/redis/RedisProperties.java` | `@ConfigurationProperties(prefix="coffee.redis")` — lista de instâncias; implementa `DatabaseProperties` do domínio |
+| `RedisConfig` | `infrastructure/config/redis/RedisConfig.java` | `@EnableConfigurationProperties(RedisProperties)` |
+| `StringByteArrayCodec` | `infrastructure/config/redis/Codec/StringByteArrayCodec.java` | Codec Key=String(UTF-8), Value=byte[] |
+| `RedisArryCodec` | `infrastructure/interfaces/Codec/RedisArryCodec.java` | ⚠ Interface estendendo `RedisCodec<String, byte[]>` — na camada errada (devia estar no domínio) |
+
+**Fluxo de uso:**
+
+```java
+// Consumidor obtém a conexão pelo nome da instância
+RedisClientConnectionAdapter conn = provider.getAdpterConnector("cache");   // ou "rate-limit"
+
+if (conn.isOpen()) {
+    RedisAsyncCommands<String, byte[]> cmd = conn.getCommands();
+    cmd.set("chave", "valor".getBytes());
+    conn.putHash("usuario:123", Map.of("nome", "quitto".getBytes()));
+}
+```
+
+Internamente, o `RedisClientProvider`:
+1. Recebe `RedisProperties` (instâncias `cache` e `rate-limit` via `coffee.redis.*`) e cria os `RedisClient` Lettuce no construtor (baratos — sem conexão de rede)
+2. `buildUri(RedisClientInstace)` monta a `RedisURI` via **`RedisURI.Builder`** (em vez de string `"redis://host:port"`) — suporta senha (`.withPassword()`, só quando não-blank) e TLS (`.withSsl(true)`) sem problemas de URL-encoding
+3. **Conexões lazy:** `getAdpterConnector(name)` usa `computeIfAbsent` — a conexão só é criada no primeiro uso, com o `StringByteArrayCodec`, e fica cacheada no `Map<String, RedisClientConnectionAdapter>`
+4. `getConnection(name)` valida o nome e o estado (`isOpen()`), lançando `DataAccessResourceFailureException` se indisponível
+5. `@PreDestroy shutdown()` fecha conexões e clients no shutdown do Spring — evita vazamento de threads Netty
+
+**Integração com Rate Limit:** `Bucket4jConfig` cria o `RateLimit` bean com o `RedisClientProvider` + `PolicyProvider`; o `Bucket4jRateLimiter` monta o `ProxyManager` distribuído de forma **lazy** (primeira chamada de `tryConsume`), então o boot não depende do Redis no ar.
+
+**Pendências conhecidas** (ver `docs/architecture/redis-abstraction.md`):
+- 🟡 Drift de config no Redis remoto (6380): instância rate-limit roda SEM `requirepass` (AUTH → ERR), mas o `.env` espera `REDIS_RATELIMIT_PASSWORD` — alinhar config do servidor com o `.env` (verificado 2026-08-04)
+- `RedisArryCodec` na camada errada (infra em vez de domínio)
+- Typos de pacote: `Adpter` → `Adapter`, `Provaider` → `Provider`, `Arry` → `Array`
 
 ---
 
 > **Documentação mantida por:** Quitto
-> **Última atualização:** Julho 2026
+> **Última atualização:** Agosto 2026
 > **Propósito:** Documentação viva — atualize conforme a arquitetura evoluir.
