@@ -1,4 +1,4 @@
-package com.quitto.server.application.controllers;
+package com.quitto.server.application.controllers.REST;
 
 import java.util.Map;
 
@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("coffee/api/v1")
 public class APIController {
 
     /**

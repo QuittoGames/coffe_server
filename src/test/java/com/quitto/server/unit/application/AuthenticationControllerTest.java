@@ -15,7 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.quitto.server.application.controllers.AuthenticationController;
+import com.quitto.server.application.controllers.Auth.AuthenticationController;
 import com.quitto.server.application.dto.Auth.LoginDTO;
 import com.quitto.server.application.dto.Auth.RegisterDTO;
 import com.quitto.server.application.interfaces.Cookies.HttpCookieWriter;

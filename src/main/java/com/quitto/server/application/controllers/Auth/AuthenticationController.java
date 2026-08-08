@@ -1,4 +1,4 @@
-package com.quitto.server.application.controllers;
+package com.quitto.server.application.controllers.Auth;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

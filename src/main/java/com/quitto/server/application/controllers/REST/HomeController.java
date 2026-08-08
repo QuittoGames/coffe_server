@@ -1,9 +1,11 @@
-package com.quitto.server.application.controllers;
+package com.quitto.server.application.controllers.REST;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
+@RequestMapping("coffee")
 public class HomeController {
 
     @GetMapping("/")
