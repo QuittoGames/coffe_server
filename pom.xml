@@ -126,6 +126,10 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-webmvc</artifactId>
 		</dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
 		<!-- AI / MCP -->
 		<dependency>
 			<groupId>org.springframework.ai</groupId>
@@ -153,6 +157,19 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- Test: Slices JPA (Spring Boot 4.0 — @DataJpaTest/@AutoConfigureTestDatabase movidos
+		     de spring-boot-test-autoconfigure para módulos dedicados) -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-data-jpa-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-jdbc-test</artifactId>
 			<scope>test</scope>
 		</dependency>
 

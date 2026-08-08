@@ -6,10 +6,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.quitto.server.domain.interfaces.Database.DatabaseClientProvider;
+import com.quitto.server.infrastructure.Adapters.in.RedisClientConnectionAdapter;
+import com.quitto.server.infrastructure.config.redis.RedisProperties;
 import com.quitto.server.infrastructure.interfaces.Ratelimit.PolicyProvider;
 import com.quitto.server.infrastructure.interfaces.Ratelimit.RateLimit;
 import com.quitto.server.infrastructure.ratelimit.Bucket4jRateLimiter;
-import com.quitto.server.infrastructure.services.DatabaseProvaider.redis.RedisClientProvider;
 
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.BucketConfiguration;
@@ -46,7 +48,9 @@ public class Bucket4jConfig {
     }
 
     @Bean
-    public RateLimit rateLimit(RedisClientProvider provider, PolicyProvider policyProvider) {
+    public RateLimit rateLimit(
+            DatabaseClientProvider<RedisClientConnectionAdapter, RedisProperties> provider,
+            PolicyProvider policyProvider) {
         return new Bucket4jRateLimiter(provider, policyProvider);
     }
 }

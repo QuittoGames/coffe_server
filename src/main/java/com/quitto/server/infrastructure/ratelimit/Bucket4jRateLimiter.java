@@ -1,15 +1,19 @@
 package com.quitto.server.infrastructure.ratelimit;
 
 import com.quitto.server.domain.enums.RateLimitPolicy;
+import com.quitto.server.domain.interfaces.Database.DatabaseClientProvider;
+import com.quitto.server.infrastructure.Adapters.in.RedisClientConnectionAdapter;
+import com.quitto.server.infrastructure.config.redis.RedisProperties;
 import com.quitto.server.infrastructure.interfaces.Ratelimit.PolicyProvider;
 import com.quitto.server.infrastructure.interfaces.Ratelimit.RateLimit;
-import com.quitto.server.infrastructure.services.DatabaseProvaider.redis.RedisClientProvider;
 
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.BucketConfiguration;
 import io.github.bucket4j.distributed.proxy.ProxyManager;
 import io.github.bucket4j.redis.lettuce.cas.LettuceBasedProxyManager;
-import io.lettuce.core.api.async.RedisAsyncCommands;
+import io.lettuce.core.api.StatefulRedisConnection;
+
+import org.springframework.dao.DataAccessResourceFailureException;
 
 /**
  * Rate limiter distribuído (Redis via bucket4j).
@@ -20,12 +24,14 @@ import io.lettuce.core.api.async.RedisAsyncCommands;
  */
 public class Bucket4jRateLimiter implements RateLimit {
 
-    private final RedisClientProvider provider;
+    private final DatabaseClientProvider<RedisClientConnectionAdapter, RedisProperties> provider;
     private final PolicyProvider policyProvider;
 
     private volatile ProxyManager<String> proxyManager;
 
-    public Bucket4jRateLimiter(RedisClientProvider provider, PolicyProvider policyProvider) {
+    public Bucket4jRateLimiter(
+            DatabaseClientProvider<RedisClientConnectionAdapter, RedisProperties> provider,
+            PolicyProvider policyProvider) {
         this.provider = provider;
         this.policyProvider = policyProvider;
     }
@@ -36,10 +42,12 @@ public class Bucket4jRateLimiter implements RateLimit {
             synchronized (this) {
                 current = proxyManager;
                 if (current == null) {
-                    RedisAsyncCommands<String, byte[]> commands = provider
-                            .getConnection("rate-limit")
-                            .async();
-                    current = LettuceBasedProxyManager.builderFor(commands).build();
+                    RedisClientConnectionAdapter adapter = provider.getAdpterConnector("rate-limit");
+                    StatefulRedisConnection<String, byte[]> connection = adapter.getConnection();
+                    if (connection == null || !connection.isOpen()) {
+                        throw new DataAccessResourceFailureException("Redis connection unavailable");
+                    }
+                    current = LettuceBasedProxyManager.builderFor(connection.async()).build();
                     proxyManager = current;
                 }
             }
