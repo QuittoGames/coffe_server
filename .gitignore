@@ -1,5 +1,9 @@
 ### Generated log & report artifacts ###
 /logs/
+/reports/
+
+### Playwright snapshots ###
+.playwright-mcp/
 
 ### General ###
 *.log
