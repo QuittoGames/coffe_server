@@ -19,6 +19,6 @@ public class TogetherAIProvider extends BaseProvider {
 
     @Override
     public String getApiBaseURL() {
-        return "https://api.together.xyz/v1";
+        return "https://api.together.ai/v1";
     }
 }

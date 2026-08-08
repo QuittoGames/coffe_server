@@ -19,6 +19,7 @@ public class NovitaAIProvider extends BaseProvider {
 
     @Override
     public String getApiBaseURL() {
-        return "https://api.novita.ai/v3/openai";
+        // Listagem de modelos em modo OpenAI-compat: GET /openai/v1/models
+        return "https://api.novita.ai/openai/v1";
     }
 }

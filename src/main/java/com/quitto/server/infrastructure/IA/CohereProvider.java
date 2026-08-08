@@ -19,6 +19,6 @@ public class CohereProvider extends BaseProvider {
 
     @Override
     public String getApiBaseURL() {
-        return "https://api.cohere.com";
+        return "https://api.cohere.com/v1";
     }
 }

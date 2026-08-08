@@ -25,4 +25,12 @@ public class IBMWatsonxProvider extends BaseProvider {
     public String getApiBaseURL() {
         return "https://{REGION}.ml.cloud.ibm.com/ml";
     }
+
+    @Override
+    protected String modelsUrl() {
+        // GET /ml/v1/foundation_model_specs?version=YYYY-MM-DD — o parâmetro version
+        // é obrigatório. O parser padrão do BaseProvider já cobre a raiz "resources"
+        // da resposta.
+        return "https://{REGION}.ml.cloud.ibm.com/ml/v1/foundation_model_specs?version=2026-08-05";
+    }
 }

@@ -19,6 +19,6 @@ public class PerplexityProvider extends BaseProvider {
 
     @Override
     public String getApiBaseURL() {
-        return "https://api.perplexity.ai";
+        return "https://api.perplexity.ai/v1";
     }
 }

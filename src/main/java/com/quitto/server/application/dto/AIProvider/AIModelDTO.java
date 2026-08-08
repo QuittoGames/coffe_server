@@ -1,0 +1,31 @@
+package com.quitto.server.application.dto.AIProvider;
+
+import com.quitto.server.domain.enums.ServiceProvider;
+import com.quitto.server.domain.models.IA.AIModel;
+
+/**
+ * DTO de resposta para um modelo de IA (catálogo de um provedor).
+ *
+ * <p>Espelha {@link AIModel} (domínio) para não expor o modelo puro
+ * diretamente na camada REST.</p>
+ */
+public record AIModelDTO(
+        String id,
+        String name,
+        ServiceProvider provider,
+        boolean stream,
+        boolean tools,
+        boolean reasoning
+) {
+
+    public static AIModelDTO from(AIModel model) {
+        return new AIModelDTO(
+                model.getId(),
+                model.getName(),
+                model.getProvider(),
+                model.supportsStreaming(),
+                model.supportsTools(),
+                model.supportsReasoning()
+        );
+    }
+}

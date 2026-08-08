@@ -26,4 +26,11 @@ public class AzureOpenAIProvider extends BaseProvider {
     protected java.util.Optional<String> apiKeyHeaderName() {
         return java.util.Optional.of("api-key");
     }
+
+    @Override
+    protected String modelsUrl() {
+        // GET /openai/models?api-version=... — o Azure OpenAI exige o parâmetro
+        // obrigatório api-version em toda chamada de API.
+        return getApiBaseURL() + "/models?api-version=2024-10-21";
+    }
 }
