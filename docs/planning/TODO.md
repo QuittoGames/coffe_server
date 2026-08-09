@@ -938,6 +938,8 @@ Documento refatorado a partir do original (backup: <code>C:\Users\Quitto\AppData
 
 - [ ] **Testes para o rate limiting** — `RateLimitFilter`/`Bucket4jRateLimiter` sem cobertura direta (testar 429 e policy).
   <span class="tag">🟡 Média · security/</span>
+- [ ] **Testes de persistence `LinuxUser` (0%)** — Machine/User cobertos (08-09, Testcontainers); LinuxUser segue 0% — falta criar mappers/adapters primeiro.
+  <span class="tag">🟡 Média · 🗄️ Banco de Dados</span>
 - [ ] **Testes para `OAuth2UserProvisioningService`** — sem teste do auto-provisionamento (criação com UUID, authority `ROLE_*`).
   <span class="tag">🟡 Média · services/OAuth/</span>
 
@@ -975,8 +977,12 @@ Documento refatorado a partir do original (backup: <code>C:\Users\Quitto\AppData
   <span class="tag">🟡 Média · 🔒 Segurança · F-7</span>
 - [ ] **Teste isolado de rate limiting (429)** — `Filter.Ratelimt` em 10%; habilitar bean via `@TestConfiguration` (ou Redis Testcontainers).
   <span class="tag">🟡 Média · 🧪 Testes</span>
-- [ ] **Testes de persistence `Machine` (0-8%) e `LinuxUser` (0%)** — cobrir adapter/mapper/entity.
+- [x] **Testes de persistence `Machine` e `User`** — **concluído 08-09** (commit `04c2849`, 25 testes Testcontainers: Machine 13 + User 12). Bloqueados localmente por ambiente (E-1).
+  <span class="tag">✅ · 🗄️ Banco de Dados · 🧪 Testes</span>
+- [ ] **Testes de persistence `LinuxUser` (0%)** — cobrir adapter/mapper/entity; falta criar mappers/adapters primeiro.
   <span class="tag">🟡 Média · 🗄️ Banco de Dados</span>
+- [ ] **Reparar PATH do Windows + iniciar Docker Desktop** — entrada malformada `D:\Projects\C++\touchD:\Projects\C++\touch` no PATH do usuário causa `InvalidPathException` no Testcontainers; daemon Docker off impede rodar os 25 testes de persistência localmente.
+  <span class="tag">🟡 Média · ⚙️ Infraestrutura · E-1</span>
 - [ ] **`RateLimit` interface para o domínio** — hoje em `infrastructure/interfaces/Ratelimit/`.
   <span class="tag">🟢 Baixa · ♻️ Refatoração</span>
 - [ ] **Alinhar JDK local ↔ CI** — validar com a mesma versão do pipeline (CI: Java 21 temurin; local: 25).
@@ -988,8 +994,8 @@ Documento refatorado a partir do original (backup: <code>C:\Users\Quitto\AppData
   <span class="tag">🟡 Média · 🧪 Testes</span>
 - [ ] **Rate limit com Redis real / Testcontainers em integração** — remover o Postgres service morto do CI; exercitar 429 de ponta a ponta.
   <span class="tag">🟡 Média · ⚙️ Infraestrutura · 🧪 Testes</span>
-- [ ] **Testcontainers de verdade (substituir H2 na integração)** — Postgres real para os testes de repositório.
-  <span class="tag">🟡 Média · 🧪 Testes</span>
+- [x] **Testcontainers de verdade (substituir H2 na integração)** — **parcialmente concluído 08-09**: Postgres real nos testes de repositório (`Machine`/`User` via `PostgresPersistenceTestSupport`). Resta: LinuxUser, Redis/rate limit e validar no CI (Linux/Docker).
+  <span class="tag">✅ parcial · 🧪 Testes · E-1</span>
 - [ ] **Enforcement de cobertura JaCoCo** — subir o threshold (ex.: ≥50%) para impedir regressão de qualidade.
   <span class="tag">🟡 Média · 🧪 Testes</span>
 
