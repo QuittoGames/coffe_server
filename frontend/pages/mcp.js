@@ -9,9 +9,10 @@ import { renderHeader } from '../components/Header.js';
 import { renderStatusBar, updateStatusBarState } from '../components/StatusBar.js';
 import { renderMiniPanel } from '../components/MiniPanel.js';
 import { renderServerStatus } from '../components/ServerStatus.js';
-import { setupToastListener } from '../components/Toast.js';
+import { setupToastListener, toast } from '../components/Toast.js';
 import { mcpCard } from '../components/McpCard.js';
 import { setupWsListeners, startWs } from '../websocket/connection.js';
+import { registerHandlers } from '../websocket/handlers.js';
 
 import { mockMCP, mockMCPLog } from '../mock/mcp.js';
 
@@ -91,7 +92,8 @@ onReady(async () => {
   renderMiniPanel('[data-mini-panel]', { active: 'mcp' });
 
   setupToastListener();
-  setupWsListeners({ onOpen: () => updateStatusBarState('open'), onClose: () => updateStatusBarState('closed'), onMessage: () => {} });
+  setupWsListeners({ onOpen: () => updateStatusBarState('open'), onClose: () => updateStatusBarState('closed') });
+  registerHandlers({ showToast: toast });
   startWs();
 
   renderServerInfo();

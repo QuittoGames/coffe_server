@@ -3,10 +3,11 @@
  * Liquid-glass toolbar: logo, fake server address, primary nav, status, user menu.
  */
 
-import { el, qs, onReady } from '../utils/dom.js';
+import { el, qs } from '../utils/dom.js';
 import { icon } from '../utils/icons.js';
 import { getUser } from '../services/auth.js';
 import { setupLogoutButtons } from '../auth/logout.js';
+import logoUrl from '../assets/Logo.png';
 
 const NAV_ITEMS = [
   { id: 'dashboard', label: 'Dashboard', icon: 'layout-dashboard', href: './dashboard.html' },
@@ -38,7 +39,7 @@ export function renderHeader(target, { title = 'Coffee Server', active = 'dashbo
   logoLink.append(
     el('img', {
       class: 'header-logo-img',
-      attrs: { src: '../assets/Logo.png', alt: 'Coffee Server logo' },
+      attrs: { src: logoUrl, alt: 'Coffee Server logo' },
     }),
     el('span', {
       class: 'header-logo-text',
@@ -87,11 +88,11 @@ export function renderHeader(target, { title = 'Coffee Server', active = 'dashbo
     const userMenu = el('div', { class: 'dropdown' });
     const avatarBtn = el('button', {
       class: 'btn btn-sm btn-ghost',
-      attrs: { type: 'button', 'aria-haspopup': 'menu', 'data-dropdown-toggle': '' },
+      attrs: { type: 'button', 'aria-haspopup': 'menu', 'data-dropdown-toggle': '', title: user.name },
     });
     avatarBtn.append(
       icon('user', { size: 16, class: 'btn-icon' }),
-      el('span', { text: user.name }),
+      el('span', { class: 'user-name', text: user.name }),
     );
 
     const menu = el('div', { class: 'dropdown-menu hidden', attrs: { role: 'menu' } });

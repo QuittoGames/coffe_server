@@ -11,12 +11,14 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.setApplicationDestinationPrefixes("/ws_protocol");
+        registry.setApplicationDestinationPrefixes("/protocol");
         registry.enableSimpleBroker("/topic","/queue");
     }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws/agent");
+        // Raw WebSocket handshake route — same "/protocol" used as the
+        // application destination prefix, keeping a single route for the agent.
+        registry.addEndpoint("/protocol");
     }
 }

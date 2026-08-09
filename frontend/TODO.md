@@ -1,8 +1,38 @@
 # Coffee Server Dashboard — TODO (Frontend)
 
-> **Última atualização:** 2026-08-02
+> **Última atualização:** 2026-08-08
 > **Base:** Quitto UI System (dark-first, developer-focused, desktop-app aesthetic)
 > **Stack:** HTML/CSS/JS vanilla (ES modules) + Thymeleaf (páginas) — servido em `/app/**` pelo Spring Boot
+
+---
+
+## ✅ Concluído — WebSocket integrado ao backend (STOMP `/protocol`)
+
+<span class="badge badge-med">Concluído</span>
+
+### 1. `connection.js` reescrito como cliente STOMP 1.2
+- [x] **Endpoint real** — `ws(s)://host/protocol` (rota padrão do WebSocket; mesmo-origem por padrão; `setWsUrl()` para override)
+- [x] **Handshake STOMP** — frame `CONNECT` com `accept-version:1.2,1.1,1.0` + `heart-beat:30000,30000` + `host`
+- [x] **Assinatura** — no `CONNECTED`, `SUBSCRIBE` em `/queue/coffee-agent` (destino `@SendTo` do backend)
+- [x] **Parser de frames** — frames NUL-terminated (`\0`); MESSAGE → `JSON.parse` → dispatch; heartbeat EOL (`\n`) ignorado
+- [x] **Envio** — `sendRequest(payload)` faz `SEND` para `/protocol/agent` (app prefix do backend, `@MessageMapping("/agent")`; payload `RequestAgentDTO`)
+- [x] **Reconnect backoff** — `RECONNECT_BASE_MS=1000` → `RECONNECT_MAX_MS=30000` (dobra); desiste após `MAX_CONSECUTIVE_FAILURES`; se o endpoint nunca abriu (1º fail), para já (evita storm de handshake no rate limit)
+- [x] **API preservada** — `setWsUrl`, `onMessage`, `setupWsListeners`, `startWs`, `disconnect` (+ alias `stopWs`)
+- [x] **Auth gate** — `connect()` só abre com sessão local (`getUser()`); `onAuthChange(!user) → stopWs()` no logout (browser nunca fala com o broker sem usuário logado)
+
+### 2. `handlers.js` — detecção de `ResponseContentAgent`
+- [x] **Branch novo** — mensagem `{ status, userUse, action, operation }` (sem `type`/`event`) detectada por `typeof action === 'string' && status !== undefined` → toast `ACTION (operation): status` (erro para `error|failed|denied|unavailable`) + `EVENTS.DATA_REFRESH` domain `agent`
+- [x] **Eventos legados mantidos** — switch `WS_EVENTS` (machine.status, mcp.invoke, metrics, health) intacto como fallback
+
+### 3. Wiring nas páginas
+- [x] **`dashboard.js`** — `registerHandlers({ showToast: toast })` antes de `startWs()`; removido `onMessage: () => {}`
+- [x] **`mcp.js`** — import `toast` adicionado; `registerHandlers({ showToast: toast })` antes de `startWs()`; removido `onMessage: () => {}`
+
+### 4. Contrato do backend (referência)
+- `WebSocketConfig.java` — endpoint `/protocol` (raw), app prefix `/protocol`, simple broker `/topic` + `/queue`
+- `AgentWebSocketController.java` — `@MessageMapping("/agent")` + `@SendTo("/queue/coffee-agent")`; responde `ResponseContentAgent(status, userUse, action, operation)`
+- `RequestAgentDTO` = `{ token, idempotencyKey, content: { action, content } }`
+- `RateLimitFilter.java` — handshake `/protocol` excluído do rate limit (não queima o bucket)
 
 ---
 
@@ -76,8 +106,8 @@
 - [x] **`.dropdown-menu` glass** — `--glass-bg-strong` + blur 8px + borda glass
 - [x] **`// ` → `❯ `** — Terminal-prefix trocado em todas as páginas (dashboard, mcp, login) + Modal; cor do prefixo `--blue-accent`
 
-### 4. Responsividade (em progresso)
-- [x] **Header nunca estoura** — `.header > * { min-width: 0 }`, `.toolbar-nav` com `overflow-x: auto` (scrollbar oculta), `.header-actions` com `flex-shrink: 0`
+### 4. Responsividade
+- [x] **Header nunca estoura** — `.header > * { min-width: 0 }`, `.toolbar-nav` com `overflow-x: auto` (scrollbar oculta), `.header-actions` com `flex-shrink: 1` (mudou de `0` na centralização) + ellipsis no `.user-name`
 - [x] **Verificado em 1280×900** — dropdown abre sobre tudo, 4 links de nav, endereço OK
 - [x] **Verificado em 640×800** — botão do usuário dentro do header, sem overflow da nav
 - [x] **BUG 480px RESOLVIDO** — Media `max-width: 600px` esconde `.toolbar-label` (nav vira ícones-only), links 36px centralizados, `.header` padding reduzido; verificado em 420×800 (`toolbarLabelsVisible: 0`)
@@ -85,15 +115,20 @@
 
 ---
 
-## 🔄 Em andamento — Centralização do conteúdo do header
+## ✅ Concluído — Centralização do conteúdo do header
 
-<span class="badge badge-phase2">Em progresso</span>
+<span class="badge badge-phase2">Concluído</span>
 
 - [x] **Header em grid de 3 zonas (centralizado)** — `.header` usa `grid-template-columns: 1fr auto 1fr`; `.header-left` (logo + address) à esquerda, nav no centro, actions à direita
   - [x] `Header.js` reestruturado — `.header-left` envolve logo + address; nav e actions mantidas
   - [x] `layout.css` — grid 3 zonas aplicado; `.toolbar-nav` com `margin-left: auto` encolhe e rola internamente
-  - [x] Re-verificar em 1280 / 640 / 480 (com usuário curto E longo)
-  - [ ] Screenshots finais em `dropdown-debug/`
+- [x] **Re-verificado em 1280 / 640 / 480 (com usuário curto E longo)** — `validate-header-final.mjs` · 6/6 PASS
+  - [x] **1280px** (`t` e `admin_teste`) — sem overflow, sem overlap btn/nav, nav centrada (delta 4px), address/logo/label/status visíveis
+  - [x] **640px** (`t` e `admin_teste`) — sem overflow, btn contido (538–624), sem overlap, address/logo/status ocultos, label visível
+  - [x] **480px** (`t` e `admin_teste`) — sem overflow, nav ícones-only, nav centrada (delta 0px)
+- [x] **BUG 640px nome longo RESOLVIDO** — `.btn` de 116px transbordava dos 86px do `.header-actions` (justify flex-end + `flex-shrink: 0`) sobre a nav. Fix: `flex-shrink: 1` + `min-width: 0` + `max-width: 100%` no btn, `.user-name` com ellipsis (`overflow: hidden; text-overflow: ellipsis`), `title` do usuário para tooltip do nome completo
+  - <span class="tag">components/Header.js · styles/layout.css</span>
+- [x] **Screenshots finais em `dropdown-debug/`** — `header-1280-short|long.png`, `header-640-short|long.png`, `header-480-short|long.png`
 
 ---
 
@@ -103,10 +138,12 @@
 
 - [ ] **Calibrar glass** — Intensidade do blur, tom do café (`--coffee-glow`), animação reativa (hover/scroll) conforme feedback visual
 - [ ] **`smoke-spring.mjs` defasado** — Script de smoke usa credenciais inexistentes (`e2e_user`/`Senha123!`); atualizar para `t`/`t` ou `admin_teste_user`/`Senha123!`
-- [ ] **WebSocket 404** — `wss://localhost:8080/ws` não existe no servidor; decidir se implementa status push real ou remove a tentativa de conexão
+- [ ] **WebSocket — validar cookie no handshake do servidor** — `SecurityConfig` mantém o handshake `/protocol` sem `permitAll` explícito (cai em `authenticated()`); hoje a restrição é o auth gate do front + JWT do cookie. Endurecer validação explícita de sessão no backend quando o contrato de handshake for decidido (ver backend TODO — segurança)
+- [x] **WebSocket — rate limit `/protocol`** — `RateLimitFilter` agora exclui o handshake `/protocol` (rota padrão do WebSocket); não queima o bucket
+- [ ] **WebSocket — smoke test com/sem cookie** — validar que com sessão (`GET /api/test` ok) o socket conecta e recebe `ResponseContentAgent`; sem sessão, `startWs()` não abre conexão
+- [ ] **WebSocket — envio real de requests** — `sendRequest(payload)` existe no front, mas nenhuma UI chama; expor quando o backend processar `RequestAgentDTO` de verdade
 - [ ] **Logs ao vivo com dados reais** — Hoje usa `randomLogEntry()` do mock; quando o backend expuser eventos MCP ou `/api/audit/logs` (Fase 4/6), ligar no feed de logs
 - [ ] **Data provider por página** — `dashboard.js` importa 9 mocks no topo (ponto único de troca). Quando o backend expuser `/api/info/*`, `/api/calendar/events`, `/api/projects`, criar `data/` provider por página (fetch + fallback mock) sem tocar nos renderers
-- [ ] **Contrato morto do websocket** — `websocket/handlers.js` nunca é chamado por nenhuma página e `EVENTS.DATA_REFRESH` não tem listener; ou integrar (atualizar KPIs/status via WS) ou remover do bundle
 - [ ] **Modal trustHtml** — callers atuais marcam `trustHtml: true` com valores mock; quando a API real chegar, escapar cada campo ou construir o body com `el()`/`textContent`
 
 ---
@@ -121,6 +158,8 @@
 | `debug-toolbar.mjs` | Validar toolbar em 1280×900 | ✅ Rodado |
 | `debug-toolbar-small.mjs` | Validar toolbar em 640×800 | ✅ Rodado |
 | `debug-toolbar-480.mjs` | Validar toolbar em 480×800 com usuário longo | ✅ Rodado (revelou bug de estouro) |
+| `probe-640-long.mjs` | Probe do bug de overlap btn/nav em 640px + nome longo | ✅ Rodado |
+| `validate-header-final.mjs` | Validação final 6/6 (1280/640/480 × t/admin_teste) com métrica `btnNavOverlap` + filtro do ruído WebSocket | ✅ Rodado |
 | `smoke-spring.mjs` | Smoke geral do servidor | ⚠️ Defasado |
 
 ---

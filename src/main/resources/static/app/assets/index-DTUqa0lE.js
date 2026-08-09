@@ -1,0 +1,1 @@
+import{r as e}from"./auth-Lv5WDTrS.js";e();const o=(()=>{try{return!!window.sessionStorage.getItem("coffee_user")}catch{return!1}})();window.location.replace(o?"pages/dashboard.html":"pages/login.html");

@@ -23,8 +23,8 @@ import com.quitto.server.shared.exception.NotEnableExceptions;
  * {@link ServiceProvider}.
  *
  * <p>
- * No boot, injeta todos os beans {@link AIProvider}, aplica a chave de API
- * de cada um via {@link CoffeAgentService} e indexa pela enumeração.
+ * No boot, injeta todos os beans {@link AIProvider}, mas não aplica a chave de API
+ * imediatamente - a chave é aplicada sob demanda quando os modelos são solicitados.
  * </p>
  */
 @Service
@@ -40,14 +40,21 @@ public class AIProviderRegistry implements AIRegistry<ServiceProvider, AIProvide
     }
 
     private Map<ServiceProvider, AIProvider> load(List<AIProvider> providers) {
-        providers.forEach(provider -> {
-            String providerName = provider.getProvider().name();
-            provider.setKey(agentService.getEnvKey(providerName));
-        });
+        // Não aplicamos a chave imediatamente - isso será feito sob demanda
         return providers.stream()
                 .collect(Collectors.toMap(
                         AIProvider::getProvider,
                         Function.identity()));
+    }
+
+    private void ensureKeyIsSet(AIProvider provider) {
+        if (provider.getApiKey() == null || provider.getApiKey().isBlank()) {
+            String providerName = provider.getProvider().name();
+            String envId = provider.getEnvId();
+            // Usa o envId se disponível, caso contrário usa o nome do provedor
+            String keyLookupValue = (envId != null && !envId.isBlank()) ? envId : providerName;
+            provider.setKey(agentService.getEnvKey(keyLookupValue));
+        }
     }
 
     @Override
@@ -84,6 +91,9 @@ public class AIProviderRegistry implements AIRegistry<ServiceProvider, AIProvide
                     "Provider " + provider + " is not registered.");
         }
 
+        // Garante que a chave esteja configurada antes de buscar os modelos
+        ensureKeyIsSet(providerTools);
+
         return providerTools.getModels();
     }
 
@@ -91,16 +101,17 @@ public class AIProviderRegistry implements AIRegistry<ServiceProvider, AIProvide
     public List<AIModel> getAllModels() {
         List<AIModel> models = new ArrayList<>();
         for (AIProvider provider : registry.values()) {
-
             if (provider == null) {
                 throw new NoSuchElementException(
                         "Provider " + provider + " is not registered.");
             }
 
+            // Garante que a chave esteja configurada antes de buscar os modelos
+            ensureKeyIsSet(provider);
+
             models.addAll(provider.getModels());
         }
         return models;
-
     }
 
     /**

@@ -40,4 +40,18 @@ public interface AIProvider {
     void turnOn();
 
     void turnOff();
+
+    /**
+     * Retorna a chave de API atualmente configurada para o provedor.
+     * @return a chave de API, ou {@code null} se não estiver configurada
+     */
+    String getApiKey();
+
+    /**
+     * Retorna o ID usado para busca de variáveis de ambiente (ex: "OPENAI").
+     * Este ID é usado pelo {@code CoffeAgentService} para buscar a chave
+     * de API apropriada nas variáveis de ambiente.
+     * @return o ID de busca de ambiente, ou {@code null} se não configurado
+     */
+    String getEnvId();
 }

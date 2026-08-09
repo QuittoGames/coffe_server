@@ -46,6 +46,7 @@ public abstract class BaseProvider implements AIProvider {
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     protected String apiKey;
+    protected String envId; // ID used for env var lookup (e.g., "OPENAI")
     private boolean enabled;
 
     /**
@@ -312,6 +313,17 @@ public abstract class BaseProvider implements AIProvider {
     private static String truncate(String body) {
         if (body == null) return "";
         return body.length() > 200 ? body.substring(0, 200) + "…" : body;
+    }
+
+    // Getters para a interface AIProvider
+    @Override
+    public String getApiKey() {
+        return apiKey;
+    }
+
+    @Override
+    public String getEnvId() {
+        return envId;
     }
 
     // auxiliares para provedores que queiram sobrescrever fetchModelsFromApi()

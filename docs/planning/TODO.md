@@ -325,7 +325,7 @@
 
 <blockquote>
 <strong>Readiness:</strong> 🟢 8.0/10 · <strong>Revisão completa em 2026-08-03</strong> — arquitetura, segurança, qualidade de código e frontend. <br>
-📅 <strong>Gerado em:</strong> 2026-08-06 · atualizado 2026-08-06 · <strong>173 tarefas</strong> · <strong>85 concluídas</strong> · <strong>85 pendentes</strong> · <strong>3 em andamento</strong> · <strong>13 erros do dia</strong> · <strong>cobertura: 49.1%</strong> <br>
+📅 <strong>Gerado em:</strong> 2026-08-06 · atualizado 2026-08-08 · <strong>173 tarefas</strong> · <strong>86 concluídas</strong> · <strong>85 pendentes</strong> · <strong>2 em andamento</strong> · <strong>13 erros do dia</strong> · <strong>cobertura: 49.7%</strong> <br>
 Documento refatorado a partir do original (backup: <code>C:\Users\Quitto\AppData\Local\Temp\opencode\TODO.md.backup-20260806</code>) — reorganizado nas seções obrigatórias, sem perda de conteúdo.
 </blockquote>
 ---
@@ -337,15 +337,6 @@ Documento refatorado a partir do original (backup: <code>C:\Users\Quitto\AppData
 
 ## ⚡ Features
 
-### Centralização do header
-
-- [ ] **Centralização do header** — grid 3 zonas já aplicado em `static/app/styles/layout.css`; falta validar casos de borda e fechar com evidências.
-  <span class="tag">🚧 Em andamento · static/app/TODO.md · volta p/ 🎨 Frontend</span>
-  - [ ] Re-validar layout com nome de usuário curto (ex.: `t`) e longo (ex.: `admin_teste`)
-  - [ ] Re-validar header com breadcrumb/nav em 1280 / 640 / 480 px
-  - [ ] Capturar screenshots finais (desktop + mobile) e anexar ao `static/app/TODO.md`
-  - [ ] Mover de volta p/ 🎨 Frontend como `[x]` ao concluir
-
 ### Ecossistema IA Provider — correção dos endpoints
 
 - [ ] **Correção dos endpoints de listagem de modelos** — pesquisa concluída: 11/37 providers com URL de listagem errada (ver `docs/research/model-listing-endpoints.md`); aplicar correções Nível 1-3 + secrets + exposição MCP.
@@ -355,7 +346,7 @@ Documento refatorado a partir do original (backup: <code>C:\Users\Quitto\AppData
   - [ ] **Nível 3 — sobrescrever `fetchModelsFromApi()` com SDK/assinatura:** Vertex (parent `publishers` + OAuth2) · watsonx (`version` query + IAM) · OCI (`compartmentId` + signing) · Bedrock (SigV4 via AWS SDK)
   - [ ] **Transversal:** paginação (`pageSize`/`pageToken`/`nextPageToken`) nos providers com listas longas (OpenAI, Cohere, Google AI Studio, Fireworks, OCI)
   - [ ] **Secrets reais:** implementar `CoffeAgentService.getEnvKey()` lendo env vars (hoje retorna placeholder `"key_temp"`)
-  - [ ] **Expor `ProvaiderIAService.getModels()`** como MCP tool
+  - [x] **Expor `ProvaiderIAService.getModels()`** como API
   - [ ] Regressão: `./mvnw test` verde após as correções
 
 ### CoffeAgent WebSocket adapter
@@ -390,7 +381,7 @@ Documento refatorado a partir do original (backup: <code>C:\Users\Quitto\AppData
 <div class="section-summary">
   <div class="stat-card"><strong>8</strong> / 10<br><span class="tag">🧱 Arquitetura</span></div>
   <div class="stat-card"><strong>10</strong> / 18<br><span class="tag">🖥️ Backend</span></div>
-  <div class="stat-card"><strong>6</strong> / 8<br><span class="tag">🎨 Frontend</span></div>
+  <div class="stat-card"><strong>7</strong> / 8<br><span class="tag">🎨 Frontend</span></div>
   <div class="stat-card"><strong>7</strong> / 12<br><span class="tag">🔒 Segurança</span></div>
   <div class="stat-card"><strong>3</strong> / 6<br><span class="tag">🔌 APIs</span></div>
   <div class="stat-card"><strong>5</strong> / 8<br><span class="tag">🗄️ Banco de Dados</span></div>
@@ -414,18 +405,18 @@ Documento refatorado a partir do original (backup: <code>C:\Users\Quitto\AppData
 
 <div class="section-summary">
   <div class="stat-card"><strong>153</strong> tarefas<br><span class="tag">total</span></div>
-  <div class="stat-card"><strong>85</strong> concluídas<br><span class="tag">✅ done</span></div>
+  <div class="stat-card"><strong>86</strong> concluídas<br><span class="tag">✅ done</span></div>
   <div class="stat-card"><strong>65</strong> pendentes<br><span class="tag">📝 todo</span></div>
-  <div class="stat-card"><strong>3</strong> em andamento<br><span class="tag">🚧 wip</span></div>
+  <div class="stat-card"><strong>2</strong> em andamento<br><span class="tag">🚧 wip</span></div>
   <div class="stat-card"><strong>13</strong> erros do dia<br><span class="tag">🧾 daily</span></div>
-  <div class="stat-card"><strong>49.1%</strong> cobertura<br><span class="tag">done / total</span></div>
+  <div class="stat-card"><strong>49.7%</strong> cobertura<br><span class="tag">done / total</span></div>
 </div>
 
 | Categoria | Progresso |
 |---|---|
 | 🧱 Arquitetura | <div class="progress-bar"><div class="progress-fill low" style="width:80%"></div></div> 8/10 |
 | 🖥️ Backend | <div class="progress-bar"><div class="progress-fill med" style="width:56%"></div></div> 10/18 |
-| 🎨 Frontend | <div class="progress-bar"><div class="progress-fill med" style="width:75%"></div></div> 6/8 |
+| 🎨 Frontend | <div class="progress-bar"><div class="progress-fill med" style="width:88%"></div></div> 7/8 |
 | 🔒 Segurança | <div class="progress-bar"><div class="progress-fill med" style="width:58%"></div></div> 7/12 |
 | 🔌 APIs | <div class="progress-bar"><div class="progress-fill med" style="width:50%"></div></div> 3/6 |
 | 🗄️ Banco de Dados | <div class="progress-bar"><div class="progress-fill med" style="width:63%"></div></div> 5/8 |
@@ -443,9 +434,9 @@ Documento refatorado a partir do original (backup: <code>C:\Users\Quitto\AppData
 
 ## ✅ Concluídas vs Pendentes
 
-- **85 concluídas** · **85 pendentes** · **3 em andamento** — total **173 tarefas**
+- **86 concluídas** · **85 pendentes** · **2 em andamento** — total **173 tarefas**
 - **13 erros do dia** no board de correções pós-bateria (Nível 1 → Nível 3)
-- **Cobertura de conclusão: 49.1%**
+- **Cobertura de conclusão: 49.7%**
 - 🎯 **Meta atual:** fechar os 🔥 Alta (OAuth2 via porta de domínio, CORS, persistência LinuxUser/ExternalAccount, `createEvent`, transporte Google cacheado, versionamento de API, multi-module) antes de escalar features novas.
 
 ---
@@ -460,6 +451,7 @@ Documento refatorado a partir do original (backup: <code>C:\Users\Quitto\AppData
 - **Bateria de testes 2026-08-03:** 195 únicos / 380 brutos · 0 falhas / 0 erros / 3 skipped · 38,4 s · JaCoCo 59,2% linha / 54,5% branch. Chain de segurança agora efetiva nos testes (Filter 19% → 83,8%); **403 ordem-dependente corrigido**; **CI falha em teste** (continue-on-error removido).
 - **CORS ainda ausente** no `SecurityConfig`; Testcontainers + JaCoCo no `pom.xml` (sem enforcement).
 - **2026-08-04:** Redis com senha + TLS no provider (`RedisURI.Builder` + `@PreDestroy` shutdown), registries IA refatorados para o contrato 1:N (`ModelsRegistry`/`AIProviderRegistry`), smoke real contra Redis 7.4.10 remoto validado (6380), import fantasma `jdk.tools.jlink.resources` removido.
+- **2026-08-08:** Centralização do header validada 6/6 (1280/640/480 × `t`/`admin_teste`) — BUG 640px com nome longo corrigido: `.header-actions .btn` ganhou `flex-shrink: 1` + ellipsis no `.user-name` + `title` no avatarBtn; `probe-ellipsis-final.mjs` e `validate-header-final.mjs` (com `btnNavOverlap` + filtro WS 404) em `coffee-smoke`; evidências e screenshots em `static/app/TODO.md` + `dropdown-debug/`.
 
 ---
 
@@ -528,6 +520,8 @@ Documento refatorado a partir do original (backup: <code>C:\Users\Quitto\AppData
   <span class="tag">static/app/components/Modal.js · pages/mcp.js</span>
 - [x] **Responsividade 1280 / 640 / 480** — header em grid de 3 zonas, nav ícones-only em <600px.
   <span class="tag">static/app/styles/layout.css</span>
+- [x] **Centralização do header validada 6/6** — re-validação em 1280/640/480 × usuário curto (`t`) e longo (`admin_teste`): sem overflow, sem overlap btn/nav, nav centralizada; bug de estouro do `.btn` em 640px corrigido com ellipsis no `.user-name` + `title` (tooltip). Evidências e screenshots em `static/app/TODO.md` + `validate-header-final.mjs`.
+  <span class="tag">static/app/components/Header.js · static/app/styles/layout.css</span>
 - [x] **Design system tokens coffee + blue** — `tokens.css` com `--glass-*`, z-index header 250.
   <span class="tag">static/app/styles/tokens.css</span>
 
@@ -1062,4 +1056,3 @@ Este documento é a **fonte única de verdade operacional** do coffe_server. Ant
 <strong>✅ 2026-08-04:</strong> Redis com senha + TLS no provider (`RedisURI.Builder` + `@PreDestroy`), registries IA no contrato 1:N (`ModelsRegistry`/`AIProviderRegistry`), smoke real contra Redis 7.4.10 remoto, import fantasma removido.<br>
 <strong>🧭 Frontend:</strong> backlog detalhado vive em <code>src/main/resources/static/app/TODO.md</code>.
 </blockquote>
-

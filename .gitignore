@@ -121,3 +121,11 @@ $RECYCLE.BIN/
 /application-local.yml
 /application-dev.properties
 /application-dev.yml
+
+### Local runtime artifacts ###
+.server.pid
+server.log.err
+backend_compile_*.txt
+frontend/build_out.txt
+frontend/frontend_build_protocol.txt
+node_modules/

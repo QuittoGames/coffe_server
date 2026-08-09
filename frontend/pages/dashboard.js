@@ -15,6 +15,7 @@ import { renderMiniPanel } from '../components/MiniPanel.js';
 import { renderServerStatus } from '../components/ServerStatus.js';
 import { setupToastListener, toast } from '../components/Toast.js';
 import { setupWsListeners, startWs } from '../websocket/connection.js';
+import { registerHandlers } from '../websocket/handlers.js';
 import { kpiCard } from '../components/KpiCard.js';
 import { machineCard } from '../components/MachineCard.js';
 import { containerRow } from '../components/ContainerRow.js';
@@ -409,7 +410,8 @@ onReady(async () => {
   renderServerStatus('[data-server-status]');
 
   setupToastListener();
-  setupWsListeners({ onOpen: () => updateStatusBarState('open'), onClose: () => updateStatusBarState('closed'), onMessage: () => {} });
+  setupWsListeners({ onOpen: () => updateStatusBarState('open'), onClose: () => updateStatusBarState('closed') });
+  registerHandlers({ showToast: toast });
   startWs();
 
   renderUserCard();

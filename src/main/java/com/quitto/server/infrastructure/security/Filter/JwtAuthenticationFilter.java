@@ -39,6 +39,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
         this.manager = manager;
     }
 
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        return path.startsWith("/app/") 
+            || path.startsWith("/css/")
+            || path.startsWith("/js/")
+            || path.startsWith("/webjars/")
+            || path.startsWith("/favicon.ico")
+            || path.startsWith("/error");
+    }
+
     // Validate the JWT sent in the Authorization header
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)throws ServletException, IOException{
