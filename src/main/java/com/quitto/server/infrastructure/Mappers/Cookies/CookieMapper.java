@@ -3,7 +3,7 @@ package com.quitto.server.infrastructure.Mappers.Cookies;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 
-import com.quitto.server.domain.valueobject.CookieDomain;
+import com.quitto.server.domain.valueobject.Cookie.CookieDomain;
 import com.quitto.server.infrastructure.interfaces.Cookies.HttpCookieMapper;
 
 @Service

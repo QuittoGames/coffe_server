@@ -1,4 +1,4 @@
-package com.quitto.server.infrastructure.security.Filter.Token;
+package com.quitto.server.infrastructure.security.Token;
 
 import java.util.Optional;
 

@@ -27,8 +27,8 @@ import com.quitto.server.domain.interfaces.Token.TokenService;
 import com.quitto.server.infrastructure.db.User.Entity.UserEntity;
 import com.quitto.server.infrastructure.db.User.Repository.JpaUserRepository;
 import com.quitto.server.infrastructure.security.Filter.Adapter.HttpTokenRequestContext;
-import com.quitto.server.infrastructure.security.Filter.Token.CookieTokenResolver;
-import com.quitto.server.infrastructure.security.Filter.Token.JwtTokenResolver;
+import com.quitto.server.infrastructure.security.Token.CookieTokenResolver;
+import com.quitto.server.infrastructure.security.Token.JwtTokenResolver;
 import com.quitto.server.infrastructure.services.Auth.Token.TokenResolverManager;
 
 import jakarta.servlet.http.Cookie;

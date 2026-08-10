@@ -2,7 +2,7 @@ package com.quitto.server.infrastructure.Adapters.out.Auth;
 
 import org.springframework.stereotype.Component;
 
-import com.quitto.server.domain.valueobject.CookieDomain;
+import com.quitto.server.domain.valueobject.Cookie.CookieDomain;
 import com.quitto.server.domain.interfaces.Cookies.CookieManager;
 import com.quitto.server.domain.interfaces.Cookies.CookieFactory;
 

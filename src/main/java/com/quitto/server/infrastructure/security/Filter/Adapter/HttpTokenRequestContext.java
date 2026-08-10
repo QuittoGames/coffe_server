@@ -1,7 +1,7 @@
 package com.quitto.server.infrastructure.security.Filter.Adapter;
 
 import com.quitto.server.domain.interfaces.Token.TokenRequestContext;
-import com.quitto.server.domain.valueobject.CookieDomain;
+import com.quitto.server.domain.valueobject.Cookie.CookieDomain;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Optional;

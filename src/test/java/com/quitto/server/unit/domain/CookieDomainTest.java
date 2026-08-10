@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
-import com.quitto.server.domain.valueobject.CookieDomain;
+import com.quitto.server.domain.valueobject.Cookie.CookieDomain;
 
 class CookieDomainTest {
 

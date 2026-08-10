@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.http.HttpHeaders;
 
 import com.quitto.server.application.interfaces.Cookies.HttpCookieWriter;
-import com.quitto.server.domain.valueobject.CookieDomain;
+import com.quitto.server.domain.valueobject.Cookie.CookieDomain;
 import com.quitto.server.infrastructure.interfaces.Cookies.HttpCookieMapper;
 
 import jakarta.servlet.http.HttpServletResponse;

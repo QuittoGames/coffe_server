@@ -21,7 +21,7 @@ import com.quitto.server.application.dto.Auth.RegisterDTO;
 import com.quitto.server.application.interfaces.Cookies.HttpCookieWriter;
 import com.quitto.server.application.services.Auth.UserAuthenticationService;
 import com.quitto.server.domain.interfaces.Cookies.CookieManager;
-import com.quitto.server.domain.valueobject.CookieDomain;
+import com.quitto.server.domain.valueobject.Cookie.CookieDomain;
 
 @ExtendWith(MockitoExtension.class)
 class AuthenticationControllerTest {

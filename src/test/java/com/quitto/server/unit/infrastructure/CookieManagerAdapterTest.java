@@ -10,7 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.quitto.server.domain.interfaces.Cookies.CookieFactory;
-import com.quitto.server.domain.valueobject.CookieDomain;
+import com.quitto.server.domain.valueobject.Cookie.CookieDomain;
 import com.quitto.server.infrastructure.Adapters.out.Auth.CookieManagerAdapter;
 
 @ExtendWith(MockitoExtension.class)

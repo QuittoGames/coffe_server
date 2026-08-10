@@ -1,6 +1,6 @@
 package com.quitto.server.domain.interfaces.Cookies;
 
-import com.quitto.server.domain.valueobject.CookieDomain;
+import com.quitto.server.domain.valueobject.Cookie.CookieDomain;
 
 /**
  * Porta de gerenciamento do cookie de access token (domínio puro).

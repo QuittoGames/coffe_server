@@ -25,13 +25,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.quitto.server.application.dto.Auth.LoginDTO;
 import com.quitto.server.domain.enums.Role;
 import com.quitto.server.domain.interfaces.Token.TokenService;
-import com.quitto.server.domain.valueobject.CookieDomain;
+import com.quitto.server.domain.valueobject.Cookie.CookieDomain;
 import com.quitto.server.infrastructure.db.User.Entity.UserEntity;
 import com.quitto.server.infrastructure.db.User.Repository.JpaUserRepository;
 import com.quitto.server.infrastructure.security.Filter.Adapter.HttpTokenRequestContext;
 import com.quitto.server.infrastructure.security.Filter.JwtAuthenticationFilter;
-import com.quitto.server.infrastructure.security.Filter.Token.CookieTokenResolver;
-import com.quitto.server.infrastructure.security.Filter.Token.JwtTokenResolver;
+import com.quitto.server.infrastructure.security.Token.CookieTokenResolver;
+import com.quitto.server.infrastructure.security.Token.JwtTokenResolver;
 import com.quitto.server.infrastructure.services.Auth.Token.Cookies.HttpCookieService;
 import com.quitto.server.infrastructure.services.Auth.Token.TokenResolverManager;
 

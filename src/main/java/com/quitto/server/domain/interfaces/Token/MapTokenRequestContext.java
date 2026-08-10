@@ -1,6 +1,6 @@
 package com.quitto.server.domain.interfaces.Token;
 
-import com.quitto.server.domain.valueobject.CookieDomain;
+import com.quitto.server.domain.valueobject.Cookie.CookieDomain;
 import java.util.Map;
 import java.util.Optional;
 

@@ -1,6 +1,6 @@
 package com.quitto.server.application.interfaces.Cookies;
 
-import com.quitto.server.domain.valueobject.CookieDomain;
+import com.quitto.server.domain.valueobject.Cookie.CookieDomain;
 
 import jakarta.servlet.http.HttpServletResponse;
 

@@ -1,4 +1,4 @@
-package com.quitto.server.domain.valueobject;
+package com.quitto.server.domain.valueobject.Cookie;
 
 import java.util.Objects;
 

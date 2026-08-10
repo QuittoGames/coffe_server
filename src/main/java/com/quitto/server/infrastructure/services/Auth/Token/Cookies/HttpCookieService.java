@@ -3,7 +3,7 @@ package com.quitto.server.infrastructure.services.Auth.Token.Cookies;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.quitto.server.domain.valueobject.CookieDomain;
+import com.quitto.server.domain.valueobject.Cookie.CookieDomain;
 import com.quitto.server.domain.interfaces.Cookies.CookieFactory;
 
 @Service
