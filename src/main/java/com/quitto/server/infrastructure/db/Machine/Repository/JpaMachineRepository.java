@@ -28,7 +28,7 @@ public interface JpaMachineRepository extends JpaRepository<MachineEntity,Long>{
 
     boolean existsByMacAddress(String macAddress);
 
-    @Modifying
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(value = "UPDATE machine SET user_id = :userId WHERE id = :machineId", nativeQuery = true)
     int updateOwner(@Param("machineId") long machineId, @Param("userId") long userId);
 

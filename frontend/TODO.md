@@ -164,4 +164,4 @@
 
 ---
 
-> **Nota de estrutura:** O frontend vive em `src/main/resources/static/app/` e é servido diretamente pelo Spring Boot em `/app/**` — sem etapa de cópia/sincronização manual. Editar sempre nesta pasta.
+> **Nota de estrutura (corrigida 2026-08-09 — auditoria):** O frontend **fonte** vive nesta pasta (`frontend/` — Vite MPA). O build (`npm run build` aqui) gera o bundle em `src/main/resources/static/app/` (via `vite.config.js`: `outDir` + `emptyOutDir`), servido pelo Spring Boot em `/app/**`. **Editar sempre em `frontend/`** e rodar `npm run build` — edições diretas em `static/app/` são sobrescritas na próxima build.

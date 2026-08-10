@@ -2,6 +2,7 @@ package com.quitto.server.infrastructure.services.Chace;
 
 import java.security.InvalidKeyException;
 import java.util.Objects;
+import java.util.Optional;
 
 import com.quitto.server.domain.interfaces.Database.Connection;
 import com.quitto.server.infrastructure.services.Serializer.JsonSerializer;
@@ -25,7 +26,7 @@ public class CacheService {
         database.insert(key,rawData);
     }
 
-    public String search(String key) throws InvalidKeyException{
+    public Optional<String> search(String key) throws InvalidKeyException{
         Objects.requireNonNull(key);
 
         String value = database.search(key);
@@ -34,6 +35,6 @@ public class CacheService {
             throw new InvalidKeyException("Key is not valid , value returend is null");
         }
 
-        return value;
+        return Optional.of(value);
     }
 }

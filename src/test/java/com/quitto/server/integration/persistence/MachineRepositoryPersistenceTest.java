@@ -36,6 +36,8 @@ class MachineRepositoryPersistenceTest extends PostgresPersistenceTestSupport {
 
     private Long ownerId;
 
+    private int machineSeq;
+
     @BeforeEach
     void seedOwner() {
         User owner = userRepository.save(
@@ -44,7 +46,10 @@ class MachineRepositoryPersistenceTest extends PostgresPersistenceTestSupport {
     }
 
     private Machine newMachine(String hostname) {
-        return new Machine(null, hostname, "ts-key-" + hostname, "10.0.0.1", "AA:BB:CC:DD:EE:01",
+        machineSeq++;
+        String ip = "10.0.0." + (machineSeq + 10);
+        String mac = String.format("AA:BB:CC:DD:EE:%02X", machineSeq);
+        return new Machine(null, hostname, "ts-key-" + hostname, ip, mac,
                 true, true, "Ubuntu 24.04", ownerId);
     }
 
@@ -85,9 +90,9 @@ class MachineRepositoryPersistenceTest extends PostgresPersistenceTestSupport {
 
     @Test
     void findByMacAddress_returnsMachine() {
-        machineRepository.save(newMachine("server-by-mac"));
+        Machine saved = machineRepository.save(newMachine("server-by-mac"));
 
-        Optional<Machine> result = machineRepository.findByMacAddress("AA:BB:CC:DD:EE:01");
+        Optional<Machine> result = machineRepository.findByMacAddress(saved.getMacAddress());
 
         assertThat(result).isPresent();
         assertThat(result.get().getHostname()).isEqualTo("server-by-mac");
