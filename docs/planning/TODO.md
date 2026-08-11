@@ -26,7 +26,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 # coffe_server — TODO
 
 > **Readiness:** 🟢 8.3/10 · **Auditoria 2026-08-09/10:** 10 subagentes (claims verificadas, bugs, arquitetura, frontend real).
-> **Totais:** 192 tasks · 106 ativas · 86 done · 104 pendentes (99 TODO + 5 bloqueadas) · 2 em execução · 4 CRITICAL · 45 novas · 5 obsoletas/canceladas.
+> **Totais:** 193 tasks · 106 ativas · 87 done · 104 pendentes (99 TODO + 5 bloqueadas) · 2 em execução · 4 CRITICAL · 45 novas · 5 obsoletas/canceladas.
 > **Build:** 231 testes · 0 failures · 0 errors · 3 skipped · 38s · 25 Testcontainers Postgres · JaCoCo 59,2% linha / 54,5% branch.
 > **Backup do TODO antigo:** `C:\Users\Quitto\AppData\Local\Temp\opencode_backup_TODO_20260810.md`.
 
@@ -34,11 +34,10 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 # Dashboard
 
-## 🚨 AGORA — próxima ação (7)
+## 🚨 AGORA — próxima ação (6)
 
 | ID | Task | Prio | Est. |
 |---|---|---|---|
-| TSK-026 | MCP: `spring.ai.mcp.server.base-url` com aspas em `application.properties:57` — remover | 🟡 | 10m |
 | TSK-047 | Secrets IA: `CoffeAgentService.getEnvKey()` lê env vars (hoje `"key_temp"`) | 🔴 | 30m |
 | TSK-001 | JwtTokenResolver exige esquema `Bearer ` (F-7); reverter teste p/ 401 | 🔴 | 30m |
 | TSK-028 | `JwtTokenService` ainda `@Value` field (claim falsa) → constructor injection | 🟡 | 30m |
@@ -77,7 +76,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ## 📊 MÉTRICAS
 
-<span class="stat-card"><strong>192</strong> total · 106 ativas + 86 done</span>
+<span class="stat-card"><strong>193</strong> total · 106 ativas + 87 done</span>
 <span class="stat-card"><strong>99</strong> TODO prontos</span>
 <span class="stat-card"><strong>5</strong> bloqueadas</span>
 <span class="stat-card"><strong>2</strong> em execução · 1 REVIEW + 1 IN_PROGRESS</span>
@@ -89,8 +88,8 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 | Categoria | Ativas |
 |---|---|
-| 🔒 Segurança | 20 |
-| 🐛 Bugs | 11 |
+| 🔒 Segurança | 21 |
+| 🐛 Bugs | 10 |
 | 🧱 Arquitetura | 15 |
 | 🤖 IA | 7 |
 | 🔌 MCP | 5 |
@@ -121,56 +120,152 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 # Backlog (resumo)
 
-> 86 done destacados por categoria. Registro completo com status individual: Task Registry abaixo.
+> 87 done · 106 ativas · 5 bloqueadas — registro completo com status individual: Task Registry abaixo.
+> Marque `[ ]` → `[x]` quando concluir uma task e ajuste as métricas no topo.
 
 ## 🔒 Segurança
 - [x] Rate limiting `/auth/login` + `/auth/register` (Bucket4j + Redis 7.4.10)
 - [x] TLS + HTTP/2; OAuth2 authority corrigida; logout revoga cookie
 - [x] `JwtTokenService.verifyToken` null-safe; `.env` fora do git; chain testada (filtro 83,8%)
-- [ ] 20 ativas → `TSK-001..020` (mTLS, CORS, Bearer, keys TLS, SameSite…)
+- [ ] TSK-001 · 🔴 — `JwtTokenResolver` exige esquema `Bearer ` (hoje aceita sem prefixo); reverter teste p/ 401
+- [ ] TSK-002 · 🔴 — CORS ausente no `SecurityConfig` — necessário p/ PS3 e web
+- [ ] TSK-107 · 🔴 — JwtTokenService só emite tokens; validação JWT via Spring Security (`JwtDecoder` + `JwtAuthenticationConverter`); elimina `extractIdSubject`
+- [ ] ⛔ TSK-003 · 🔴 — mTLS `client-auth=require` + X509 filter (ADR-004)
+- [ ] TSK-004 · 🟡 — Permissões granulares/scopes (N:N, scopes JWT, `@PreAuthorize`)
+- [ ] TSK-005 · 🔴 — RateLimitFilter: catch vazios + política por rota (LOGIN/REGISTER/API)
+- [ ] TSK-006 · 🟡 — Higiene secrets: `.env`/`keys/` fora do git + `.env.example`
+- [ ] TSK-007 · 🟡 — RateLimitFilter log `"RateLimit begin {}"` → SLF4J real
+- [ ] TSK-008 · 🔴 — MDC request ID / user ID / session ID
+- [ ] TSK-009 · 🟡 — Cookie domain hardcoded `"coffe_server"` → configurável
+- [ ] TSK-010 · 🟢 — Security TRACE dev → profile `dev`
+- [ ] TSK-011 · 🟡 — `CookieDomain` campo `sameSite` (default seguro)
+- [ ] TSK-012 · 🟡 — Sanitizar secrets/keys em logs
+- [ ] TSK-013 · 🟡 — Teste rate limit 429 (políticas)
+- [ ] TSK-014 · 🟢 — API Key resolver (`X-API-Key`) na chain
+- [ ] TSK-015 · 🔴 — Chaves TLS privadas no JAR (`resources/keys`) → externo/env
+- [ ] TSK-016 · 🟡 — CookieMapper SameSite `Lax` → `Strict`
+- [ ] TSK-017 · 🟡 — JwtAuthenticationFilter: `NE`/`JTWVE` + separar `recoverToken`
+- [ ] TSK-018 · 🟢 — Confirmar `.gitignore` cobre `keys/` e certs
+- [ ] TSK-019 · 🟡 — AuthExceptionHandler: 500 genérico sem vazar detalhes
+- [ ] TSK-020 · 🔴 — `OAuth2UserProvisioningService` → porta `UserRepository` (DIP)
 
 ## 🐛 Bugs
 - [x] `setOwner()` implementado; `extractIdSubject` Optional; `User.toString` sem hash
-- [ ] 11 ativas → `TSK-021..031`
+- [x] TSK-026 · 🟡 — MCP base-url com aspas literal em `application.properties:57` removidas
+- [ ] TSK-021 · 🟡 — Validação de senha register inconsistente (1..500 vs min 8)
+- [ ] TSK-022 · 🟡 — DTOs sem Bean Validation (`@NotBlank/@Email/@Size`)
+- [ ] TSK-023 · 🟢 — `RegisterResponseDTO.Token` maiúsculo (inconsistente com login)
+- [ ] TSK-024 · 🟡 — `MachineService`: `UsernameNotFoundException` (Spring) → `UserNotFoundException`
+- [ ] TSK-025 · 🟢 — HomeController: validar redirects pós-build Vite
+- [ ] TSK-027 · 🟡 — Drift Redis remoto 6380 (rate-limit sem `requirepass`)
+- [ ] TSK-028 · 🟡 — `JwtTokenService` `@Value` field (claim falsa) → constructor
+- [ ] TSK-029 · 🟢 — Typo porta: `genareteToken` → `generateToken`
+- [ ] TSK-030 · 🟢 — Typo porta: `resolver` → `resolve`
+- [ ] TSK-031 · 🟢 — `isIs_active()` → `isActive()`
 
 ## 🧱 Arquitetura
 - [x] CookieSystem no domínio; `MachineNotFoundException` no domínio; typos de classe corrigidos; `AIRegistry` 1:N
-- [ ] 15 ativas → `TSK-032..045` + `TSK-054`
+- [ ] TSK-032 · 🟡 — `TokenResolverManager` infra → application (use case)
+- [ ] TSK-033 · 🟢 — Domínio anêmico: `Machine.wakeOnLan()`, `ExternalAccount.refreshTokenIfExpired()`
+- [ ] TSK-034 · 🟢 — Pacotes com typos (`Adpter`, `Provaider`, `Arry`, `Ratelimit`, `LinuxAcount`) — rename breaking
+- [ ] TSK-035 · 🟢 — `domain/Repository/users` → `User`
+- [ ] TSK-036 · 🔴 — ADR-002: versionamento `/api/v1` — decidir + aplicar
+- [ ] TSK-037 · 🔴 — ADR-003: multi-module — decidir
+- [ ] TSK-038 · 🟡 — ADR-004: CA mTLS — decidir
+- [ ] TSK-039 · 🟡 — ADR-005: MCP módulo separado — decidir
+- [ ] TSK-040 · 🟡 — `CalendarController` REST em `mcp/` → application
+- [ ] TSK-041 · 🟢 — `shared/` cross-cutting — definir destino
+- [ ] TSK-042 · 🟡 — Regra de camadas: MCP tools delegam p/ use cases
+- [ ] TSK-043 · 🟢 — OAuth2 Google será refatorado — não usar como base (IA_README)
+- [ ] TSK-044 · 🟢 — `GoogleCalenderService` (typo `Calender`) — rename
+- [ ] TSK-045 · 🟢 — Typo porta: `getAdpterConnector` → `getAdapterConnector`
+- [ ] TSK-054 · 🟡 — `RateLimit` interface infra → domínio
 
 ## 🤖 IA
 - [x] Registries 1:N (`ModelsRegistry`, `AIProviderRegistry`); import fantasma removido
-- [ ] 7 ativas → `TSK-047..053`
+- [ ] TSK-047 · 🔴 — `getEnvKey()` lê env vars (hoje `"key_temp"`)
+- [ ] TSK-048 · 🟡 — Listagem Nível 2 (DeepInfra, Novita, Ollama, Cloudflare, Fireworks, Azure)
+- [ ] TSK-049 · 🟡 — Listagem Nível 3 (Vertex, watsonx, OCI, Bedrock — SDK/SigV4)
+- [ ] 🚧 TSK-050 · 🟡 — Listagem Nível 1 (Together `.ai`, Cohere `/v1`, Perplexity `/v1`)
+- [ ] TSK-051 · 🟢 — Paginação (pageSize/pageToken/nextPageToken)
+- [ ] TSK-052 · 🟢 — Expor `getModels()` via MCP/API
+- [ ] TSK-053 · 🟡 — Regressão IA pós-correções
 
 ## 🔌 MCP
 - [x] `GoogleCalendarTools` @Component; MCP `/mcp` com `ROLE_MCP`; `listEvents` funcional
-- [ ] 5 ativas → `TSK-055..059`
+- [ ] TSK-055 · 🟡 — `listEvents` estável durante refactor OAuth2
+- [ ] TSK-056 · 🟡 — Tools de máquinas (status/WoL) — depende WoL
+- [ ] TSK-057 · 🟢 — Tool health check
+- [ ] ⛔ TSK-058 · 🔴 — `createEvent()` stub → real (OAuth2 refactor)
+- [ ] TSK-059 · 🟢 — Documentar fluxo MCP
 
 ## 🌐 WebSocket
 - [x] STOMP 1.2 no front (`/protocol`, `@SendTo /queue/coffee-agent`); smoke `sendRequest`
-- [ ] 6 ativas → `TSK-060..065`
+- [ ] TSK-060 · 🟡 — Protocolo JSON coffe-agent ↔ server
+- [ ] TSK-061 · 🟡 — Handler + endpoint `/ws/agent` (STOMP `/protocol` existe)
+- [ ] TSK-062 · 🟡 — Rota WS na security chain
+- [ ] TSK-063 · 🟡 — Handshake validado (cookie) + smoke com/sem sessão
+- [ ] TSK-064 · 🟢 — UI `sendRequest()` real p/ WS
+- [ ] TSK-065 · 🟢 — Doc fluxo WS em `docs/architecture/`
 
 ## ⚙️ Infra
 - [x] Abstração Redis completa; `@PreDestroy`; TLS/senha Redis; logback rolling; CI/CD 5 jobs; compose security-lab
-- [ ] 5 ativas → `TSK-066..070`
+- [ ] TSK-066 · 🟡 — Alinhar Redis remoto (6380) com `.env`
+- [ ] TSK-067 · 🟡 — Testcontainers no CI (validar Docker/Linux)
+- [ ] TSK-068 · 🟢 — `smoke-spring.mjs` defasado (`admin_teste`/`Senha123!`)
+- [ ] TSK-069 · 🟡 — Alinhar JDK local (25) ↔ CI (21 temurin)
+- [ ] TSK-070 · 🟢 — Pipeline Vite documentado (b540c61)
 
 ## 🧪 Testes
 - [x] Bateria 231 verdes (25 Testcontainers Postgres); unidade/integração/segurança; Testcontainers+JaCoCo no pom
-- [ ] 14 ativas → `TSK-071..084`
+- [ ] TSK-071 · 🟡 — Cobertura `security.Filter` ≥ 83,8% pós-refactors
+- [ ] TSK-072 · 🟡 — Testes `RateLimitFilter`/Bucket4j (429, política)
+- [ ] TSK-073 · 🟡 — Testes `OAuth2UserProvisioningService` (UUID, ROLE_*)
+- [ ] ⛔ TSK-074 · 🟡 — Persistence `LinuxUser` (0%) — exige mappers/adapters
+- [ ] TSK-075 · 🟡 — Testes `mcp/` (tools Calendar)
+- [ ] TSK-076 · 🟡 — Testes `IA` (BaseProvider parse, 404/405)
+- [ ] TSK-077 · 🟡 — JaCoCo threshold ≥ 50% (enforcement)
+- [ ] TSK-078 · 🟢 — Regressão typos renomeados (compile)
+- [ ] TSK-079 · 🟡 — Isolamento 403 ordem-dependente (SecurityContextHolder)
+- [ ] TSK-080 · 🟢 — Smoke Redis 7.4.10 — manter
+- [ ] TSK-081 · 🟢 — Fluxo login/register completo
+- [ ] TSK-082 · 🟡 — Regressão cookie-only (sem JWT no body)
+- [ ] TSK-083 · 🟢 — Config profiles (h2/test)
+- [ ] TSK-084 · 🟢 — CI testes bloqueantes (continue-on-error removido)
 
 ## ✨ Features
 - [x] Auth cookie-only; logout; `MachineEntity` mapping; dashboard liquid-glass; MCP server configurado; `/api/test`
-- [ ] 13 ativas → `TSK-085..097`
+- [ ] TSK-085 · 🟡 — `UserService` esqueleto → CRUD via porta
+- [ ] TSK-086 · 🟡 — Wake-on-LAN (magic packet UDP 9) + rota
+- [ ] TSK-087 · 🟢 — Tailscale integração (status nós)
+- [ ] TSK-088 · 🔴 — Persistence `ExternalAccount`
+- [ ] TSK-089 · 🔴 — Persistence `LinuxUser`/`Groups`
+- [ ] TSK-090 · 🟡 — Vincular `ExternalAccount` no login OAuth2
+- [ ] TSK-091 · 🟡 — `/api/health` detalhado
+- [ ] TSK-092 · 🟢 — Logs ao vivo reais (backend)
+- [ ] TSK-093 · 🟡 — Jobs assíncronos (BACKUP/RESTORE/SYNC)
+- [ ] TSK-094 · 🟢 — Backup controllers (`/mnt/mount/data/backups`)
+- [ ] TSK-095 · 🟢 — `UnixUserService` (parse `/etc/passwd`, `/etc/group`)
+- [ ] TSK-096 · 🟡 — OAuth2 GitHub (Provider.GITHUB)
+- [ ] TSK-097 · 🟡 — Bean Validation + `spring-boot-starter-validation`
 
 ## 🎨 Frontend
 - [x] Dashboard liquid-glass; `frontend/` Vite MPA → `static/app/`; XSS eliminado; responsividade 6/6; tokens coffee+blue
-- [ ] 4 ativas → `TSK-098..101`
+- [ ] TSK-098 · 🟡 — WebSocket UI `sendRequest` + handshake
+- [ ] TSK-099 · 🟢 — Logs ao vivo no front (`/api/audit/logs`)
+- [ ] TSK-100 · 🟢 — Data provider por página (fetch com fallback)
+- [ ] TSK-101 · 🟢 — Backlog frontend → `frontend/TODO.md` (fonte `frontend/` → `static/app/`)
 
 ## 📦 Modularização / Docs
 - [x] Domínio 100% puro (extraível); `docs/architecture` + ADRs 001-005 registrados
-- [ ] 4 ativas → `TSK-102..105`
+- [ ] ⛔ TSK-102 · 🟡 — Extrair `server-mcp` módulo Maven (ADR-005)
+- [ ] ⛔ TSK-103 · 🟢 — Publicar `server-domain` Maven Local/GH Packages (ADR-003)
+- [ ] TSK-104 · 🟢 — README principal (setup, profiles, MCP)
+- [ ] TSK-105 · 🟢 — Atualizar docs pós-mudanças
 
 ## 🧹 Cleanup
-- [ ] 2 ativas → `TSK-046` + `TSK-106` (REVIEW)
+- [ ] TSK-046 · 🟢 — Imports fantasma VS Code (ex.: `jdk.tools`)
+- [ ] 🚧 TSK-106 · 🔴 — Commit do refactor Token resolvers + typo `IndepotecyKey` (REVIEW)
 
 ---
 
@@ -178,20 +273,19 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 > 106 tasks · IDs estáveis (não ordenam por categoria) · agrupadas por categoria p/ leitura. Prioridade: 🔴 CRIT · 🔴 Alta · 🟡 Média · 🟢 Baixa. Status: ✅ TODO · 🚧 em execução · ⛔ bloqueado.
 
-## 🔒 Segurança (20)
+## 🔒 Segurança (21)
 
 | ID | Task | Prio | Status |
 |---|---|---|---|
 | TSK-001 | `JwtTokenResolver` exige esquema `Bearer ` (hoje aceita sem prefixo); reverter `tokenWithoutBearerPrefix_returns401` → 401 | 🔴 CRIT | ✅ TODO · AGORA (30m) |
 | TSK-002 | CORS ausente no `SecurityConfig` — necessário p/ PS3 e web | 🔴 CRIT | ✅ TODO · PRÓXIMO (1h) |
+| TSK-107 | JwtTokenService só emite tokens; validação JWT (signature/expiration/issuer/claims) via Spring Security (`JwtDecoder` + `JwtAuthenticationConverter`) — elimina `extractIdSubject` na maioria dos usos (`Authentication` / `@AuthenticationPrincipal Jwt`) | 🔴 | ✅ TODO · PRÓXIMO |
 | TSK-003 | mTLS `client-auth=require` + X509 filter | 🔴 | ⛔ BLOQ · ADR-004 |
 | TSK-004 | Permissões granulares/scopes (N:N, scopes JWT, `@PreAuthorize`) | 🟡 | ✅ TODO · PRÓXIMO |
 | TSK-005 | RateLimitFilter: catch vazios + política por rota (LOGIN/REGISTER/API) | 🔴 CRIT | ✅ TODO (30m) |
-| TSK-006 | Higiene secrets: `.env`/`keys/` fora do git + `.env.example` | 🟡 | ✅ TODO · PRÓXIMO |
 | TSK-007 | RateLimitFilter log `"RateLimit begin {}"` → SLF4J real | 🟡 | ✅ TODO · AGORA (15m) |
 | TSK-008 | MDC request ID / user ID / session ID | 🔴 | ✅ TODO · PRÓXIMO |
 | TSK-009 | Cookie domain hardcoded `"coffe_server"` → configurável | 🟡 | ✅ TODO |
-| TSK-010 | Security TRACE dev → profile `dev` | 🟢 | ✅ TODO · PRÓXIMO |
 | TSK-011 | `CookieDomain` campo `sameSite` (default seguro) | 🟡 | ✅ TODO · PRÓXIMO |
 | TSK-012 | Sanitizar secrets/keys em logs | 🟡 | ✅ TODO · PRÓXIMO |
 | TSK-013 | Teste rate limit 429 (políticas) | 🟡 | ✅ TODO · PRÓXIMO |
@@ -203,7 +297,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 | TSK-019 | AuthExceptionHandler: 500 genérico sem vazar detalhes | 🟡 | ✅ TODO · PRÓXIMO |
 | TSK-020 | `OAuth2UserProvisioningService` → porta `UserRepository` (DIP) | 🔴 | ✅ TODO · PRÓXIMO |
 
-## 🐛 Bugs (11)
+## 🐛 Bugs (10)
 
 | ID | Task | Prio | Status |
 |---|---|---|---|
@@ -212,7 +306,6 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 | TSK-023 | `RegisterResponseDTO.Token` maiúsculo (inconsistente com login) | 🟢 | ✅ TODO |
 | TSK-024 | `MachineService`: `UsernameNotFoundException` (Spring) → `UserNotFoundException` | 🟡 | ✅ TODO |
 | TSK-025 | HomeController: validar redirects pós-build Vite | 🟢 | ✅ TODO |
-| TSK-026 | `application.properties:57`: aspas literais no MCP base-url | 🟡 | ✅ TODO · AGORA (10m) |
 | TSK-027 | Drift Redis remoto 6380 (rate-limit sem `requirepass`) | 🟡 | ✅ TODO |
 | TSK-028 | `JwtTokenService` `@Value` field (claim falsa) → constructor | 🟡 | ✅ TODO · AGORA (30m) |
 | TSK-029 | Typo porta: `genareteToken` → `generateToken` | 🟢 | ✅ TODO |
