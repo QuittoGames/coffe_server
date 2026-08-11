@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 public interface OperationKey {
+    UUID getId();
+
     UUID getValue();
 
     LocalDateTime getCreationDate();
@@ -14,4 +16,6 @@ public interface OperationKey {
     Instant expiresAt();
 
     boolean isExpired();
+
+    boolean isValid();
 }
