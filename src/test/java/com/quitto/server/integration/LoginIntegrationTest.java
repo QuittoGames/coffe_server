@@ -71,7 +71,7 @@ class LoginIntegrationTest {
 
     @Test
     void login_withValidCredentials_returns200AndSetsCookie() throws Exception {
-        LoginDTO login = new LoginDTO(USERNAME, PASSWORD);
+        LoginDTO login = new LoginDTO(null,USERNAME, PASSWORD);
 
         MvcResult result = mockMvc.perform(post("/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -86,7 +86,7 @@ class LoginIntegrationTest {
 
     @Test
     void login_cookieContainsValidJwt() throws Exception {
-        LoginDTO login = new LoginDTO(USERNAME, PASSWORD);
+        LoginDTO login = new LoginDTO(null,USERNAME, PASSWORD);
 
         MvcResult result = mockMvc.perform(post("/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -105,7 +105,7 @@ class LoginIntegrationTest {
 
     @Test
     void login_setsCookieOnResponse() throws Exception {
-        LoginDTO login = new LoginDTO(USERNAME, PASSWORD);
+        LoginDTO login = new LoginDTO(null,USERNAME, PASSWORD);
 
         MvcResult result = mockMvc.perform(post("/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -120,7 +120,7 @@ class LoginIntegrationTest {
 
     @Test
     void login_setsCookieWithHttpOnlyAndSecure() throws Exception {
-        LoginDTO login = new LoginDTO(USERNAME, PASSWORD);
+        LoginDTO login = new LoginDTO(null,USERNAME, PASSWORD);
 
         MvcResult result = mockMvc.perform(post("/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -137,7 +137,7 @@ class LoginIntegrationTest {
 
     @Test
     void login_withWrongPassword_returns401() throws Exception {
-        LoginDTO login = new LoginDTO(USERNAME, "wrong-password");
+        LoginDTO login = new LoginDTO(null,USERNAME, "wrong-password");
 
         mockMvc.perform(post("/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -147,7 +147,7 @@ class LoginIntegrationTest {
 
     @Test
     void login_withNonExistentUser_returns401() throws Exception {
-        LoginDTO login = new LoginDTO("nonexistent_user", PASSWORD);
+        LoginDTO login = new LoginDTO(null,"nonexistent_user", PASSWORD);
 
         mockMvc.perform(post("/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)

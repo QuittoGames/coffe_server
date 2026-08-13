@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.quitto.server.infrastructure.services.Auth.Token.Jtw.JwtTokenService;
@@ -15,9 +16,12 @@ class JwtTokenServiceTest {
 
     private JwtTokenService tokenService;
 
+    @Value("${api.security.key}")
+    private String key;
+
     @BeforeEach
     void setUp() {
-        tokenService = new JwtTokenService();
+        tokenService = new JwtTokenService(this.key);
         ReflectionTestUtils.setField(tokenService, "KEY", "test-secret-key-for-jwt-unit-tests");
     }
 
@@ -74,7 +78,7 @@ class JwtTokenServiceTest {
 
     @Test
     void verifyToken_returnsFalseOnTokenFromDifferentKey() {
-        JwtTokenService otherService = new JwtTokenService();
+        JwtTokenService otherService = new JwtTokenService(this.key);
         ReflectionTestUtils.setField(otherService, "KEY", "different-secret-key");
 
         String token = otherService.generateToken(1L);

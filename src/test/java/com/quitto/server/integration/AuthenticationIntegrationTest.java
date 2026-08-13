@@ -26,7 +26,7 @@ import com.quitto.server.domain.enums.Role;
 import com.quitto.server.domain.interfaces.Token.TokenService;
 import com.quitto.server.infrastructure.db.User.Entity.UserEntity;
 import com.quitto.server.infrastructure.db.User.Repository.JpaUserRepository;
-import com.quitto.server.infrastructure.security.Filter.Adapter.HttpTokenRequestContext;
+import com.quitto.server.infrastructure.Adapters.in.HttpTokenRequestContext;
 import com.quitto.server.infrastructure.security.Token.CookieTokenResolver;
 import com.quitto.server.infrastructure.security.Token.JwtTokenResolver;
 import com.quitto.server.infrastructure.services.Auth.Token.TokenResolverManager;
@@ -77,7 +77,7 @@ class AuthenticationIntegrationTest {
 
     @Test
     void fullFlow_loginReturnsValidJwtInCookie() throws Exception {
-        LoginDTO login = new LoginDTO(USERNAME, PASSWORD);
+        LoginDTO login = new LoginDTO(null,USERNAME, PASSWORD);
 
         MvcResult loginResult = mockMvc.perform(post("/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -96,7 +96,7 @@ class AuthenticationIntegrationTest {
 
     @Test
     void loginResponseIncludesCookie() throws Exception {
-        LoginDTO login = new LoginDTO(USERNAME, PASSWORD);
+        LoginDTO login = new LoginDTO(null,USERNAME, PASSWORD);
 
         MvcResult result = mockMvc.perform(post("/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -111,7 +111,7 @@ class AuthenticationIntegrationTest {
 
     @Test
     void cookieTokenCanBeResolvedByCookieResolver() throws Exception {
-        LoginDTO login = new LoginDTO(USERNAME, PASSWORD);
+        LoginDTO login = new LoginDTO(null,USERNAME, PASSWORD);
 
         MvcResult loginResult = mockMvc.perform(post("/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -189,7 +189,7 @@ class AuthenticationIntegrationTest {
 
     @Test
     void loginCookieMatchesJwtResolverValue() throws Exception {
-        LoginDTO login = new LoginDTO(USERNAME, PASSWORD);
+        LoginDTO login = new LoginDTO(null,USERNAME, PASSWORD);
 
         MvcResult result = mockMvc.perform(post("/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)

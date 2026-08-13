@@ -62,7 +62,7 @@ class RegisterIntegrationTest {
 
     @Test
     void register_withValidData_returns200AndSetsCookie() throws Exception {
-        RegisterDTO register = new RegisterDTO("new_user_reg", "SenhaForte123!", "new_reg@email.com");
+        RegisterDTO register = new RegisterDTO(null,"new_user_reg", "SenhaForte123!", "new_reg@email.com");
 
         MvcResult result = mockMvc.perform(post("/auth/register")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -78,7 +78,7 @@ class RegisterIntegrationTest {
 
     @Test
     void register_createsUserInDatabase() throws Exception {
-        RegisterDTO register = new RegisterDTO("db_check_user", "Senha123!", "db_check@email.com");
+        RegisterDTO register = new RegisterDTO(null,"db_check_user", "Senha123!", "db_check@email.com");
 
         mockMvc.perform(post("/auth/register")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -93,7 +93,7 @@ class RegisterIntegrationTest {
 
     @Test
     void register_withEmptyPassword_returns401() throws Exception {
-        RegisterDTO register = new RegisterDTO("user_no_pass", "", "nopass@email.com");
+        RegisterDTO register = new RegisterDTO(null,"user_no_pass", "", "nopass@email.com");
 
         mockMvc.perform(post("/auth/register")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -103,14 +103,14 @@ class RegisterIntegrationTest {
 
     @Test
     void newlyRegisteredUser_canLogin() throws Exception {
-        RegisterDTO register = new RegisterDTO("register_then_login", "MinhaSenha123!", "rtl@email.com");
+        RegisterDTO register = new RegisterDTO(null,"register_then_login", "MinhaSenha123!", "rtl@email.com");
 
         mockMvc.perform(post("/auth/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(register)))
             .andExpect(status().isOk());
 
-        LoginDTO login = new LoginDTO("register_then_login", "MinhaSenha123!");
+        LoginDTO login = new LoginDTO(null,"register_then_login", "MinhaSenha123!");
         mockMvc.perform(post("/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(login)))

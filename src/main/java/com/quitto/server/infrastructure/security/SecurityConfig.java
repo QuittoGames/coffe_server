@@ -14,7 +14,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.quitto.server.infrastructure.security.Filter.JwtAuthenticationFilter;
-import com.quitto.server.infrastructure.security.Filter.Ratelimt.RateLimitFilter;
+import com.quitto.server.infrastructure.security.Filter.RateLimit.RateLimitFilter;
 import com.quitto.server.infrastructure.services.OAuth.OAuth2UserProvisioningService;
 
 @Configuration
@@ -24,16 +24,14 @@ public class SecurityConfig {
 
     private final OAuth2UserProvisioningService oauthService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final RateLimitFilter rateLimitFilter;
+    private final ObjectProvider<RateLimitFilter> rateLimitFilterProvider;
 
     public SecurityConfig(OAuth2UserProvisioningService oauthService,
                           JwtAuthenticationFilter jwtAuthenticationFilter,
                           ObjectProvider<RateLimitFilter> rateLimitFilterProvider) {
         this.oauthService = oauthService;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
-        // RateLimitFilter only exists when coffee.ratelimit.enabled=true
-        // (Bucket4jConfig is conditional on the same property).
-        this.rateLimitFilter = rateLimitFilterProvider.getIfAvailable();
+        this.rateLimitFilterProvider = rateLimitFilterProvider;
     }
 
     @Bean
@@ -69,8 +67,11 @@ public class SecurityConfig {
 
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class); // Object Filter before of class
 
+        // RateLimitFilter only exists when coffee.ratelimit.enabled=true.
+        // Tests keep rate limiting disabled, so register it only if present.
+        RateLimitFilter rateLimitFilter = rateLimitFilterProvider.getIfAvailable();
         if (rateLimitFilter != null) {
-            http.addFilterAfter(rateLimitFilter, JwtAuthenticationFilter.class); // Object Filter before of class
+            http.addFilterAfter(rateLimitFilter, JwtAuthenticationFilter.class); // Object Filter after of class
         }
 
         http.exceptionHandling(ex -> ex

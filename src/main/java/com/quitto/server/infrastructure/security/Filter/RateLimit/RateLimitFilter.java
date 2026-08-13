@@ -1,4 +1,4 @@
-package com.quitto.server.infrastructure.security.Filter.Ratelimt;
+package com.quitto.server.infrastructure.security.Filter.RateLimit;
 
 import java.io.IOException;
 import java.util.Objects;

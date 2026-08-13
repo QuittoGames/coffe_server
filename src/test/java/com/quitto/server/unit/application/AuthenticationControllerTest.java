@@ -53,7 +53,7 @@ class AuthenticationControllerTest {
         when(cookieManager.createAccessTokenCookie("jwt-token")).thenReturn(domain);
         doNothing().when(cookieWriter).writeCookie(any(), any());
 
-        LoginDTO login = new LoginDTO("quitto", "senha123");
+        LoginDTO login = new LoginDTO(null,"quitto", "senha123");
 
         mockMvc.perform(post("/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -70,7 +70,7 @@ class AuthenticationControllerTest {
         when(userAuthService.login("quitto", "wrong"))
             .thenReturn("");
 
-        LoginDTO login = new LoginDTO("quitto", "wrong");
+        LoginDTO login = new LoginDTO(null,"quitto", "wrong");
 
         mockMvc.perform(post("/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -88,7 +88,7 @@ class AuthenticationControllerTest {
         when(cookieManager.createAccessTokenCookie("new-jwt-token")).thenReturn(domain);
         doNothing().when(cookieWriter).writeCookie(any(), any());
 
-        RegisterDTO register = new RegisterDTO("novo", "senha123", "novo@test.com");
+        RegisterDTO register = new RegisterDTO(null,"novo", "senha123", "novo@test.com");
 
         mockMvc.perform(post("/auth/register")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -102,7 +102,7 @@ class AuthenticationControllerTest {
 
     @Test
     void register_withEmptyPassword_returns401() throws Exception {
-        RegisterDTO register = new RegisterDTO("novo", "", "novo@test.com");
+        RegisterDTO register = new RegisterDTO(null,"novo", "", "novo@test.com");
 
         mockMvc.perform(post("/auth/register")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -115,7 +115,7 @@ class AuthenticationControllerTest {
         when(userAuthService.register("existente", "senha", "email@test.com"))
             .thenReturn("");
 
-        RegisterDTO register = new RegisterDTO("existente", "senha", "email@test.com");
+        RegisterDTO register = new RegisterDTO(null,"existente", "senha", "email@test.com");
 
         mockMvc.perform(post("/auth/register")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -132,7 +132,7 @@ class AuthenticationControllerTest {
 
         mockMvc.perform(post("/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(new LoginDTO("quitto", "senha123"))))
+                .content(objectMapper.writeValueAsString(new LoginDTO(null,"quitto", "senha123"))))
             .andExpect(status().isOk());
 
         verify(cookieManager).createAccessTokenCookie("jwt-token");

@@ -1,6 +1,8 @@
 package com.quitto.server.application.dto.AIProvider;
 
+import com.quitto.server.application.dto.BaseDTO;
 import com.quitto.server.domain.enums.ServiceProvider;
+import com.quitto.server.domain.interfaces.OperationKey.OperationKey;
 import com.quitto.server.domain.models.IA.AIModel;
 
 /**
@@ -10,16 +12,22 @@ import com.quitto.server.domain.models.IA.AIModel;
  * diretamente na camada REST.</p>
  */
 public record AIModelDTO(
+        OperationKey idempotencyKey,
         String id,
         String name,
         ServiceProvider provider,
         boolean stream,
         boolean tools,
         boolean reasoning
-) {
+) implements BaseDTO {
 
     public static AIModelDTO from(AIModel model) {
+        return from(model, null);
+    }
+
+    public static AIModelDTO from(AIModel model, OperationKey idempotencyKey) {
         return new AIModelDTO(
+                idempotencyKey,
                 model.getId(),
                 model.getName(),
                 model.getProvider(),

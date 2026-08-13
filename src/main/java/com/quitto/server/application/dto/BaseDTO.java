@@ -2,7 +2,6 @@ package com.quitto.server.application.dto;
 
 import com.quitto.server.domain.interfaces.OperationKey.OperationKey;
 
-public record ErrorResponse(
-        OperationKey idempotencyKey,
-        String msg) implements BaseDTO {
+public interface BaseDTO {
+    OperationKey idempotencyKey();
 }

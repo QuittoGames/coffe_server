@@ -1,4 +1,4 @@
-package com.quitto.server.infrastructure.services.Indepotecy;
+package com.quitto.server.infrastructure.services.Idempotency;
 
 import java.time.Duration;
 import java.time.LocalDateTime;

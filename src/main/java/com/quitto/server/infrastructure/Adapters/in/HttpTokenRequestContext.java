@@ -1,4 +1,4 @@
-package com.quitto.server.infrastructure.security.Filter.Adapter;
+package com.quitto.server.infrastructure.Adapters.in;
 
 import com.quitto.server.domain.interfaces.Token.TokenRequestContext;
 import com.quitto.server.domain.valueobject.Cookie.CookieDomain;

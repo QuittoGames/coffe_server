@@ -64,7 +64,7 @@ class SecurityTest {
         };
 
         for (String payload : sqlPayloads) {
-            LoginDTO login = new LoginDTO(payload, "qualquer_senha");
+            LoginDTO login = new LoginDTO(null,payload, "qualquer_senha");
             mockMvc.perform(post("/auth/login")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(login)))
@@ -83,7 +83,7 @@ class SecurityTest {
         };
 
         for (String payload : sqlPayloads) {
-            LoginDTO login = new LoginDTO("admin_teste", payload);
+            LoginDTO login = new LoginDTO(null,"admin_teste", payload);
             mockMvc.perform(post("/auth/login")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(login)))
@@ -104,7 +104,7 @@ class SecurityTest {
         };
 
         for (String payload : xssPayloads) {
-            LoginDTO login = new LoginDTO(payload, "senha123");
+            LoginDTO login = new LoginDTO(null,payload, "senha123");
             mockMvc.perform(post("/auth/login")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(login)))
@@ -115,13 +115,13 @@ class SecurityTest {
     @Test
     @DisplayName("login with empty credentials returns 401")
     void login_withEmptyCredentials_returns400() throws Exception {
-        LoginDTO emptyName = new LoginDTO("", "senha123");
+        LoginDTO emptyName = new LoginDTO(null,"", "senha123");
         mockMvc.perform(post("/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(emptyName)))
             .andExpect(status().isUnauthorized());
 
-        LoginDTO emptyPass = new LoginDTO("admin_teste", "");
+        LoginDTO emptyPass = new LoginDTO(null,"admin_teste", "");
         mockMvc.perform(post("/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(emptyPass)))
@@ -136,7 +136,7 @@ class SecurityTest {
     @Test
     @DisplayName("register with weak password returns 401")
     void register_withWeakPassword_returns400() throws Exception {
-        RegisterDTO emptyPass = new RegisterDTO("novo_usuario", "", "novo@email.com");
+        RegisterDTO emptyPass = new RegisterDTO(null,"novo_usuario", "", "novo@email.com");
         mockMvc.perform(post("/auth/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(emptyPass)))
@@ -146,7 +146,7 @@ class SecurityTest {
     @Test
     @DisplayName("register with duplicate email returns 401")
     void register_withDuplicateEmail_returns401() throws Exception {
-        RegisterDTO duplicate = new RegisterDTO("outro_usuario", "Senha123!", "admin@test.com");
+        RegisterDTO duplicate = new RegisterDTO(null,"outro_usuario", "Senha123!", "admin@test.com");
         mockMvc.perform(post("/auth/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(duplicate)))
@@ -217,13 +217,13 @@ class SecurityTest {
     @DisplayName("rapid login attempts trigger rate limit")
     void rapidLoginAttempts_triggerRateLimit() throws Exception {
         for (int i = 0; i < 20; i++) {
-            LoginDTO login = new LoginDTO("user_" + i, "wrong_" + i);
+            LoginDTO login = new LoginDTO(null,"user_" + i, "wrong_" + i);
             mockMvc.perform(post("/auth/login")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(login)));
         }
 
-        LoginDTO login = new LoginDTO("final_user", "final_password");
+        LoginDTO login = new LoginDTO(null,"final_user", "final_password");
         mockMvc.perform(post("/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(login)))

@@ -28,7 +28,7 @@ import com.quitto.server.domain.interfaces.Token.TokenService;
 import com.quitto.server.domain.valueobject.Cookie.CookieDomain;
 import com.quitto.server.infrastructure.db.User.Entity.UserEntity;
 import com.quitto.server.infrastructure.db.User.Repository.JpaUserRepository;
-import com.quitto.server.infrastructure.security.Filter.Adapter.HttpTokenRequestContext;
+import com.quitto.server.infrastructure.Adapters.in.HttpTokenRequestContext;
 import com.quitto.server.infrastructure.security.Filter.JwtAuthenticationFilter;
 import com.quitto.server.infrastructure.security.Token.CookieTokenResolver;
 import com.quitto.server.infrastructure.security.Token.JwtTokenResolver;
@@ -95,7 +95,7 @@ class CookieSystemIntegrationTest {
 
     @Test
     void login_withValidCredentials_returnsJwtInCookie() throws Exception {
-        LoginDTO login = new LoginDTO(TEST_USER, TEST_PASSWORD);
+        LoginDTO login = new LoginDTO(null,TEST_USER, TEST_PASSWORD);
 
         MvcResult result = mockMvc.perform(post("/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -112,7 +112,7 @@ class CookieSystemIntegrationTest {
 
     @Test
     void login_withInvalidCredentials_returnsUnauthorized() throws Exception {
-        LoginDTO login = new LoginDTO(TEST_USER, "wrong-password");
+        LoginDTO login = new LoginDTO(null,TEST_USER, "wrong-password");
 
         mockMvc.perform(post("/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -259,7 +259,7 @@ class CookieSystemIntegrationTest {
 
     @Test
     void fullFlow_loginAndUseGeneratedToken() throws Exception {
-        LoginDTO login = new LoginDTO(TEST_USER, TEST_PASSWORD);
+        LoginDTO login = new LoginDTO(null,TEST_USER, TEST_PASSWORD);
 
         MvcResult loginResult = mockMvc.perform(post("/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)

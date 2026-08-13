@@ -18,8 +18,8 @@ import com.quitto.server.domain.Repository.users.UserRepository;
 import com.quitto.server.domain.interfaces.Token.TokenRequestContext;
 import com.quitto.server.domain.interfaces.Token.TokenService;
 import com.quitto.server.domain.models.User.User;
+import com.quitto.server.infrastructure.Adapters.in.HttpTokenRequestContext;
 import com.quitto.server.infrastructure.security.SecurityUser;
-import com.quitto.server.infrastructure.security.Filter.Adapter.HttpTokenRequestContext;
 import com.quitto.server.infrastructure.services.Auth.Token.TokenResolverManager;
 
 import jakarta.servlet.FilterChain;
@@ -42,7 +42,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
-        return path.startsWith("/app/") 
+        return path.startsWith("/app/")
             || path.startsWith("/css/")
             || path.startsWith("/js/")
             || path.startsWith("/webjars/")

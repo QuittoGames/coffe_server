@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.quitto.server.application.controllers.REST.AIProvaider.AIProvaiderController;
 import com.quitto.server.domain.enums.ServiceProvider;
 import com.quitto.server.domain.interfaces.IA.AIProvider;
+import com.quitto.server.domain.interfaces.OperationKey.OperationKeyManager;
 import com.quitto.server.domain.models.IA.AIModel;
 import com.quitto.server.infrastructure.Adapters.out.api.AIProvaider.AIProvaiderAdpiter;
 
@@ -43,12 +45,15 @@ class AIProvaiderControllerTest {
     @Mock
     private AIProvaiderAdpiter provaiderAdpiter;
 
+    @Mock
+    private ObjectProvider<OperationKeyManager> operationKeyManager;
+
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders.standaloneSetup(
-                new AIProvaiderController(provaiderAdpiter)
+                new AIProvaiderController(provaiderAdpiter, operationKeyManager)
         ).setControllerAdvice(new IllegalArgumentExceptionAdvice())
         .build();
     }

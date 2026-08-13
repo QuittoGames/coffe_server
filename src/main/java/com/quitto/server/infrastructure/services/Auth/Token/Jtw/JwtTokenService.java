@@ -18,8 +18,11 @@ import com.quitto.server.domain.interfaces.Token.TokenService;
 @Service
 public class JwtTokenService implements TokenService<Long> {
 
-    @Value("${api.security.key}") // Get ENV value
-    private String KEY;
+    private final String KEY;
+
+    public JwtTokenService(@Value("${api.security.key}") String Key) {  // Get ENV value
+        this.KEY = Key;
+    }
 
     @Override
     public String generateToken(@NotNull Long id) throws IllegalArgumentException, JWTCreationException{

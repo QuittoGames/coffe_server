@@ -146,7 +146,6 @@ public class AIProviderRegistry implements AIRegistry<ServiceProvider, AIProvide
         registry.put(provider, value);
     }
 
-
     @Override
     public int size() {
         return registry.size();
