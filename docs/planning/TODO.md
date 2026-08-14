@@ -2,7 +2,6 @@
 :root{--bg:#0B0F14;--el:#111827;--hov:#161B22;--bd:#1F2937;--bd2:#374151;--c1:#3C2415;--c2:#6F4E37;--c3:#A67B5B;--c4:#E8D5C4;--bl:#3B82F6;--bl2:#60A5FA;--ok:#22C55E;--warn:#EAB308;--err:#EF4444;--m:#6B7280;--t1:#F9FAFB;--t2:#D1D5DB;--t3:#9CA3AF;--r:8px;--rs:4px}
 body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--t1);line-height:1.6;max-width:960px;margin:0 auto;padding:24px}
 h1{font-size:2rem;font-weight:700;color:var(--c4);border-bottom:2px solid var(--c2);padding-bottom:12px}
-h1::before{content:"☕";font-size:1.8rem;margin-right:10px}
 h2{font-size:1.3rem;font-weight:600;color:var(--c3);margin-top:32px;margin-bottom:12px;padding:8px 12px;background:linear-gradient(90deg,var(--c1),transparent);border-left:3px solid var(--c3);border-radius:0 var(--r) var(--r) 0}
 h3{font-size:1.05rem;font-weight:600;color:var(--t2);margin-top:24px;margin-bottom:8px}
 a{color:var(--bl);text-decoration:none}
@@ -10,8 +9,6 @@ a:hover{color:var(--bl2);text-decoration:underline}
 .tag{display:inline-block;padding:1px 8px;border-radius:var(--rs);font-size:.7rem;font-family:Consolas,monospace;background:var(--hov);color:var(--t3);border:1px solid var(--bd)}
 ul{list-style:none;padding-left:0}
 ul li{padding:6px 12px;margin-bottom:4px;border-radius:var(--r);background:var(--el);border:1px solid var(--bd);font-size:.9rem}
-ul li::before{content:"□";margin-right:10px;color:var(--m)}
-ul li.done::before{content:"☑";color:var(--ok)}
 table{width:100%;border-collapse:separate;border-spacing:0;border-radius:var(--r);overflow:hidden;border:1px solid var(--bd);font-size:.85rem;margin:12px 0}
 th{background:var(--c1);color:var(--c4);font-weight:600;text-align:left;padding:8px 12px;font-size:.75rem;text-transform:uppercase;letter-spacing:.5px}
 td{padding:8px 12px;border-top:1px solid var(--bd);background:var(--el);color:var(--t2)}
@@ -24,7 +21,6 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 .task-done{opacity:.75}
 .task-blocked{color:var(--err)}
 .badge-prio{display:inline-block;padding:1px 8px;border-radius:var(--rs);font-size:.7rem;font-family:Consolas,monospace;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
-.badge-crit{background:var(--err);color:#fff}
 .badge-high{background:#F97316;color:#fff}
 .badge-med{background:var(--warn);color:var(--bg)}
 .badge-low{background:var(--ok);color:var(--bg)}
@@ -33,7 +29,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 # coffe_server — TODO
 
-> **SOURCE OF TRUTH** — Tasks identificadas por **IDs estáveis** (TSK-001..TSK-107; próximo livre: **TSK-108**). O **estado canônico é a checkbox** de cada task: `[ ]` TODO · `[>]` IN_PROGRESS · `[x]` DONE · `[!]` BLOCKED · `[-]` CANCELLED. **Dashboard, Metrics e Active Work são derivados** e NÃO contêm estado independente (nunca duplicar descrição/estado).
+> **SOURCE OF TRUTH** — Tasks identificadas por **IDs estáveis** (TSK-001..TSK-047; próximo livre: **TSK-048**). O **estado canônico é a checkbox** de cada task: `[ ]` TODO · `[>]` IN_PROGRESS · `[x]` DONE · `[!]` BLOCKED · `[-]` CANCELLED. **Dashboard, Metrics e Active Work são derivados** das checkboxes e NÃO contêm estado independente. Backlog reconstruído do zero (2026-08-13) a partir de verificação direta do código — nenhuma task foi herdada do backlog anterior sem evidência.
 
 ---
 
@@ -43,55 +39,37 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ## AGORA
 
-- TSK-047, TSK-001, TSK-005, TSK-015, TSK-028, TSK-016, TSK-054, TSK-007
+- — (nenhuma task em progresso)
 
 ## PRÓXIMO
 
-- 🔒 Segurança: TSK-002, TSK-004, TSK-006, TSK-008, TSK-009, TSK-010, TSK-011, TSK-012, TSK-013, TSK-014, TSK-017, TSK-018, TSK-019, TSK-020, TSK-107
-- 🐛 Bugs: TSK-021, TSK-022, TSK-023, TSK-024, TSK-025, TSK-027, TSK-029, TSK-030, TSK-031
-- 🧱 Arquitetura: TSK-032, TSK-033, TSK-034, TSK-035, TSK-036, TSK-037, TSK-038, TSK-039, TSK-040, TSK-041, TSK-042, TSK-043, TSK-044, TSK-045
-- 🤖 IA: TSK-048, TSK-049, TSK-051, TSK-052, TSK-053
-- 🔌 MCP: TSK-055, TSK-056, TSK-057, TSK-059
-- 🌐 WebSocket: TSK-060, TSK-061, TSK-062, TSK-063, TSK-064, TSK-065
-- ⚙️ Infra: TSK-066, TSK-067, TSK-068, TSK-069, TSK-070
-- 🧪 Testes: TSK-071, TSK-072, TSK-073, TSK-075, TSK-076, TSK-077, TSK-078, TSK-079, TSK-080, TSK-081, TSK-082, TSK-083, TSK-084
-- ✨ Features: TSK-085, TSK-086, TSK-087, TSK-088, TSK-089, TSK-090, TSK-091, TSK-092, TSK-093, TSK-094, TSK-095, TSK-096, TSK-097
-- 🎨 Frontend: TSK-098, TSK-099, TSK-100, TSK-101
-- 📦 Modularização/Docs: TSK-104, TSK-105
-- 🧹 Cleanup: TSK-046
+- **SECURITY:** TSK-001, TSK-002, TSK-003, TSK-004, TSK-005, TSK-006, TSK-007, TSK-008, TSK-009, TSK-010
+- **BUG:** TSK-011, TSK-012, TSK-013, TSK-014
+- **ARCHITECTURE:** TSK-015, TSK-016, TSK-017, TSK-018, TSK-019, TSK-020, TSK-021
+- **IA:** TSK-022, TSK-023, TSK-024, TSK-025, TSK-026
+- **MCP:** TSK-027, TSK-028, TSK-029
+- **WEBSOCKET:** TSK-030, TSK-031, TSK-032
+- **INFRA:** TSK-033, TSK-034
+- **TESTS:** TSK-035, TSK-036, TSK-037, TSK-038, TSK-039
+- **FEATURE:** TSK-040, TSK-041, TSK-042
+- **CLEANUP:** TSK-043, TSK-044, TSK-045, TSK-046
+- **DOCS:** TSK-047
 
 ## BLOQUEADO
 
-- TSK-003 — ADR-004 sem decisão (mTLS)
-- TSK-058 — OAuth2 Google será refatorado (createEvent stub)
-- TSK-074 — faltam repos/mappers/adapters de LinuxUser
-- TSK-102 — ADR-005 em aberto
-- TSK-103 — ADR-003 em aberto
-
-## Em execução
-
-- TSK-050 — IA endpoints Nível 1
-- TSK-106 — Commit do refactor Token resolvers (REVIEW)
+- — (nenhuma task bloqueada)
 
 ## Metrics
 
-> Informação **derivada** das checkboxes de status (uma por task em `# Tasks`). Não editar manualmente.
+> Informação **derivada** das checkboxes de status em `# Tasks`. Não editar manualmente.
 
-<span class="stat-card"><strong>107</strong> Total</span><span class="stat-card"><strong>98</strong> TODO</span><span class="stat-card"><strong>2</strong> IN_PROGRESS</span><span class="stat-card"><strong>2</strong> DONE</span><span class="stat-card"><strong>5</strong> BLOCKED</span><span class="stat-card"><strong>0</strong> CANCELLED em tasks</span><span class="stat-card"><strong>8</strong> AGORA</span><span class="stat-card"><strong>91</strong> PRÓXIMO</span><span class="stat-card"><strong>2</strong> Em execução</span>
-
-> **Notas históricas** (auditoria 2026-08-09/10, 10 subagentes — informação legada, não derivada):
-> - Build: **231 testes · 0 failures · 0 errors · 3 skipped · 38s · 25 Testcontainers Postgres**
-> - Cobertura: **JaCoCo 59,2% linha / 54,5% branch** · Readiness 🟢 **8.3/10** · **4 CRITICAL** · **45 novas da auditoria**
-> - Legado: 193 tasks · 106 ativas · **87 done** · contagens por categoria (🔒 21, 🐛 10, 🧱 15, 🤖 7, 🔌 5, 🌐 6, ⚙️ 5, 🧪 14, ✨ 13, 🎨 4, 📦 4, 🧹 2)
-> - 5 claims obsoletas/canceladas marcadas `[-]` na seção própria (sem ID — fora da contagem de tasks).
-> - Backup do TODO anterior: `C:\Users\Quitto\AppData\Local\Temp\opencode_backup_TODO_20260810.md`
+<span class="stat-card"><strong>47</strong> Total</span><span class="stat-card"><strong>47</strong> TODO</span><span class="stat-card"><strong>0</strong> IN_PROGRESS</span><span class="stat-card"><strong>0</strong> DONE</span><span class="stat-card"><strong>0</strong> BLOCKED</span><span class="stat-card"><strong>0</strong> CANCELLED</span>
 
 ## Active Work
 
 > Derivado das tasks `[>]` (IN_PROGRESS) em `# Tasks`. Sem estado duplicado.
 
-- **TSK-050** — IA endpoints Nível 1 (Together `.xyz`→`.ai`, Cohere `/v1`, Perplexity `/v1`). Pesquisa: `docs/research/model-listing-endpoints.md`.
-- **TSK-106** — Commit do refactor Token resolvers + typo `IndepotecyKey` (REVIEW). Próximo: `./mvnw.cmd test` → revisar diff → corrigir typo → commit.
+- — (nenhuma)
 
 ---
 
@@ -99,839 +77,807 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 > Estado canônico: a checkbox antes do metadado `Priority` em cada task. `[ ]` TODO · `[>]` IN_PROGRESS · `[x]` DONE · `[!]` BLOCKED · `[-]` CANCELLED.
 
-## 🔒 Segurança
+## SECURITY
 
-### TSK-001 — JwtTokenResolver exige esquema `Bearer `
+### TSK-001 — JwtTokenResolver exige esquema `Bearer ` no header Authorization
 
-- [ ] **Priority:** CRITICAL
-- **Category:** SECURITY · **Owner:** BOTH · **Estimate:** 30m
+- [ ] **Status:** TODO
+- **Priority:** HIGH
+- **Category:** SECURITY · **Owner:** BOTH
 
-**Objective:** Exigir o prefixo `Bearer ` no header `Authorization` — hoje o resolver aceita token sem prefixo. Reverter o teste `tokenWithoutBearerPrefix_returns401` para esperar 401.
+**Context:** `JwtTokenResolver.java:17` faz `v.replace("Bearer ", "")` sem exigir o prefixo — um header `Authorization: <token sem prefixo>` é aceito como token válido.
 
-**Acceptance Criteria:**
-- [ ] header sem `Bearer ` → não resolve (filtro → 401)
-- [ ] header `Bearer <token>` → token resolvido
-- [ ] testes da chain atualizados e build verde
+**Objective:** Exigir o prefixo `Bearer `: sem ele, o resolver deve retornar `Optional.empty()` (filtro → 401).
+
+**Expected:** header sem `Bearer ` não resolve token; header `Bearer <token>` resolve normalmente; testes da chain atualizados.
 
 **Validation:** `.\mvnw.cmd test`
 
-**Notes:** Breaking p/ clientes que enviam token sem prefixo. Relacionada a TSK-017.
+**Notes:** Mudança de comportamento — clientes que enviam token sem prefixo quebram (intencional). Relacionada a TSK-036.
+
+**References:** `src/main/java/com/quitto/server/infrastructure/security/Token/JwtTokenResolver.java:17`
 
 ### TSK-002 — CORS ausente no SecurityConfig
 
-- [ ] **Priority:** CRITICAL
-- **Category:** SECURITY · **Owner:** BOTH · **Estimate:** 1h
-
-**Objective:** Adicionar CORS no `SecurityConfig` (necessário p/ PS3 e web). Sensível na security chain — revisão humana.
-
-### TSK-003 — mTLS `client-auth=require` + X509 filter
-
-- [!] **Priority:** HIGH
-- **Category:** SECURITY · **Owner:** QUITTO
-- **Requires Decision:** YES · **ADR:** ADR-004 · **Blocked By:** ADR-004
-
-**Objective:** Ativar mTLS `client-auth=require` + X509 filter. Decisão ADR-001 (JWT + mTLS híbrido); hoje `client-auth=none`; depende da CA (ADR-004). ⛔ Não implementar sem decisão.
-
-### TSK-004 — Permissões granulares / scopes
-
-- [ ] **Priority:** MEDIUM
+- [ ] **Status:** TODO
+- **Priority:** HIGH
 - **Category:** SECURITY · **Owner:** BOTH
 
-**Objective:** Permissões N:N, scopes JWT, `@PreAuthorize`. Sensível — revisar design antes.
+**Context:** Nenhuma configuração `CorsConfigurationSource`/`cors()` existe no projeto (grep por `CorsConfiguration` = 0 hits em `src/main/java`). O frontend estático serve do mesmo domínio hoje, mas clientes web externos (PS3, apps) serão bloqueados.
 
-### TSK-005 — RateLimitFilter: catch vazios + política por rota
+**Objective:** Adicionar CORS configurado no `SecurityConfig` (origens permitidas por propriedade, métodos e headers para `Authorization`/`Content-Type`).
 
-- [ ] **Priority:** CRITICAL
-- **Category:** SECURITY · **Owner:** BOTH · **Estimate:** 30m
-
-**Objective:** Preencher os catch vazios do `RateLimitFilter` e aplicar política por rota (LOGIN/REGISTER/API).
+**Expected:** requisições cross-origin autenticadas funcionam; configuração via propriedade (`coffee.cors.*`); testes de segurança continuam verdes.
 
 **Validation:** `.\mvnw.cmd test`
 
-**Notes:** Comportamento de segurança — revisão humana.
+**Notes:** Sensível na security chain — revisão humana antes de fechar.
 
-### TSK-006 — Higiene de secrets: `.env`/`keys/` fora do git + `.env.example`
+**References:** `src/main/java/com/quitto/server/infrastructure/security/SecurityConfig.java`
 
-- [ ] **Priority:** MEDIUM
+### TSK-003 — Chaves TLS privadas fora do JAR
+
+- [ ] **Status:** TODO
+- **Priority:** HIGH
+- **Category:** SECURITY · **Owner:** HUMAN
+
+**Context:** `src/main/resources/keys/` contém `server.p12`, `server.key`, `server.csr`, `server.crt`, `ca.key`, `ca.crt` commitados — chaves privadas são empacotadas no JAR (`server.ssl.key-store=classpath:keys/server.p12`).
+
+**Objective:** Mover as chaves privadas para fora do classpath (caminho externo/env) e remover os arquivos de `resources/keys` do repositório.
+
+**Expected:** JAR sem material privado; TLS lê o keystore de caminho absoluto/env; `.gitignore` cobre o diretório de chaves.
+
+**Validation:** `.\mvnw.cmd build` + boot local com keystore externo.
+
+**Notes:** Mudança sensível de infraestrutura — decisão humana. Não empacotar chaves privadas no artefato final.
+
+**References:** `src/main/resources/keys/*`, `src/main/resources/application.properties`
+
+### TSK-004 — OAuth2UserProvisioningService usa JpaUserRepository direto (DIP)
+
+- [ ] **Status:** TODO
+- **Priority:** MEDIUM
 - **Category:** SECURITY · **Owner:** AGENT
 
-**Objective:** Garantir `.env`/`keys/` fora do git e criar `.env.example`. Relacionada a TSK-018.
+**Context:** `OAuth2UserProvisioningService.java:14-15,33` injeta e usa `JpaUserRepository` (Spring Data) diretamente, ignorando a porta `UserRepository` do domínio.
 
-### TSK-007 — RateLimitFilter log placeholder → SLF4J real
+**Objective:** Trocar pela porta `UserRepository` (injeção da interface do domínio).
 
-- [ ] **Priority:** MEDIUM
-- **Category:** SECURITY · **Owner:** AGENT · **Estimate:** 15m
-
-**Objective:** Trocar o log placeholder `"RateLimit begin {}"` por SLF4J real.
-
-### TSK-008 — MDC request ID / user ID / session ID
-
-- [ ] **Priority:** HIGH
-- **Category:** SECURITY · **Owner:** AGENT
-
-**Objective:** Adicionar MDC (request ID, user ID, session ID) nos logs.
-
-### TSK-009 — Cookie domain hardcoded → configurável
-
-- [ ] **Priority:** MEDIUM
-- **Category:** SECURITY · **Owner:** AGENT
-
-**Objective:** `HttpCookieService.setDomain("coffe_server")` → propriedade configurável.
-
-### TSK-010 — Security TRACE dev → profile dev
-
-- [ ] **Priority:** LOW
-- **Category:** SECURITY · **Owner:** AGENT
-
-**Objective:** Mover configuração TRACE para o profile `dev`.
-
-### TSK-011 — `CookieDomain` campo `sameSite` (default seguro)
-
-- [ ] **Priority:** MEDIUM
-- **Category:** SECURITY · **Owner:** AGENT
-
-**Objective:** Adicionar campo `sameSite` ao `CookieDomain`.
-
-### TSK-012 — Sanitizar secrets/keys em logs
-
-- [ ] **Priority:** MEDIUM
-- **Category:** SECURITY · **Owner:** AGENT
-
-**Objective:** Evitar vazamento de secrets/keys em logs.
-
-### TSK-013 — Teste rate limit 429
-
-- [ ] **Priority:** MEDIUM
-- **Category:** SECURITY · **Owner:** AGENT
-
-**Objective:** Testar políticas de rate limit (429) em `/auth/login` e `/auth/register`.
-
-### TSK-014 — API Key resolver (`X-API-Key`)
-
-- [ ] **Priority:** LOW
-- **Category:** SECURITY · **Owner:** AGENT
-
-**Objective:** Adicionar resolver `X-API-Key` na chain (OCP: novo `@Component TokenResolver`).
-
-### TSK-015 — Chaves TLS privadas fora do JAR
-
-- [ ] **Priority:** CRITICAL
-- **Category:** SECURITY · **Owner:** BOTH
-
-**Objective:** Mover chaves TLS privadas de `resources/keys` para externo/env. Não empacotar chaves privadas no JAR.
-
-**Notes:** Mudança sensível de infra — revisão humana.
-
-### TSK-016 — CookieMapper SameSite `Lax` → `Strict`
-
-- [ ] **Priority:** MEDIUM
-- **Category:** SECURITY · **Owner:** AGENT · **Estimate:** 30m
-
-**Objective:** SameSite `Strict` no CookieMapper (CSRF). Verificar impacto no OAuth2 (redirects).
-
-### TSK-017 — JwtAuthenticationFilter: nomes + `recoverToken`
-
-- [ ] **Priority:** MEDIUM
-- **Category:** SECURITY · **Owner:** AGENT
-
-**Objective:** Renomear variáveis (`NE`, `JTWVE`) e separar `recoverToken`. Relacionada a TSK-001.
-
-### TSK-018 — Confirmar `.gitignore` cobre `keys/` e certs
-
-- [ ] **Priority:** LOW
-- **Category:** SECURITY · **Owner:** AGENT
-
-**Objective:** Confirmar `.gitignore` cobre `keys/` e certificados.
-
-### TSK-019 — AuthExceptionHandler: 500 genérico
-
-- [ ] **Priority:** MEDIUM
-- **Category:** SECURITY · **Owner:** AGENT
-
-**Objective:** Handler retorna 500 genérico sem vazar stack trace/detalhes internos.
-
-### TSK-020 — `OAuth2UserProvisioningService` → porta `UserRepository` (DIP)
-
-- [ ] **Priority:** HIGH
-- **Category:** SECURITY · **Owner:** AGENT
-
-**Objective:** Trocar JPA direto pela porta `UserRepository`. OAuth2 Google será refatorado depois (TSK-043) — aplicar DIP mesmo assim.
-
-### TSK-107 — JwtTokenService só emite tokens; validação via Spring Security
-
-- [ ] **Priority:** HIGH
-- **Category:** SECURITY · **Owner:** BOTH
-
-**Objective:** `JwtTokenService` somente emite tokens; validação (signature/expiration/issuer/claims) via `JwtDecoder` + `JwtAuthenticationConverter`; eliminar `extractIdSubject` na maioria dos usos (`Authentication`/`@AuthenticationPrincipal Jwt`).
-
-**Notes:** Mudança sensível/breaking — revisão humana.
-
-## 🐛 Bugs
-
-### TSK-021 — Validação de senha register inconsistente (1..500 vs min 8)
-
-- [ ] **Priority:** MEDIUM
-- **Category:** BUG · **Owner:** AGENT
-
-**Objective:** Unificar regra de senha no register (hoje `@Size` 1..500 no DTO vs min 8 no service).
-
-### TSK-022 — DTOs sem Bean Validation
-
-- [ ] **Priority:** MEDIUM
-- **Category:** BUG · **Owner:** AGENT
-
-**Objective:** Adicionar `@NotBlank`/`@Email`/`@Size` nos DTOs de auth.
-
-### TSK-023 — `RegisterResponseDTO.Token` maiúsculo
-
-- [ ] **Priority:** LOW
-- **Category:** BUG · **Owner:** AGENT
-
-**Objective:** `Token` → `token` (inconsistente com `LoginResponseDTO`).
-
-### TSK-024 — `MachineService`: exceção Spring → domínio
-
-- [ ] **Priority:** MEDIUM
-- **Category:** BUG · **Owner:** AGENT
-
-**Objective:** `UsernameNotFoundException` (Spring) → `UserNotFoundException` (domínio).
-
-### TSK-025 — HomeController: validar redirects pós-build Vite
-
-- [ ] **Priority:** LOW
-- **Category:** BUG · **Owner:** AGENT
-
-**Objective:** Conferir redirects/rotas do frontend após build do Vite.
-
-### TSK-026 — MCP base-url com aspas literal removidas
-
-- [x] **Priority:** LOW
-- **Category:** BUG · **Owner:** AGENT
-
-**Objective:** Remover aspas literais do base-url em `application.properties:57`.
-
-### TSK-027 — Drift Redis remoto 6380 (rate-limit sem `requirepass`)
-
-- [ ] **Priority:** MEDIUM
-- **Category:** BUG · **Owner:** QUITTO
-
-**Objective:** Alinhar config do servidor Redis (6380) com o `.env` (rate-limit roda sem AUTH).
-
-### TSK-028 — `JwtTokenService` `@Value` field (claim falsa) → constructor
-
-- [ ] **Priority:** MEDIUM
-- **Category:** BUG · **Owner:** AGENT · **Estimate:** 30m
-
-**Objective:** Converter `@Value("${api.security.key}")` field (claim falsa de constructor injection) para construtor explícito com `@Value` no parâmetro.
-
-**Acceptance Criteria:**
-- [ ] `JwtTokenService` sem field injection
-- [ ] propriedade `api.security.key` resolvida nos profiles (default/h2/test)
-- [ ] testes de integração auth continuam verdes
+**Expected:** serviço OAuth2 depende só de contratos do domínio; testes de integração de login OAuth2 (se houver) continuam verdes.
 
 **Validation:** `.\mvnw.cmd test`
 
-**Notes:** Relacionada a TSK-047 (constructor injection em toda a chain de auth).
+**References:** `src/main/java/com/quitto/server/infrastructure/services/OAuth/OAuth2UserProvisioningService.java:14-15,33`
 
-### TSK-029 — Typo porta: `genareteToken` → `generateToken`
+### TSK-005 — AuthExceptionHandler: 500 genérico e sem vazar mensagens cruas
 
-- [ ] **Priority:** LOW
-- **Category:** BUG · **Owner:** AGENT
+- [ ] **Status:** TODO
+- **Priority:** MEDIUM
+- **Category:** SECURITY · **Owner:** AGENT
 
-**Objective:** Corrigir typo na porta `TokenService` e em todos os usos.
+**Context:** O handler mapeia `IllegalArgumentException` → 401 com a mensagem crua da exceção no body (vaza detalhes internos) e não há handler genérico para 500.
 
-### TSK-030 — Typo porta: `resolver` → `resolve`
+**Objective:** Mensagem 401 sanitizada (sem refletir `e.getMessage()`); adicionar `@ExceptionHandler(Exception.class)` → 500 genérico sem detalhes internos; logar a causa via SLF4J.
 
-- [ ] **Priority:** LOW
-- **Category:** BUG · **Owner:** AGENT
-
-**Objective:** Corrigir typo na porta `TokenResolver`.
-
-### TSK-031 — `isIs_active()` → `isActive()`
-
-- [ ] **Priority:** LOW
-- **Category:** BUG · **Owner:** AGENT
-
-**Objective:** Corrigir getter de `Groups`.
-
-## 🧱 Arquitetura
-
-### TSK-032 — `TokenResolverManager` infra → application (use case)
-
-- [ ] **Priority:** MEDIUM
-- **Category:** ARCH · **Owner:** AGENT
-
-**Objective:** Mover `TokenResolverManager` para `application/services/Auth/Token/` (use case, não infra).
-
-### TSK-033 — Domínio anêmico: `Machine.wakeOnLan()`, `ExternalAccount.refreshTokenIfExpired()`
-
-- [ ] **Priority:** LOW
-- **Category:** ARCH · **Owner:** AGENT
-
-**Objective:** Mover regras de negócio para os models do domínio.
-
-### TSK-034 — Pacotes com typos (`Adpter`, `Provaider`, `Arry`, `Ratelimit`, `LinuxAcount`) — rename breaking
-
-- [ ] **Priority:** LOW
-- **Category:** ARCH · **Owner:** AGENT
-
-**Objective:** Renomear pacotes com typos (breaking de imports — planejar com cuidado).
-
-### TSK-035 — `CookieService` infra → domínio (porta)
-
-- [ ] **Priority:** MEDIUM
-- **Category:** ARCH · **Owner:** AGENT
-
-**Objective:** Mover a interface `CookieService` para `domain/interfaces/` e separar `writeCookie()`/`toFrameworkCookie()` (Jakarta) num adapter.
-
-### TSK-036 — `extractIdSubject()` → `Optional<Long>`
-
-- [ ] **Priority:** MEDIUM
-- **Category:** ARCH · **Owner:** AGENT
-
-**Objective:** Porta `TokenService.extractIdSubject` retorna `Optional<ID>` em vez de `null`.
-
-### TSK-037 — `MachineRepositoryAdapter.setOwner()` retorna `new User()` vazio
-
-- [ ] **Priority:** MEDIUM
-- **Category:** ARCH · **Owner:** AGENT
-
-**Objective:** Corrigir stub de `setOwner()` no adapter (LSP).
-
-### TSK-038 — Field injection → constructor injection
-
-- [ ] **Priority:** MEDIUM
-- **Category:** ARCH · **Owner:** AGENT
-
-**Objective:** Trocar `@Autowired` em campos por construtor (UserRepositoryAdapter, GoogelCalenderTools e demais).
-
-### TSK-039 — `System.out/err` → SLF4J
-
-- [ ] **Priority:** LOW
-- **Category:** ARCH · **Owner:** AGENT
-
-**Objective:** Logs estruturados nos MCP tools/controllers.
-
-### TSK-040 — MCP `GoogelCalenderTools` sem `@Component`
-
-- [ ] **Priority:** MEDIUM
-- **Category:** ARCH · **Owner:** AGENT
-
-**Objective:** Adicionar `@Component` para os `@Tool` serem descobertos.
-
-### TSK-041 — `@Tool` com `@SneakyThrows` → try/catch
-
-- [ ] **Priority:** MEDIUM
-- **Category:** ARCH · **Owner:** AGENT
-
-**Objective:** Substituir `@SneakyThrows` por tratamento explícito (Lombok opcional).
-
-### TSK-042 — MCP tools: separar autenticação por tool
-
-- [ ] **Priority:** MEDIUM
-- **Category:** ARCH · **Owner:** AGENT
-
-**Objective:** Cada `@Tool` resolve auth própria em vez de `System.getenv("TOKEN")` global.
-
-### TSK-043 — OAuth2 Google refatoração (arquitetura)
-
-- [ ] **Priority:** MEDIUM
-- **Category:** ARCH · **Owner:** QUITTO
-
-**Objective:** Refatorar serviços OAuth2 Google (fonte: `.agents/IA_README.md`). **Não usar como base de análise** até o cliente pedir.
-
-### TSK-044 — Redis: `RedisArryCodec`/typos de pacote — reavaliar camada
-
-- [ ] **Priority:** LOW
-- **Category:** ARCH · **Owner:** AGENT
-
-**Objective:** Avaliar interface `RedisArryCodec` (infra) e typos `Arry`/`Adpter`/`Provaider`.
-
-### TSK-045 — Domínio: `User` sem hash em `toString`
-
-- [x] **Priority:** LOW
-- **Category:** ARCH · **Owner:** AGENT
-
-**Objective:** Não expor `passwordHash` em `toString()`.
-
-### TSK-054 — MCP: `GoogleCalenderService.createEvent()` retorna `""` — stub
-
-- [ ] **Priority:** MEDIUM
-- **Category:** ARCH · **Owner:** AGENT
-
-**Objective:** Implementar `createEvent()` real (ou remover o stub).
-
-## 🤖 IA
-
-### TSK-047 — Constructor injection na chain de auth (Spring)
-
-- [ ] **Priority:** HIGH
-- **Category:** IA · **Owner:** AGENT
-
-**Objective:** Trocar field injection por constructor injection em toda a cadeia de autenticação (filtro, resolvers, serviços). Pré-requisito p/ TSK-028.
-
-**Acceptance Criteria:**
-- [ ] nenhum `@Autowired` em campo na cadeia de auth
-- [ ] build verde com testes de integração auth
+**Expected:** nenhuma resposta HTTP expõe stack trace/mensagem interna; 500 padronizado.
 
 **Validation:** `.\mvnw.cmd test`
 
-### TSK-048 — `BaseProvider`: expor `getModels()` 1:N (provider → List<AIModel>)
+**References:** `src/main/java/com/quitto/server/shared/exception/AuthExceptionHandler.java`
 
-- [ ] **Priority:** HIGH
-- **Category:** IA · **Owner:** AGENT
+### TSK-006 — CookieDomain sem sameSite + CookieMapper hardcoda `Lax`
 
-**Objective:** Ajustar `BaseProvider`/registry para o contrato `AIRegistry.find(K)` → `Optional<List<V>>` (1:N por provider).
+- [ ] **Status:** TODO
+- **Priority:** MEDIUM
+- **Category:** SECURITY · **Owner:** AGENT
 
-### TSK-049 — `ServiceProvider` enum 1:1 com `AIProvider` (registry)
+**Context:** `CookieMapper.java:18` fixa `sameSite("Lax")`; `CookieDomain` não possui campo `sameSite` — o atributo não é configurável por cookie.
 
-- [ ] **Priority:** MEDIUM
-- **Category:** IA · **Owner:** AGENT
+**Objective:** Adicionar campo `sameSite` ao `CookieDomain` (default seguro) e fazer o `CookieMapper` usar o valor do VO em vez de constante.
 
-**Objective:** Garantir que cada constante de `ServiceProvider` tenha exatamente um `AIProvider` registrado.
+**Expected:** `CookieDomain` valida valores permitidos; mapper propaga o atributo; testes de cookie system atualizados e verdes.
 
-### TSK-050 — IA endpoints Nível 1 (URLs de listagem)
+**Validation:** `.\mvnw.cmd test`
 
-- [>] **Priority:** HIGH
-- **Category:** IA · **Owner:** AGENT
+**Notes:** Verificar impacto no fluxo OAuth2 (redirects com `Strict`).
 
-**Objective:** Corrigir URLs de listagem de modelos (Nível 1: Together `.xyz`→`.ai`, Cohere `/v1`, Perplexity `/v1`).
+**References:** `src/main/java/com/quitto/server/infrastructure/security/Token/Cookies/CookieMapper.java:18`, `src/main/java/com/quitto/server/domain/valueobject/Cookie/CookieDomain.java`
 
-**Notes:** Pesquisa: `docs/research/model-listing-endpoints.md`. 11 de 37 provedores com URL incorreta (30%).
+### TSK-007 — Register: Bean Validation no DTO + regra única de senha
 
-### TSK-051 — IA endpoints Nível 2 (modelsUrl custom)
+- [ ] **Status:** TODO
+- **Priority:** MEDIUM
+- **Category:** SECURITY · **Owner:** AGENT
 
-- [ ] **Priority:** MEDIUM
-- **Category:** IA · **Owner:** AGENT
+**Context:** `AuthenticationController.java:66-68` valida senha manualmente (1..500) e responde 401 em caso de falha; `RegisterDTO` não usa Bean Validation; `SpringAuthenticationService.register()` não aplica a regra mínima de 8 caracteres que existe apenas em `User.changePassword()`.
 
-**Objective:** Sobrescrever `modelsUrl()` nos provedores com path custom (DeepInfra, Novita, Ollama, Cloudflare, Fireworks, Azure OpenAI).
+**Objective:** Unificar a regra de senha (mín. 8) no service/domínio e usar Bean Validation (`@NotBlank`, `@Email`, `@Size`) nos DTOs de auth; falha de validação deve retornar 400, não 401.
 
-### TSK-052 — IA endpoints Nível 3 (SDK/assinatura)
+**Expected:** `POST /auth/register` com senha curta → 400 com corpo de erro; DTOs validados; testes de registro ajustados e verdes.
 
-- [ ] **Priority:** LOW
-- **Category:** IA · **Owner:** AGENT
+**Validation:** `.\mvnw.cmd test`
 
-**Objective:** Sobrescrever `fetchModelsFromApi()` com SDK/assinatura (Vertex AI, watsonx, OCI, AWS Bedrock).
+**References:** `src/main/java/com/quitto/server/application/controllers/Auth/AuthenticationController.java:66-68`, `src/main/java/com/quitto/server/application/dto/Auth/RegisterDTO.java`, `src/main/java/com/quitto/server/domain/models/User/User.java:77-80`
 
-### TSK-053 — `CoffeAgentService.getEnvKey()` placeholder → secrets reais
+### TSK-008 — Logging DEBUG de security no profile default
 
-- [ ] **Priority:** MEDIUM
-- **Category:** IA · **Owner:** AGENT
+- [ ] **Status:** TODO
+- **Priority:** LOW
+- **Category:** SECURITY · **Owner:** AGENT
 
-**Objective:** Substituir retorno `"key_temp"` por leitura real de env vars (ex.: `OPENAI_API_KEY`).
+**Context:** `application.properties` mantém `logging.level.org.springframework.security=DEBUG` (e TRACE) no profile padrão — ruído e exposição de detalhes de autenticação em produção.
 
-## 🔌 MCP
+**Objective:** Mover o nível DEBUG/TRACE para o profile de dev (ex.: `application-h2.properties` ou profile `dev`), deixando o default em INFO/WARN.
 
-### TSK-055 — MCP: `GoogleCalendarTools` (nome corrigido) com `@Component`
+**Expected:** boot default sem logs DEBUG de security; dev continua verboso.
 
-- [ ] **Priority:** MEDIUM
-- **Category:** MCP · **Owner:** AGENT
+**Validation:** `.\mvnw.cmd build`
 
-**Objective:** Garantir descoberta dos `@Tool` (classe renomeada + `@Component`).
+**References:** `src/main/resources/application.properties`
 
-### TSK-056 — MCP: autenticação por tool (sem `System.getenv("TOKEN")` global)
+### TSK-009 — .env.example ausente
 
-- [ ] **Priority:** MEDIUM
-- **Category:** MCP · **Owner:** AGENT
+- [ ] **Status:** TODO
+- **Priority:** LOW
+- **Category:** SECURITY · **Owner:** AGENT
 
-**Objective:** Cada `@Tool` resolve auth própria (OAuth2/security context).
+**Context:** O projeto importa `.env` via `spring.config.import=optional:file:.env[.properties]` e lê secrets de env vars, mas não existe `.env.example` documentando as variáveis (`DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, `SERVER_API_KEY`, `GOOGLE_CLIENT_ID`, `GOOGLE_SECRET_API`, `REDIS_*`).
 
-### TSK-057 — MCP: `@SneakyThrows` → try/catch explícito
+**Objective:** Criar `.env.example` com todas as variáveis usadas (valores vazios/placeholder) e garantir que `.env` está fora do git.
 
-- [ ] **Priority:** MEDIUM
-- **Category:** MCP · **Owner:** AGENT
+**Expected:** novo dev consegue configurar o ambiente sem ler o código; `.env` ausente do repositório.
 
-**Objective:** Remover Lombok opcional dos tools MCP.
+**Validation:** inspeção visual + `git status` sem `.env`.
 
-### TSK-058 — MCP: `GoogleCalendarService.createEvent()` stub → real
+**References:** `.env` (local), `src/main/resources/application.properties`
 
-- [!] **Priority:** MEDIUM
-- **Category:** MCP · **Owner:** AGENT
-- **Blocked By:** OAuth2 Google refatoração (TSK-043)
+### TSK-010 — Profile h2 herda TLS do default
 
-**Objective:** Implementar `createEvent()` real (hoje retorna `""`).
+- [ ] **Status:** TODO
+- **Priority:** MEDIUM
+- **Category:** SECURITY · **Owner:** AGENT
 
-### TSK-059 — MCP: separar REST `CalendarController` da camada MCP
+**Context:** `application.properties` define `server.ssl.enabled=true` e `application-h2.properties` não sobrescreve `server.ssl.*` — o profile h2 herda TLS (com keystore do classpath), forçando HTTPS no ambiente de dev local.
 
-- [ ] **Priority:** MEDIUM
-- **Category:** MCP · **Owner:** AGENT
+**Objective:** No profile h2, desabilitar TLS explicitamente (`server.ssl.enabled=false`) ou sobrescrever o keystore.
 
-**Objective:** `CalendarController` (REST) fora de `mcp/tools/` — reposicionar (ADR-005).
+**Expected:** boot com profile h2 em HTTP puro; profile default continua TLS.
 
-## 🌐 WebSocket
+**Validation:** `.\mvnw spring-boot:run -Dspring-boot.run.profiles=h2` acessível via HTTP.
 
-### TSK-060 — STOMP: handshake com token JWT (cookie/header)
-
-- [ ] **Priority:** MEDIUM
-- **Category:** WEBSOCKET · **Owner:** AGENT
-
-**Objective:** Autenticar handshake WebSocket reutilizando a chain de resolvers.
-
-### TSK-061 — STOMP: `@MessageMapping` protegidos por role
-
-- [ ] **Priority:** MEDIUM
-- **Category:** WEBSOCKET · **Owner:** AGENT
-
-**Objective:** Autorizar destinos por role via Spring Security + STOMP.
-
-### TSK-062 — STOMP: tópico `/topic/status` (máquinas/eventos)
-
-- [ ] **Priority:** MEDIUM
-- **Category:** WEBSOCKET · **Owner:** AGENT
-
-**Objective:** Broadcast de eventos de máquinas/backup em tempo real.
-
-### TSK-063 — WebSocket: heartbeat + reconexão no client
-
-- [ ] **Priority:** LOW
-- **Category:** WEBSOCKET · **Owner:** AGENT
-
-**Objective:** Heartbeat STOMP e reconexão resiliente no front.
-
-### TSK-064 — WebSocket: fila por usuário `/user/queue/*`
-
-- [ ] **Priority:** LOW
-- **Category:** WEBSOCKET · **Owner:** AGENT
-
-**Objective:** Mensagens privadas por usuário autenticado.
-
-### TSK-065 — WebSocket: testes de integração (STOMP client)
-
-- [ ] **Priority:** MEDIUM
-- **Category:** WEBSOCKET · **Owner:** AGENT
-
-**Objective:** Testar handshake, auth e tópicos com STOMP client real.
-
-## ⚙️ Infra
-
-### TSK-066 — Deployment: Dockerfile multi-stage + compose prod
-
-- [ ] **Priority:** MEDIUM
-- **Category:** INFRA · **Owner:** QUITTO
-
-**Objective:** Dockerfile multi-stage (build → runtime) e `docker-compose.prod.yml` (app + postgres + redis cache/rate-limit).
-
-### TSK-067 — Secrets via env vars (fora do `application.properties`)
-
-- [ ] **Priority:** MEDIUM
-- **Category:** INFRA · **Owner:** QUITTO
-
-**Objective:** Mover secrets (DB, JWT, OAuth2, Redis) para env vars; manter defaults locais apenas nos profiles dev/test.
-
-### TSK-068 — Health checks (Actuator) para Postgres, Redis, OAuth2
-
-- [ ] **Priority:** LOW
-- **Category:** INFRA · **Owner:** AGENT
-
-**Objective:** Expor health de dependências via Actuator.
-
-### TSK-069 — Logging: padrão estruturado (JSON) em produção
-
-- [ ] **Priority:** LOW
-- **Category:** INFRA · **Owner:** AGENT
-
-**Objective:** Logback JSON em prod (parseável), texto colorido em dev.
-
-### TSK-070 — CI: GitHub Actions (build + testes + coverage)
-
-- [ ] **Priority:** MEDIUM
-- **Category:** INFRA · **Owner:** AGENT
-
-**Objective:** Workflow Maven com testes (profile test) e relatório de cobertura.
-
-## 🧪 Testes
-
-### TSK-071 — Testes unitários do domínio (sem Spring)
-
-- [ ] **Priority:** MEDIUM
-- **Category:** TESTS · **Owner:** AGENT
-
-**Objective:** Cobrir enums, exceções, `CookieDomain`, `User`, `Machine` sem contexto Spring.
-
-### TSK-072 — Testes dos TokenResolvers + manager (unitário)
-
-- [ ] **Priority:** MEDIUM
-- **Category:** TESTS · **Owner:** AGENT
-
-**Objective:** Testar chain de resolvers (cookie, bearer, ausência) isoladamente.
-
-### TSK-073 — Testes dos repositórios (JPA com H2)
-
-- [ ] **Priority:** MEDIUM
-- **Category:** TESTS · **Owner:** AGENT
-
-**Objective:** Testar adapters/mappers (User, Machine) com H2.
-
-### TSK-074 — Testes LinuxUser/Groups (persistence)
-
-- [!] **Priority:** MEDIUM
-- **Category:** TESTS · **Owner:** AGENT
-- **Blocked By:** faltam repos/mappers/adapters de LinuxUser
-
-**Objective:** Testar persistência de LinuxUser/Groups quando implementada.
-
-### TSK-075 — Testes de integração REST (MockMvc + H2)
-
-- [ ] **Priority:** MEDIUM
-- **Category:** TESTS · **Owner:** AGENT
-
-**Objective:** Testar `/auth/*`, `/api/test` e calendário via MockMvc.
-
-### TSK-076 — Testes de segurança (401/403 nas rotas protegidas)
-
-- [ ] **Priority:** HIGH
-- **Category:** TESTS · **Owner:** AGENT
-
-**Objective:** Validar acesso negado sem token e com roles incorretas.
-
-### TSK-077 — Testes de rate limit (429)
-
-- [ ] **Priority:** MEDIUM
-- **Category:** TESTS · **Owner:** AGENT
-
-**Objective:** Validar Bucket4j em `/auth/login`/`/auth/register`.
-
-### TSK-078 — Testes JWT (geração, expiração, tamper)
-
-- [ ] **Priority:** MEDIUM
-- **Category:** TESTS · **Owner:** AGENT
-
-**Objective:** Testar `JwtTokenService` (token válido, expirado, assinatura adulterada).
-
-### TSK-079 — Testes dos providers de IA (mock HTTP)
-
-- [ ] **Priority:** MEDIUM
-- **Category:** TESTS · **Owner:** AGENT
-
-**Objective:** Testar parsing de modelos com respostas mockadas por provider.
-
-### TSK-080 — Testes do OAuth2 Google (mock de fluxo)
-
-- [ ] **Priority:** LOW
-- **Category:** TESTS · **Owner:** AGENT
-
-**Objective:** Testar provisioning com mock do OAuth2User. (OAuth2 será refatorado — TSK-043.)
-
-### TSK-081 — Testes do Redis (Testcontainers)
-
-- [ ] **Priority:** MEDIUM
-- **Category:** TESTS · **Owner:** AGENT
-
-**Objective:** Testar a abstração Redis (provider, adapter, codec) com Testcontainers.
-
-### TSK-082 — Testes de snapshot das rotas (API contract)
-
-- [ ] **Priority:** LOW
-- **Category:** TESTS · **Owner:** AGENT
-
-**Objective:** Fixar formato de resposta das rotas (body + status) contra mudanças acidentais.
-
-### TSK-083 — Testes MCP tools (métodos `@Tool`)
-
-- [ ] **Priority:** MEDIUM
-- **Category:** TESTS · **Owner:** AGENT
-
-**Objective:** Testar chamadas e erros das tools MCP (calendar, future AI).
-
-### TSK-084 — E2E happy path (login → token → API)
-
-- [ ] **Priority:** MEDIUM
-- **Category:** TESTS · **Owner:** AGENT
-
-**Objective:** Fluxo completo via HTTP real (Testcontainers): register/login/access.
-
-## ✨ Features
-
-### TSK-085 — CRUD de Máquinas (REST)
-
-- [ ] **Priority:** HIGH
-- **Category:** FEATURE · **Owner:** AGENT
-
-**Objective:** Endpoints CRUD de máquinas + permissão por owner (relacionado a TSK-004).
-
-### TSK-086 — Wake-on-LAN (magic packet)
-
-- [ ] **Priority:** MEDIUM
-- **Category:** FEATURE · **Owner:** AGENT
-
-**Objective:** Enviar magic packet para `macAddress` (domain `Machine.wakeOnLan()` — TSK-033).
-
-### TSK-087 — Integração Tailscale (listar máquinas)
-
-- [ ] **Priority:** MEDIUM
-- **Category:** FEATURE · **Owner:** AGENT
-
-**Objective:** Consultar máquinas via API Tailscale usando `tailscaleNodeKey`.
-
-### TSK-088 — CRUD de Usuários (admin)
-
-- [ ] **Priority:** MEDIUM
-- **Category:** FEATURE · **Owner:** AGENT
-
-**Objective:** Admin gerencia usuários (ativar/desativar, role) — base p/ multi-usuário.
-
-### TSK-089 — CRUD LinuxUser/Groups
-
-- [ ] **Priority:** MEDIUM
-- **Category:** FEATURE · **Owner:** AGENT
-
-**Objective:** Persistência completa de LinuxUser/Groups (desbloqueia TSK-074).
-
-### TSK-090 — Mapper/Adapter de ExternalAccount
-
-- [ ] **Priority:** LOW
-- **Category:** FEATURE · **Owner:** AGENT
-
-**Objective:** Completar persistência de contas OAuth externas (mapper + adapter).
-
-### TSK-091 — `UserService` real (não esqueleto)
-
-- [ ] **Priority:** LOW
-- **Category:** FEATURE · **Owner:** AGENT
-
-**Objective:** Implementar operações do `UserService` (hoje só construtor vazio).
-
-### TSK-092 — Backup de arquivos (módulo)
-
-- [ ] **Priority:** MEDIUM
-- **Category:** FEATURE · **Owner:** AGENT
-
-**Objective:** Módulo de backup de arquivos/sistemas (visão do plain.md).
-
-### TSK-093 — Google Tasks (integração)
-
-- [ ] **Priority:** LOW
-- **Category:** FEATURE · **Owner:** AGENT
-
-**Objective:** Integração com Google Tasks (reuso da infra OAuth2).
-
-### TSK-094 — MCP tools de IA (modelos + chat)
-
-- [ ] **Priority:** MEDIUM
-- **Category:** FEATURE · **Owner:** AGENT
-
-**Objective:** Expor modelos/chat via MCP usando o ecossistema de providers (TSK-048..053).
-
-### TSK-095 — Página de login Thymeleaf (`login.html`)
-
-- [ ] **Priority:** MEDIUM
-- **Category:** FEATURE · **Owner:** AGENT
-
-**Objective:** Criar `login.html` referenciado por `HomeController` (hoje 404).
-
-### TSK-096 — Dashboard do usuário (Thymeleaf)
-
-- [ ] **Priority:** MEDIUM
-- **Category:** FEATURE · **Owner:** AGENT
-
-**Objective:** Página pós-login com dados do usuário/máquinas.
-
-### TSK-097 — Refresh token (rota + cookie)
-
-- [ ] **Priority:** MEDIUM
-- **Category:** FEATURE · **Owner:** AGENT
-
-**Objective:** Fluxo de refresh (novo JWT) com rota dedicada.
-
-## 🎨 Frontend
-
-### TSK-098 — Landing page Thymeleaf alinhada à identidade Coffee
-
-- [ ] **Priority:** MEDIUM
-- **Category:** FRONTEND · **Owner:** AGENT
-
-**Objective:** `index.html` coerente com `docs/UX/VISUAL-IDENTITY.md` (dark-first, café + azul).
-
-### TSK-099 — CSS do app centralizado (design system)
-
-- [ ] **Priority:** MEDIUM
-- **Category:** FRONTEND · **Owner:** AGENT
-
-**Objective:** Unificar `static/css/app.css` com os tokens do design system (variáveis CSS).
-
-### TSK-100 — Empty states e loading (UX)
-
-- [ ] **Priority:** LOW
-- **Category:** FRONTEND · **Owner:** AGENT
-
-**Objective:** Aplicar estados vazios com CTA e loading (skeleton) conforme identidade visual.
-
-### TSK-101 — Responsividade básica (mobile)
-
-- [ ] **Priority:** LOW
-- **Category:** FRONTEND · **Owner:** AGENT
-
-**Objective:** Layout mínimo utilizável em mobile (dashboard e login).
-
-## 📦 Modularização / Docs
-
-### TSK-102 — MCP como módulo Maven separado (`server-mcp`)
-
-- [!] **Priority:** MEDIUM
-- **Category:** MOD · **Owner:** AGENT
-- **Blocked By:** ADR-005 em aberto
-
-**Objective:** Extrair camada MCP para módulo próprio (tools + services, sem controllers REST).
-
-### TSK-103 — Multi-module Maven (domain/application/infra/boot)
-
-- [!] **Priority:** MEDIUM
-- **Category:** MOD · **Owner:** AGENT
-- **Blocked By:** ADR-003 em aberto
-
-**Objective:** Estrutura multi-module conforme ADR-003 (domínio 100% puro, zero dependências).
-
-### TSK-104 — Atualizar docs após refactors (arquitetura/audit)
-
-- [ ] **Priority:** LOW
-- **Category:** MOD · **Owner:** AGENT
-
-**Objective:** Refletir no `docs/architecture/arquiteture.md` e `docs/audits/relatorio-completo.md` as mudanças de estrutura/API já aplicadas.
-
-### TSK-105 — ADRs propostos → decisão
-
-- [ ] **Priority:** LOW
-- **Category:** MOD · **Owner:** QUITTO
-
-**Objective:** Decidir ADR-002 (versionamento `/api/v1/`), ADR-003 (modularização), ADR-005 (módulo MCP). Atualizar status no `docs/architecture/adr/README.md`.
-
-## 🧹 Cleanup
-
-### TSK-046 — Código morto / imports não usados / logs de debug
-
-- [ ] **Priority:** LOW
-- **Category:** CLEANUP · **Owner:** AGENT
-
-**Objective:** Varrer código morto, imports não usados e `System.out/err` remanescentes.
-
-### TSK-106 — Commit do refactor Token resolvers + typo `IndepotecyKey` (REVIEW)
-
-- [>] **Priority:** HIGH
-- **Category:** CLEANUP · **Owner:** AGENT
-
-**Objective:** Revisar diff do refactor dos resolvers; corrigir typo `IndepotecyKey`; rodar `.\mvnw.cmd test`; commitar.
-
-**Notes:** Refactor em andamento — `HttpTokenRequestContext` e portas TokenResolver/TokenRequestContext renomeadas; testes precisam de ajuste de imports (LSP sinalizando).
+**References:** `src/main/resources/application-h2.properties`, `src/main/resources/application.properties`
 
 ---
 
-## ✅ Completed
+## BUG
 
-> Marcador de conclusão — **não é uma task** (sem ID). O estado das tasks DONE vive nas próprias checkboxes `[x]` em `# Tasks`.
+### TSK-011 — AuthenticationController.login: bloco vazio de idempotência
 
-- TSK-026 — aspas literais removidas do MCP base-url
-- TSK-045 — `User.toString()` sem hash de senha
-- Claims legadas de conclusão (87 done na auditoria 2026-08-10) — consolidadas nas checkboxes das tasks correspondentes; sem duplicação de estado aqui.
+- [ ] **Status:** TODO
+- **Priority:** MEDIUM
+- **Category:** BUG · **Owner:** AGENT
 
-## 🗑️ Obsoletas / Canceladas
+**Context:** `AuthenticationController.java:47-49` contém `if(operationKeyManager.validated(key)){}` — bloco vazio (placeholder): a idempotência é verificada mas nada é feito com o resultado.
 
-> Claims legadas da auditoria — **sem IDs** e **fora da contagem** de tasks (107). Marcadas `[-]` apenas para registro histórico.
+**Objective:** Definir o comportamento: se a chave já foi validada, responder a operação anterior (cache) ou ignorar; senão, implementar/remover o bloco. Remover código morto.
 
-- [-] mTLS TLS server-side completo (na real: só `client-auth=none`; mTLS bloqueado no ADR-004 — ver TSK-003)
-- [-] `login.html` existia (na real: template não existe — ver TSK-095)
-- [-] OAuth2 Google validado como base de arquitetura (na real: será refatorado — TSK-043; não usar como base)
-- [-] Redis rate-limit configurado com AUTH (na real: drift no servidor 6380 — ver TSK-027)
-- [-] `extractIdSubject` retorna `Optional<Long>` (na real: mudança pendente — ver TSK-036)
+**Expected:** login com chave repetida tem comportamento definido e testado; sem blocos vazios.
+
+**Validation:** `.\mvnw.cmd test`
+
+**References:** `src/main/java/com/quitto/server/application/controllers/Auth/AuthenticationController.java:44-49`
+
+### TSK-012 — CacheService.search lança exceção de idempotência em cache miss
+
+- [ ] **Status:** TODO
+- **Priority:** MEDIUM
+- **Category:** BUG · **Owner:** AGENT
+
+**Context:** `CacheService.java:44-54` — quando a chave não existe no Redis, `search()` lança `InvalidIdempotencyKeyException` em vez de retornar `Optional.empty()`. Semântica incorreta: cache miss é ausência, não erro de chave inválida.
+
+**Objective:** Retornar `Optional.empty()` em cache miss; exceção de idempotência só para chave genuinamente inválida (ex.: null/blank).
+
+**Expected:** `search("chave-inexistente")` → `Optional.empty()`; testes do CacheService (se houver) atualizados.
+
+**Validation:** `.\mvnw.cmd test`
+
+**References:** `src/main/java/com/quitto/server/infrastructure/services/Cache/CacheService.java:44-54`
+
+### TSK-013 — MachineService vaza UsernameNotFoundException do Spring
+
+- [ ] **Status:** TODO
+- **Priority:** MEDIUM
+- **Category:** BUG · **Owner:** AGENT
+
+**Context:** `MachineService.java:3,28` importa e lança `org.springframework.security.core.userdetails.UsernameNotFoundException` na camada de aplicação — vazamento de framework para fora da infraestrutura.
+
+**Objective:** Substituir por exceção de domínio (ex.: `UserNotFoundException` em `domain/exception/`) e ajustar o handler HTTP correspondente.
+
+**Expected:** aplicação não referencia classes do Spring Security; 404/400 padronizado no endpoint que usa o service.
+
+**Validation:** `.\mvnw.cmd test`
+
+**References:** `src/main/java/com/quitto/server/application/services/Machine/MachineService.java:3,28`
+
+### TSK-014 — User.equals por email sem hashCode
+
+- [ ] **Status:** TODO
+- **Priority:** LOW
+- **Category:** BUG · **Owner:** AGENT
+
+**Context:** `User.java:102-115` implementa `equals` por email, mas não há `hashCode()` — violação do contrato equals/hashCode (documentada no javadoc :25-27). Quebra coleções hash (Set/Map) com `User`.
+
+**Objective:** Implementar `hashCode()` consistente com `equals` (baseado no email).
+
+**Expected:** `equals`/`hashCode` consistentes; testes de domínio de `User` cobrem o contrato.
+
+**Validation:** `.\mvnw.cmd test`
+
+**References:** `src/main/java/com/quitto/server/domain/models/User/User.java:25-27,102-115`
+
+---
+
+## ARCHITECTURE
+
+### TSK-015 — CookieService: interface morta com Jakarta na infra
+
+- [ ] **Status:** TODO
+- **Priority:** MEDIUM
+- **Category:** ARCHITECTURE · **Owner:** AGENT
+
+**Context:** `infrastructure/interfaces/Cookies/CookieService.java` é uma interface de contrato (deveria ser domínio) que expõe `HttpServletResponse` (Jakarta) e não possui implementação nem usos — o fluxo atual usa `CookieManager` (domínio) + `HttpCookieWriter` (application). É código morto.
+
+**Objective:** Remover a interface morta (e o diretório `infrastructure/interfaces/Cookies/` se vazio).
+
+**Expected:** `CookieService` não existe mais; build verde sem referências pendentes.
+
+**Validation:** `.\mvnw.cmd test`
+
+**References:** `src/main/java/com/quitto/server/infrastructure/interfaces/Cookies/CookieService.java`
+
+### TSK-016 — TokenResolverManager na infra → application (use case)
+
+- [ ] **Status:** TODO
+- **Priority:** MEDIUM
+- **Category:** ARCHITECTURE · **Owner:** AGENT
+
+**Context:** `TokenResolverManager` (orquestrador da chain de resolvers) está em `infrastructure/services/Auth/Token/` — é lógica de orquestração (use case), não implementação de infraestrutura.
+
+**Objective:** Mover para `application/services/Auth/Token/`, mantendo as portas `TokenResolver`/`TokenRequestContext` no domínio e os resolvers na infra.
+
+**Expected:** dependências continuam apontando para dentro; testes de resolvers/manager ajustam imports e ficam verdes.
+
+**Validation:** `.\mvnw.cmd test`
+
+**References:** `src/main/java/com/quitto/server/infrastructure/services/Auth/Token/TokenResolverManager.java`
+
+### TSK-017 — RedisArryCodec em camada errada (infra em vez de domínio)
+
+- [ ] **Status:** TODO
+- **Priority:** LOW
+- **Category:** ARCHITECTURE · **Owner:** AGENT
+
+**Context:** `infrastructure/interfaces/Codec/RedisArryCodec.java:7` estende `RedisCodec<String, byte[]>` (Lettuce) e fica em `infrastructure/interfaces/` — contrato que deveria pertencer ao domínio, mas dependendo de Lettuce não pode. Camada inconsistente.
+
+**Objective:** Reavaliar: mover a interface para `domain/interfaces/` (se desacoplável) ou documentar/renomear como adapter de infra (`RedisCodecAdapter`), corrigindo o nome `Arry` → `Array`.
+
+**Expected:** camada da interface consistente com a regra de dependências; sem `interfaces/` dentro de infra para contratos.
+
+**Validation:** `.\mvnw.cmd test`
+
+**References:** `src/main/java/com/quitto/server/infrastructure/interfaces/Codec/RedisArryCodec.java:7`
+
+### TSK-018 — Machine anêmico: criar comportamento `wakeOnLan()` no domínio
+
+- [ ] **Status:** TODO
+- **Priority:** MEDIUM
+- **Category:** ARCHITECTURE · **Owner:** AGENT
+
+**Context:** `Machine` é data bag (só campos/getters) — não possui `wakeOnLan()` nem regras de negócio relacionadas a WOL/Tailscale.
+
+**Objective:** Adicionar comportamento ao modelo de domínio (ex.: `wakeOnLan()` validando `macAddress`/`wolEnabled` antes de delegar o envio do magic packet à infra).
+
+**Expected:** `Machine` com regras de WOL no domínio; testes unitários de domínio cobrem o método.
+
+**Validation:** `.\mvnw.cmd test`
+
+**Notes:** Pré-requisito conceitual de TSK-041.
+
+**References:** `src/main/java/com/quitto/server/domain/models/Machine/Machine.java`
+
+### TSK-019 — LinuxUser/Groups: persistência incompleta
+
+- [ ] **Status:** TODO
+- **Priority:** MEDIUM
+- **Category:** ARCHITECTURE · **Owner:** AGENT
+
+**Context:** Existem domain models (`LinuxUser`, `Groups`) e entities JPA (`GroupsEntity`, `LinuxUserEntity`), mas faltam mappers, adapters e Spring Data repositories — persistência não conectada às portas do domínio.
+
+**Objective:** Implementar mapper + adapter + repository para `LinuxUser` e `Groups` (padrão dos demais agregados) e registrar portas no domínio se necessário.
+
+**Expected:** `LinuxUserRepository`/`GroupsRepository` utilizáveis; testes de persistência com H2/Testcontainers verdes.
+
+**Validation:** `.\mvnw.cmd test`
+
+**References:** `src/main/java/com/quitto/server/domain/models/LinuxAccount/`, `src/main/java/com/quitto/server/infrastructure/db/LinuxUser/`
+
+### TSK-020 — ExternalAccount: mapper + adapter de persistência
+
+- [ ] **Status:** TODO
+- **Priority:** LOW
+- **Category:** ARCHITECTURE · **Owner:** AGENT
+
+**Context:** Domain model `ExternalAccount` e `ExternalAccountEntity` existem, mas não há mapper/adapter conectando-os à persistência.
+
+**Objective:** Completar o adapter de `ExternalAccount` (entity → domain → entity) seguindo o padrão de `UserRepositoryAdapter`.
+
+**Expected:** contas OAuth externas persistíveis via porta de repositório; testes de persistência verdes.
+
+**Validation:** `.\mvnw.cmd test`
+
+**References:** `src/main/java/com/quitto/server/domain/models/ExternalAccount/`, `src/main/java/com/quitto/server/infrastructure/db/User/Entity/ExternalAccountEntity.java`
+
+### TSK-021 — User: construtor público vazio permite estado inválido
+
+- [ ] **Status:** TODO
+- **Priority:** LOW
+- **Category:** ARCHITECTURE · **Owner:** AGENT
+
+**Context:** `User.java:53-55` expõe `public User()` sem campos — permite criar agregado raiz sem nome/email/role/hash.
+
+**Objective:** Remover o construtor vazio ou torná-lo privado/package-private, forçando criação pelos construtores completos (ou factory).
+
+**Expected:** instâncias de `User` sempre válidas; usos existentes ajustados; testes verdes.
+
+**Validation:** `.\mvnw.cmd test`
+
+**References:** `src/main/java/com/quitto/server/domain/models/User/User.java:53-55`
+
+---
+
+## IA
+
+### TSK-022 — CoffeAgentService.getEnvKey() retorna vazio (stub)
+
+- [ ] **Status:** TODO
+- **Priority:** HIGH
+- **Category:** IA · **Owner:** AGENT
+
+**Context:** `CoffeAgentService.java:22-24` retorna `""` para qualquer `providerName` — sem secrets reais, a listagem/chamada de modelos falha em runtime (blocker do ecossistema IA).
+
+**Objective:** Ler a API key de variável de ambiente (ex.: `OPENAI_API_KEY`, `ANTHROPIC_API_KEY` conforme `ServiceProvider`) e devolver `Optional<String>` (vazio quando ausente).
+
+**Expected:** providers recebem chave real quando a env existe; ausência tratada sem exceção genérica.
+
+**Validation:** `.\mvnw.cmd test` (com mocks) + smoke com env setada.
+
+**References:** `src/main/java/com/quitto/server/infrastructure/services/CoffeAgent/CoffeAgentService.java:22-24`
+
+### TSK-023 — IA endpoints Nível 2: modelsUrl() custom por provedor
+
+- [ ] **Status:** TODO
+- **Priority:** MEDIUM
+- **Category:** IA · **Owner:** AGENT
+
+**Context:** Pesquisa `docs/research/model-listing-endpoints.md` aponta 11 providers com URL de listagem incorreta. Nível 1 (Together/Cohere/Perplexity) já corrigido; falta o Nível 2: sobrescrever `modelsUrl()` para DeepInfra (`/models/list`), Novita (`/openai/v1`), Ollama (`/api/tags`), Cloudflare (`/ai/models/search`), Fireworks (`accounts/{id}`), Azure (`api-version`).
+
+**Objective:** Implementar as URLs custom nos providers listados, mantendo o parser do `BaseProvider` (ajustando `parseModels` onde o formato diferir, ex.: Ollama).
+
+**Expected:** `getModels()` retorna catálogo real para os 6 providers; testes com HTTP mockado verdes (TSK-037).
+
+**Validation:** `.\mvnw.cmd test`
+
+**Notes:** Ollama exige override de parse (`{models:[{name, model}]}`); Cloudflare exige `task=Text Generation`.
+
+**References:** `docs/research/model-listing-endpoints.md`, `src/main/java/com/quitto/server/infrastructure/IA/BaseProvider.java`
+
+### TSK-024 — IA endpoints Nível 3: SDK/assinatura (Vertex, watsonx, OCI, Bedrock)
+
+- [ ] **Status:** TODO
+- **Priority:** LOW
+- **Category:** IA · **Owner:** AGENT
+
+**Context:** TODOs no código (`AwsBedrockProvider.java:45`, `OCIGenerativeAIProvider.java:45`, `FireworksAIProvider.java:39`) indicam pendência de auth por SDK/assinatura (SigV4, OCI signing, IAM) — não cabem no padrão Bearer do `BaseProvider`.
+
+**Objective:** Sobrescrever `fetchModelsFromApi()` com SDK/assinatura para AWS Bedrock, IBM watsonx, OCI e Vertex AI.
+
+**Expected:** listagem de modelos funcional nos 4 provedores cloud; sem TODOs pendentes.
+
+**Validation:** `.\mvnw.cmd test` (mocks) — execução real depende de credenciais.
+
+**References:** `src/main/java/com/quitto/server/infrastructure/IA/AwsBedrockProvider.java:45`, `OCIGenerativeAIProvider.java:45`, `FireworksAIProvider.java:39`, `docs/research/model-listing-endpoints.md`
+
+### TSK-025 — Typos IA: AIProvaider*, getModelsForProvaider, ProvaiderIAService, packages
+
+- [ ] **Status:** TODO
+- **Priority:** MEDIUM
+- **Category:** IA · **Owner:** AGENT
+
+**Context:** Typos públicos persistem: `AIProvaiderController`, `AIProvaiderPort`, `AIProvaiderAdpiter`, `ProvaiderIAService`, método `getModelsForProvaider` (`AIRegistry.java:27`), `findProvaider`, packages `Provaiders`/`Reagistry`.
+
+**Objective:** Renomear classes, métodos e packages para `Provider`/`Registry` (ex.: `AIProviderController`, `AIProviderRegistry`, `getModelsForProvider`, `findProvider`), atualizando todos os imports e usos.
+
+**Expected:** zero typos de `Provaider`/`Reagistry`/`Adpiter` no código; build verde.
+
+**Validation:** `.\mvnw.cmd test`
+
+**Notes:** Renomeação de packages quebra imports — planejar com cuidado (grep completo antes).
+
+**References:** `src/main/java/com/quitto/server/application/controllers/IA/`, `src/main/java/com/quitto/server/infrastructure/services/IA/`
+
+### TSK-026 — CoffeAgentService: field injection `@Value` → constructor
+
+- [ ] **Status:** TODO
+- **Priority:** LOW
+- **Category:** IA · **Owner:** AGENT
+
+**Context:** `CoffeAgentService.java:19-20` usa `@Value` em campos (field injection) — a convenção do projeto é constructor injection.
+
+**Objective:** Converter para construtor com `@Value` no parâmetro (padrão já usado em `JwtTokenService`).
+
+**Expected:** sem field injection no serviço; propriedades resolvidas nos profiles; testes verdes.
+
+**Validation:** `.\mvnw.cmd test`
+
+**References:** `src/main/java/com/quitto/server/infrastructure/services/CoffeAgent/CoffeAgentService.java:19-20`
+
+---
+
+## MCP
+
+### TSK-027 — GoogleCalendarService.createEvent() stub + field injection
+
+- [ ] **Status:** TODO
+- **Priority:** MEDIUM
+- **Category:** MCP · **Owner:** AGENT
+
+**Context:** `GoogleCalendarService.java:19-21` — `createEvent()` retorna `""` (stub); o client é campo `@Autowired` público (:16-17).
+
+**Objective:** Implementar `createEvent()` real (chamada à API Calendar) e trocar para constructor injection.
+
+**Expected:** criação de evento retorna o evento criado (id); sem field injection; testes MCP ajustados (TSK-038/TSK-083 antigo).
+
+**Validation:** `.\mvnw.cmd test`
+
+**Notes:** Depende do fluxo OAuth2 Google existente (a ser refatorado futuramente — fora de escopo deste TODO).
+
+**References:** `src/main/java/com/quitto/server/mcp/services/GoogleCalendarService.java:16-21`
+
+### TSK-028 — GoogleCalendarTools: injection + logging + tratamento de exceções
+
+- [ ] **Status:** TODO
+- **Priority:** MEDIUM
+- **Category:** MCP · **Owner:** AGENT
+
+**Context:** `GoogleCalendarTools` usa campos `@Autowired` públicos (:21-25), `System.err.println` (:40,42) e engole exceções retornando lista vazia — falhas de MCP ficam invisíveis para o agente.
+
+**Objective:** Constructor injection, SLF4J no lugar de `System.err`, e propagar/descrever erros na resposta da tool (não lista vazia silenciosa).
+
+**Expected:** tool MCP reporta erro ao agente; logs estruturados; sem field injection.
+
+**Validation:** `.\mvnw.cmd test` (McpToolTest)
+
+**References:** `src/main/java/com/quitto/server/mcp/tools/GoogleCalendarTools.java`
+
+### TSK-029 — CalendarController (REST) dentro de mcp/tools + permitAll + println
+
+- [ ] **Status:** TODO
+- **Priority:** MEDIUM
+- **Category:** MCP · **Owner:** AGENT
+
+**Context:** `mcp/tools/CalendarController.java` é controller REST (não MCP) com `@PreAuthorize("permitAll()")` e `System.out/err.println` (:31,43,46) — camada MCP misturada com REST público.
+
+**Objective:** Mover para `application/controllers/` (REST), restringir acesso (autenticado) e trocar prints por SLF4J.
+
+**Expected:** nenhum controller REST em `mcp/`; endpoints de calendário autenticados; logs estruturados.
+
+**Validation:** `.\mvnw.cmd test`
+
+**References:** `src/main/java/com/quitto/server/mcp/tools/CalendarController.java`
+
+---
+
+## WEBSOCKET
+
+### TSK-030 — WebSocket handshake sem autenticação JWT
+
+- [ ] **Status:** TODO
+- **Priority:** HIGH
+- **Category:** WEBSOCKET · **Owner:** AGENT
+
+**Context:** `WebSocketConfig.java` registra `/protocol` sem `HandshakeInterceptor` nem filtro — o endpoint STOMP é acessível sem token, ignorando a chain de resolvers do projeto.
+
+**Objective:** Autenticar o handshake reutilizando `TokenResolverManager` (cookie/header), rejeitando conexões sem JWT válido.
+
+**Expected:** handshake sem token falha; com token válido conecta; testes STOMP cobrem (TSK-038).
+
+**Validation:** `.\mvnw.cmd test`
+
+**References:** `src/main/java/com/quitto/server/infrastructure/config/WebSocket/WebSocketConfig.java`, `src/main/java/com/quitto/server/infrastructure/services/Auth/Token/TokenResolverManager.java`
+
+### TSK-031 — Destinos STOMP sem proteção por role + allowedOrigins ausente
+
+- [ ] **Status:** TODO
+- **Priority:** MEDIUM
+- **Category:** WEBSOCKET · **Owner:** AGENT
+
+**Context:** `AgentWebSocketController.java:29-30` expõe `@MessageMapping("/agent")` sem controle de autorização; `WebSocketConfig` não define `setAllowedOrigins`.
+
+**Objective:** Proteger destinos por role (ex.: `ROLE_MCP` para `/agent`) e configurar origens permitidas por propriedade.
+
+**Expected:** envio sem a role correta é rejeitado no canal STOMP; origens configuráveis.
+
+**Validation:** `.\mvnw.cmd test`
+
+**References:** `src/main/java/com/quitto/server/application/controllers/WebSocket/AgentWebSocketController.java:29-30`, `src/main/java/com/quitto/server/infrastructure/config/WebSocket/WebSocketConfig.java`
+
+### TSK-032 — AgentWebSocketController responde resposta canônica
+
+- [ ] **Status:** TODO
+- **Priority:** MEDIUM
+- **Category:** WEBSOCKET · **Owner:** AGENT
+
+**Context:** O controller chama `requestManager.request(...)` mas responde ao cliente com texto fixo ("processed"), descartando o resultado real do protocolo do agente (`CoffeAgentRequestManager`).
+
+**Objective:** Retornar a resposta real do `CoffeAgentRequestManager` ao cliente (mapear para o formato de saída do canal).
+
+**Expected:** cliente STOMP recebe resposta útil (conteúdo do agente), não placeholder.
+
+**Validation:** `.\mvnw.cmd test`
+
+**References:** `src/main/java/com/quitto/server/application/controllers/WebSocket/AgentWebSocketController.java`, `src/main/java/com/quitto/server/infrastructure/services/CoffeAgent/CoffeAgentRequestManager.java`
+
+---
+
+## INFRA
+
+### TSK-033 — Dockerfile multi-stage + docker-compose prod ausentes
+
+- [ ] **Status:** TODO
+- **Priority:** MEDIUM
+- **Category:** INFRA · **Owner:** HUMAN
+
+**Context:** Não existem `Dockerfile`, `docker-compose.yml` nem `docker-compose.prod.yml` no repositório (glob não encontrou).
+
+**Objective:** Criar Dockerfile multi-stage (build Maven → runtime JRE 21) e compose de produção (app + postgres + redis cache/rate-limit), com secrets via env.
+
+**Expected:** `docker compose up` sobe o ecossistema completo; JAR sem chaves TLS empacotadas (relacionado a TSK-003).
+
+**Validation:** `docker compose build` + `docker compose up` smoke.
+
+**Notes:** Decisão humana (infra do homelab).
+
+### TSK-034 — CI GitHub Actions ausente
+
+- [ ] **Status:** TODO
+- **Priority:** MEDIUM
+- **Category:** INFRA · **Owner:** HUMAN
+
+**Context:** Não existe `.github/workflows/` — build/testes não rodam em CI.
+
+**Objective:** Workflow Maven (Java 21) com `.\mvnw.cmd test` no profile de teste e report de cobertura.
+
+**Expected:** PRs rodam a suíte completa; falhas bloqueiam merge.
+
+**Validation:** push de teste do workflow.
+
+---
+
+## TESTS
+
+### TSK-035 — Teste de rate limit (429) em /auth/login e /auth/register
+
+- [ ] **Status:** TODO
+- **Priority:** MEDIUM
+- **Category:** TESTS · **Owner:** AGENT
+
+**Context:** O `RateLimitFilter` implementa política por rota (enum `RateLimitPolicy`) e responde 429, mas não há teste cobrindo o estouro de limite.
+
+**Objective:** Testar que exceder o limite em login/register retorna 429 (e que o limite normal passa).
+
+**Validation:** `.\mvnw.cmd test`
+
+**References:** `src/main/java/com/quitto/server/infrastructure/security/Filter/RateLimit/`, `src/test/java/`
+
+### TSK-036 — Testes de segurança 401/403 nas rotas protegidas
+
+- [ ] **Status:** TODO
+- **Priority:** HIGH
+- **Category:** TESTS · **Owner:** AGENT
+
+**Context:** Existem testes de integração de auth, mas não há suíte dedicada validando 401 sem token e 403 com role incorreta nas rotas protegidas (ex.: `/api/**`, `/mcp/**`).
+
+**Objective:** Testar acesso negado sem token, com token inválido e com role errada; incluir o caso do `Bearer` obrigatório (TSK-001).
+
+**Validation:** `.\mvnw.cmd test`
+
+### TSK-037 — Testes dos providers de IA (HTTP mockado)
+
+- [ ] **Status:** TODO
+- **Priority:** MEDIUM
+- **Category:** TESTS · **Owner:** AGENT
+
+**Context:** Nenhum teste cobre `BaseProvider`/providers concretos — parsing de modelos e erros HTTP não são validados.
+
+**Objective:** Testar parsing de `getModels()` com respostas mockadas por provider (raízes `data`/`models`/`result`, erros 4xx/5xx → `ProviderException`).
+
+**Validation:** `.\mvnw.cmd test`
+
+**Notes:** Pré-requisito para fechar TSK-023/024 com segurança.
+
+### TSK-038 — Testes WebSocket (handshake, auth e tópicos)
+
+- [ ] **Status:** TODO
+- **Priority:** MEDIUM
+- **Category:** TESTS · **Owner:** AGENT
+
+**Context:** Não há testes STOMP/WebSocket cobrindo o endpoint `/protocol`.
+
+**Objective:** Testar handshake sem/com token (TSK-030), envio sem role (TSK-031) e resposta do `/agent` (TSK-032).
+
+**Validation:** `.\mvnw.cmd test`
+
+### TSK-039 — E2E happy path (register → login → cookie → /api/test)
+
+- [ ] **Status:** TODO
+- **Priority:** MEDIUM
+- **Category:** TESTS · **Owner:** AGENT
+
+**Context:** Os testes existentes cobrem partes do fluxo, mas não o caminho feliz completo via HTTP real.
+
+**Objective:** Fluxo completo com Testcontainers (Postgres): registrar, logar, capturar cookie, acessar `/api/test` autenticado.
+
+**Validation:** `.\mvnw.cmd test`
+
+---
+
+## FEATURE
+
+### TSK-040 — CRUD de máquinas REST
+
+- [ ] **Status:** TODO
+- **Priority:** HIGH
+- **Category:** FEATURE · **Owner:** AGENT
+
+**Context:** `MachineRepository` (porta) e `MachineRepositoryAdapter` estão completos e `MachineService` existe, mas não há controller REST de máquinas — o domínio está sem exposição.
+
+**Objective:** Endpoints CRUD de máquinas (listar por owner, criar, atualizar, deletar) com permissão por dono.
+
+**Expected:** REST de máquinas funcional e autenticado; testes de integração cobrindo ownership.
+
+**Validation:** `.\mvnw.cmd test`
+
+### TSK-041 — Wake-on-LAN (magic packet)
+
+- [ ] **Status:** TODO
+- **Priority:** MEDIUM
+- **Category:** FEATURE · **Owner:** AGENT
+
+**Context:** `Machine` tem `macAddress`/`wolEnabled`, mas nenhuma implementação envia magic packet (UDP 9).
+
+**Objective:** Implementar envio de magic packet na infra (ex.: `WakeOnLanService`), validando via domínio (TSK-018).
+
+**Expected:** endpoint/ferramenta aciona WOL de máquina com `wolEnabled=true`; testes unitários do pacote.
+
+**Validation:** `.\mvnw.cmd test`
+
+### TSK-042 — Integração Tailscale (listar máquinas)
+
+- [ ] **Status:** TODO
+- **Priority:** MEDIUM
+- **Category:** FEATURE · **Owner:** AGENT
+
+**Context:** `Machine` possui `tailscaleNodeKey`, mas nenhuma integração consulta a API Tailscale.
+
+**Objective:** Serviço de integração (infra) que lista/verifica máquinas via API Tailscale usando a chave do node.
+
+**Expected:** status das máquinas consultável; falha de integração tratada sem derrubar o fluxo.
+
+**Validation:** `.\mvnw.cmd test` (mocks)
+
+---
+
+## CLEANUP
+
+### TSK-043 — Varredura System.out/err e imports não usados
+
+- [ ] **Status:** TODO
+- **Priority:** LOW
+- **Category:** CLEANUP · **Owner:** AGENT
+
+**Context:** Restam `System.out/err` (CalendarController já em TSK-029, GoogleCalendarTools em TSK-028 — aqui a varredura geral) e imports não usados/duplicados no código.
+
+**Objective:** Varrer todo `src/main/java` e `src/test/java` removendo prints restantes (→ SLF4J) e imports mortos.
+
+**Expected:** zero `System.out/err` no código; imports limpos.
+
+**Validation:** `.\mvnw.cmd test`
+
+### TSK-044 — Typos Redis/Database: getAdpterConnector, getProvaiders, DatabaseProvaider
+
+- [ ] **Status:** TODO
+- **Priority:** LOW
+- **Category:** CLEANUP · **Owner:** AGENT
+
+**Context:** `DatabaseClientProvider` declara `getAdpterConnector(...)`/`getProvaiders(...)` e o package `infrastructure/services/DatabaseProvaider/` mantém o typo `Provaider`.
+
+**Objective:** Renomear métodos e package para `getAdapterConnector`/`getProviders`/`DatabaseProvider`, atualizando usos (`CacheService`, `RedisClientProvider`, `Bucket4jRateLimiter`).
+
+**Expected:** zero typos de `Adpter`/`Provaider` no ecossistema Redis/Database.
+
+**Validation:** `.\mvnw.cmd test`
+
+**Notes:** `RedisClientInstace` tem javadoc documentando que o typo histórico NÃO deve ser renomeado — manter.
+
+**References:** `src/main/java/com/quitto/server/domain/interfaces/Database/DatabaseClientProvider.java`, `src/main/java/com/quitto/server/infrastructure/services/DatabaseProvaider/`
+
+### TSK-045 — HttpCookieWriterManeger → HttpCookieWriterManager
+
+- [ ] **Status:** TODO
+- **Priority:** LOW
+- **Category:** CLEANUP · **Owner:** AGENT
+
+**Context:** Classe `HttpCookieWriterManeger` (application/interfaces/Cookies) mantém o typo `Maneger`.
+
+**Objective:** Renomear para `HttpCookieWriterManager` e atualizar usos.
+
+**Validation:** `.\mvnw.cmd test`
+
+**References:** `src/main/java/com/quitto/server/application/interfaces/Cookies/HttpCookieWriterManeger.java`
+
+### TSK-046 — User: parâmetro `passowrd` no construtor
+
+- [ ] **Status:** TODO
+- **Priority:** LOW
+- **Category:** CLEANUP · **Owner:** AGENT
+
+**Context:** `User.java:45` — o construtor `User(long, String, String passowrd, ...)` usa o parâmetro com typo.
+
+**Objective:** Renomear para `password`.
+
+**Validation:** `.\mvnw.cmd test`
+
+**References:** `src/main/java/com/quitto/server/domain/models/User/User.java:45`
+
+---
+
+## DOCS
+
+### TSK-047 — ADRs e redis-abstraction deletados sem commit; docs de arquitetura desatualizadas
+
+- [ ] **Status:** TODO
+- **Priority:** LOW
+- **Category:** DOCS · **Owner:** BOTH
+
+**Context:** `git status` mostra `docs/architecture/adr/ADR-001..005`, `README.md` e `redis-abstraction.*` como **deletados sem commit**; `docs/architecture/arquiteture.md` ainda descreve classes renomeadas/removidas (ex.: `CookieService` na infra, `JtwTokenResvoler`, `RegisterResponseDTO`).
+
+**Objective:** Decidir o destino das deleções (commit de remoção ou restore) e atualizar `arquiteture.md`/`relatorio-completo.md` para refletir o estado real (resolvers renomeados, idempotency, cookie-only auth, packages corrigidos).
+
+**Expected:** `git status` limpo (deleções decididas); docs de arquitetura sem referências a classes inexistentes.
+
+**Validation:** inspeção de `git status` + revisão das docs.
+
+**References:** `docs/architecture/`, `docs/audits/`
+
+---
+
+## Completed
+
+> Marcador de conclusão — **não é uma task** (sem ID). O estado das tasks DONE vive nas próprias checkboxes `[x]` em `# Tasks`. Nenhuma task foi carregada como DONE nesta reconstrução; refactors verificados no código (token resolvers + `Optional`, typos de classes públicas, idempotency, rate-limit por rota, constructor injection em JWT/filter, URLs de listagem Nível 1, frontend Vite, UserService completo) foram confirmados e por isso **não geraram tasks**.
+
+## Cancelled / Obsolete
+
+> Claims legadas do backlog anterior **sem IDs** e **fora da contagem** de tasks — registradas apenas para histórico, pois o backlog foi reconstruído do zero com evidência.
+
+- [-] Typos em classes públicas (`JtwTokenResvoler`, `BCryptPassowordService`, `Provaider`, `ExternalAccont`, `GoogelCalenderTools`, `GoogleCalenderService`, `LoginDTO.passoword`) — verificados como corrigidos no código
+- [-] `JwtTokenService.extractIdSubject` retornava `null` — verificado: retorna `Optional<Long>`
+- [-] `MachineRepositoryAdapter.setOwner()` retornava `new User()` vazio — verificado: `setOwner` real (retorna `Optional<Machine>` via `updateOwner`)
+- [-] `RateLimitFilter` com catch vazios — verificado: logging SLF4J + `sendError` implementados
+- [-] `UserService` esqueleto — verificado: implementado
+- [-] `login.html` inexistente — verificado: existe (`templates/` + frontend `static/app/pages/login.html`)
+- [-] `RegisterResponseDTO`/`LoginResponseDTO` — removidos (fluxo cookie-only)
+- [-] mTLS (client-auth=require) — sem ADR ativa (arquivos ADR deletados sem commit); fora de escopo até decisão
+- [-] Modularização Maven multi-module — sem ADR ativa; fora de escopo até decisão
 
 ---
 
@@ -941,143 +887,69 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 | ID | Estado | Prio | Categoria | Título curto |
 |----|--------|------|-----------|--------------|
-| TSK-001 | `[ ]` | CRITICAL | 🔒 | JwtTokenResolver exige `Bearer ` |
-| TSK-002 | `[ ]` | CRITICAL | 🔒 | CORS no SecurityConfig |
-| TSK-003 | `[!]` | HIGH | 🔒 | mTLS (ADR-004) |
-| TSK-004 | `[ ]` | MEDIUM | 🔒 | Permissões granulares/scopes |
-| TSK-005 | `[ ]` | CRITICAL | 🔒 | RateLimitFilter catch + política |
-| TSK-006 | `[ ]` | MEDIUM | 🔒 | Higiene secrets + `.env.example` |
-| TSK-007 | `[ ]` | MEDIUM | 🔒 | RateLimitFilter SLF4J |
-| TSK-008 | `[ ]` | HIGH | 🔒 | MDC logs |
-| TSK-009 | `[ ]` | MEDIUM | 🔒 | Cookie domain configurável |
-| TSK-010 | `[ ]` | LOW | 🔒 | TRACE dev → profile |
-| TSK-011 | `[ ]` | MEDIUM | 🔒 | `CookieDomain.sameSite` |
-| TSK-012 | `[ ]` | MEDIUM | 🔒 | Sanitizar secrets em logs |
-| TSK-013 | `[ ]` | MEDIUM | 🔒 | Teste rate limit 429 |
-| TSK-014 | `[ ]` | LOW | 🔒 | API Key resolver |
-| TSK-015 | `[ ]` | CRITICAL | 🔒 | Chaves TLS fora do JAR |
-| TSK-016 | `[ ]` | MEDIUM | 🔒 | SameSite Strict |
-| TSK-017 | `[ ]` | MEDIUM | 🔒 | Filter nomes + `recoverToken` |
-| TSK-018 | `[ ]` | LOW | 🔒 | `.gitignore` keys/certs |
-| TSK-019 | `[ ]` | MEDIUM | 🔒 | 500 genérico no handler |
-| TSK-020 | `[ ]` | HIGH | 🔒 | OAuth2 → porta UserRepository |
-| TSK-021 | `[ ]` | MEDIUM | 🐛 | Validação senha register |
-| TSK-022 | `[ ]` | MEDIUM | 🐛 | Bean Validation DTOs |
-| TSK-023 | `[ ]` | LOW | 🐛 | `RegisterResponseDTO.Token` |
-| TSK-024 | `[ ]` | MEDIUM | 🐛 | Exceção domínio em MachineService |
-| TSK-025 | `[ ]` | LOW | 🐛 | Redirects pós-build Vite |
-| TSK-026 | `[x]` | LOW | 🐛 | MCP base-url aspas |
-| TSK-027 | `[ ]` | MEDIUM | 🐛 | Drift Redis 6380 |
-| TSK-028 | `[ ]` | MEDIUM | 🐛 | `@Value` field → constructor |
-| TSK-029 | `[ ]` | LOW | 🐛 | Typo `genareteToken` |
-| TSK-030 | `[ ]` | LOW | 🐛 | Typo `resolver` |
-| TSK-031 | `[ ]` | LOW | 🐛 | `isIs_active()` |
-| TSK-032 | `[ ]` | MEDIUM | 🧱 | TokenResolverManager → app |
-| TSK-033 | `[ ]` | LOW | 🧱 | Domínio anêmico |
-| TSK-034 | `[ ]` | LOW | 🧱 | Pacotes com typos |
-| TSK-035 | `[ ]` | MEDIUM | 🧱 | CookieService → domínio |
-| TSK-036 | `[ ]` | MEDIUM | 🧱 | `extractIdSubject` Optional |
-| TSK-037 | `[ ]` | MEDIUM | 🧱 | Stub `setOwner()` |
-| TSK-038 | `[ ]` | MEDIUM | 🧱 | Constructor injection |
-| TSK-039 | `[ ]` | LOW | 🧱 | System.out → SLF4J |
-| TSK-040 | `[ ]` | MEDIUM | 🧱 | Tools `@Component` |
-| TSK-041 | `[ ]` | MEDIUM | 🧱 | `@SneakyThrows` → try/catch |
-| TSK-042 | `[ ]` | MEDIUM | 🧱 | Auth por tool |
-| TSK-043 | `[ ]` | MEDIUM | 🧱 | Refactor OAuth2 Google |
-| TSK-044 | `[ ]` | LOW | 🧱 | RedisArryCodec camada |
-| TSK-045 | `[x]` | LOW | 🧱 | `User.toString` sem hash |
-| TSK-046 | `[ ]` | LOW | 🧹 | Código morto/imports |
-| TSK-047 | `[ ]` | HIGH | 🤖 | Constructor injection auth |
-| TSK-048 | `[ ]` | HIGH | 🤖 | BaseProvider 1:N |
-| TSK-049 | `[ ]` | MEDIUM | 🤖 | ServiceProvider 1:1 |
-| TSK-050 | `[>]` | HIGH | 🤖 | IA endpoints Nível 1 |
-| TSK-051 | `[ ]` | MEDIUM | 🤖 | IA endpoints Nível 2 |
-| TSK-052 | `[ ]` | LOW | 🤖 | IA endpoints Nível 3 |
-| TSK-053 | `[ ]` | MEDIUM | 🤖 | getEnvKey real |
-| TSK-054 | `[ ]` | MEDIUM | 🧱 | createEvent stub |
-| TSK-055 | `[ ]` | MEDIUM | 🔌 | GoogleCalendarTools `@Component` |
-| TSK-056 | `[ ]` | MEDIUM | 🔌 | Auth por tool MCP |
-| TSK-057 | `[ ]` | MEDIUM | 🔌 | MCP try/catch |
-| TSK-058 | `[!]` | MEDIUM | 🔌 | createEvent real |
-| TSK-059 | `[ ]` | MEDIUM | 🔌 | CalendarController fora de MCP |
-| TSK-060 | `[ ]` | MEDIUM | 🌐 | STOMP handshake JWT |
-| TSK-061 | `[ ]` | MEDIUM | 🌐 | STOMP roles |
-| TSK-062 | `[ ]` | MEDIUM | 🌐 | Tópico `/topic/status` |
-| TSK-063 | `[ ]` | LOW | 🌐 | Heartbeat/reconexão |
-| TSK-064 | `[ ]` | LOW | 🌐 | Fila `/user/queue/*` |
-| TSK-065 | `[ ]` | MEDIUM | 🌐 | Testes STOMP |
-| TSK-066 | `[ ]` | MEDIUM | ⚙️ | Dockerfile + compose prod |
-| TSK-067 | `[ ]` | MEDIUM | ⚙️ | Secrets env vars |
-| TSK-068 | `[ ]` | LOW | ⚙️ | Health checks |
-| TSK-069 | `[ ]` | LOW | ⚙️ | Logging JSON prod |
-| TSK-070 | `[ ]` | MEDIUM | ⚙️ | CI GitHub Actions |
-| TSK-071 | `[ ]` | MEDIUM | 🧪 | Testes domínio |
-| TSK-072 | `[ ]` | MEDIUM | 🧪 | Testes resolvers |
-| TSK-073 | `[ ]` | MEDIUM | 🧪 | Testes repositórios H2 |
-| TSK-074 | `[!]` | MEDIUM | 🧪 | Testes LinuxUser/Groups |
-| TSK-075 | `[ ]` | MEDIUM | 🧪 | Integração REST MockMvc |
-| TSK-076 | `[ ]` | HIGH | 🧪 | Testes segurança 401/403 |
-| TSK-077 | `[ ]` | MEDIUM | 🧪 | Testes rate limit |
-| TSK-078 | `[ ]` | MEDIUM | 🧪 | Testes JWT |
-| TSK-079 | `[ ]` | MEDIUM | 🧪 | Testes providers IA |
-| TSK-080 | `[ ]` | LOW | 🧪 | Testes OAuth2 mock |
-| TSK-081 | `[ ]` | MEDIUM | 🧪 | Testes Redis Testcontainers |
-| TSK-082 | `[ ]` | LOW | 🧪 | Snapshot rotas |
-| TSK-083 | `[ ]` | MEDIUM | 🧪 | Testes MCP tools |
-| TSK-084 | `[ ]` | MEDIUM | 🧪 | E2E happy path |
-| TSK-085 | `[ ]` | HIGH | ✨ | CRUD Máquinas |
-| TSK-086 | `[ ]` | MEDIUM | ✨ | Wake-on-LAN |
-| TSK-087 | `[ ]` | MEDIUM | ✨ | Tailscale |
-| TSK-088 | `[ ]` | MEDIUM | ✨ | CRUD Usuários |
-| TSK-089 | `[ ]` | MEDIUM | ✨ | CRUD LinuxUser/Groups |
-| TSK-090 | `[ ]` | LOW | ✨ | ExternalAccount mapper |
-| TSK-091 | `[ ]` | LOW | ✨ | UserService real |
-| TSK-092 | `[ ]` | MEDIUM | ✨ | Backup de arquivos |
-| TSK-093 | `[ ]` | LOW | ✨ | Google Tasks |
-| TSK-094 | `[ ]` | MEDIUM | ✨ | MCP tools IA |
-| TSK-095 | `[ ]` | MEDIUM | ✨ | Página login Thymeleaf |
-| TSK-096 | `[ ]` | MEDIUM | ✨ | Dashboard usuário |
-| TSK-097 | `[ ]` | MEDIUM | ✨ | Refresh token |
-| TSK-098 | `[ ]` | MEDIUM | 🎨 | Landing page identidade |
-| TSK-099 | `[ ]` | MEDIUM | 🎨 | CSS design system |
-| TSK-100 | `[ ]` | LOW | 🎨 | Empty states/loading |
-| TSK-101 | `[ ]` | LOW | 🎨 | Responsividade mobile |
-| TSK-102 | `[!]` | MEDIUM | 📦 | Módulo MCP (ADR-005) |
-| TSK-103 | `[!]` | MEDIUM | 📦 | Multi-module (ADR-003) |
-| TSK-104 | `[ ]` | LOW | 📦 | Atualizar docs |
-| TSK-105 | `[ ]` | LOW | 📦 | Decidir ADRs |
-| TSK-106 | `[>]` | HIGH | 🧹 | Commit refactor resolvers |
-| TSK-107 | `[ ]` | HIGH | 🔒 | JwtTokenService só emite |
+| TSK-001 | `[ ]` | HIGH | SECURITY | JwtTokenResolver exige `Bearer ` |
+| TSK-002 | `[ ]` | HIGH | SECURITY | CORS ausente no SecurityConfig |
+| TSK-003 | `[ ]` | HIGH | SECURITY | Chaves TLS fora do JAR |
+| TSK-004 | `[ ]` | MEDIUM | SECURITY | OAuth2 → porta UserRepository |
+| TSK-005 | `[ ]` | MEDIUM | SECURITY | Handler 500 genérico + sem vazar mensagens |
+| TSK-006 | `[ ]` | MEDIUM | SECURITY | CookieDomain.sameSite + mapper |
+| TSK-007 | `[ ]` | MEDIUM | SECURITY | Register: Bean Validation + regra de senha |
+| TSK-008 | `[ ]` | LOW | SECURITY | DEBUG security → dev |
+| TSK-009 | `[ ]` | LOW | SECURITY | .env.example |
+| TSK-010 | `[ ]` | MEDIUM | SECURITY | h2 herda TLS |
+| TSK-011 | `[ ]` | MEDIUM | BUG | Bloco vazio de idempotência no login |
+| TSK-012 | `[ ]` | MEDIUM | BUG | CacheService.search em cache miss |
+| TSK-013 | `[ ]` | MEDIUM | BUG | MachineService vaza exceção Spring |
+| TSK-014 | `[ ]` | LOW | BUG | User.equals sem hashCode |
+| TSK-015 | `[ ]` | MEDIUM | ARCHITECTURE | CookieService interface morta |
+| TSK-016 | `[ ]` | MEDIUM | ARCHITECTURE | TokenResolverManager → application |
+| TSK-017 | `[ ]` | LOW | ARCHITECTURE | RedisArryCodec camada errada |
+| TSK-018 | `[ ]` | MEDIUM | ARCHITECTURE | Machine.wakeOnLan() no domínio |
+| TSK-019 | `[ ]` | MEDIUM | ARCHITECTURE | LinuxUser/Groups persistence |
+| TSK-020 | `[ ]` | LOW | ARCHITECTURE | ExternalAccount mapper/adapter |
+| TSK-021 | `[ ]` | LOW | ARCHITECTURE | User construtor vazio |
+| TSK-022 | `[ ]` | HIGH | IA | getEnvKey stub |
+| TSK-023 | `[ ]` | MEDIUM | IA | Endpoints Nível 2 (modelsUrl) |
+| TSK-024 | `[ ]` | LOW | IA | Endpoints Nível 3 (SDK) |
+| TSK-025 | `[ ]` | MEDIUM | IA | Typos AIProvaider/Reagistry |
+| TSK-026 | `[ ]` | LOW | IA | CoffeAgentService constructor injection |
+| TSK-027 | `[ ]` | MEDIUM | MCP | createEvent stub + field injection |
+| TSK-028 | `[ ]` | MEDIUM | MCP | Tools: injection + SLF4J + erros |
+| TSK-029 | `[ ]` | MEDIUM | MCP | CalendarController fora de mcp |
+| TSK-030 | `[ ]` | HIGH | WEBSOCKET | Handshake sem auth |
+| TSK-031 | `[ ]` | MEDIUM | WEBSOCKET | Destinos sem role + origins |
+| TSK-032 | `[ ]` | MEDIUM | WEBSOCKET | Resposta canônica do /agent |
+| TSK-033 | `[ ]` | MEDIUM | INFRA | Dockerfile + compose prod |
+| TSK-034 | `[ ]` | MEDIUM | INFRA | CI GitHub Actions |
+| TSK-035 | `[ ]` | MEDIUM | TESTS | Rate limit 429 |
+| TSK-036 | `[ ]` | HIGH | TESTS | Segurança 401/403 |
+| TSK-037 | `[ ]` | MEDIUM | TESTS | Providers IA mockados |
+| TSK-038 | `[ ]` | MEDIUM | TESTS | WebSocket STOMP |
+| TSK-039 | `[ ]` | MEDIUM | TESTS | E2E happy path |
+| TSK-040 | `[ ]` | HIGH | FEATURE | CRUD de máquinas REST |
+| TSK-041 | `[ ]` | MEDIUM | FEATURE | Wake-on-LAN |
+| TSK-042 | `[ ]` | MEDIUM | FEATURE | Tailscale |
+| TSK-043 | `[ ]` | LOW | CLEANUP | System.out/err + imports |
+| TSK-044 | `[ ]` | LOW | CLEANUP | Typos Redis/Database |
+| TSK-045 | `[ ]` | LOW | CLEANUP | HttpCookieWriterManeger |
+| TSK-046 | `[ ]` | LOW | CLEANUP | User param passowrd |
+| TSK-047 | `[ ]` | LOW | DOCS | ADRs deletados + docs desatualizadas |
 
 ---
 
-# Decisões (ADRs)
-
-> Estado dos ADRs — ver `docs/architecture/adr/README.md` (fonte canônica). Referência rápida.
-
-| ADR | Título | Status |
-|-----|--------|--------|
-| ADR-001 | JWT + mTLS híbrido | ✅ Accepted |
-| ADR-002 | Versionamento de API (`/api/v1/`) | 📝 Proposed (TSK-105) |
-| ADR-003 | Modularização Maven | 📝 Proposed (TSK-103) |
-| ADR-004 | CA para mTLS | ⏳ Open (TSK-003) |
-| ADR-005 | MCP módulo separado | 📝 Proposed (TSK-102) |
-
----
-
-# 🤖 Agent Protocol
+# Agent Protocol
 
 > Regras para agentes que editam este arquivo — **obrigatório**.
 
 1. **Estado canônico = checkbox** em `# Tasks`. Nunca duplicar descrição/estado em Dashboard, Metrics, Active Work ou Registry (são derivados — atualizar apenas as checkboxes).
-2. **IDs estáveis**: TSK-001..TSK-107. Próximo ID: **TSK-108**. Nunca reutilizar IDs cancelados.
-3. **Formatos de status**: `[ ]` TODO · `[>]` IN_PROGRESS · `[x]` DONE · `[!]` BLOCKED · `[-]` CANCELLED. Tasks BLOCKED devem declarar `Blocked By` (task ou ADR). Tasks CANCELLED/obsoletas sem ID ficam na seção `## 🗑️ Obsoletas / Canceladas`.
-4. **Estrutura mínima por task**: `### TSK-XXX — Título` → linha de status+`Priority` → metadados (`Category`, `Owner`, `Estimate`) → `**Objective:**`. Blocos `Acceptance Criteria`/`Validation`/`Notes` apenas quando houver critérios verificáveis.
+2. **IDs estáveis**: TSK-001..TSK-047. Próximo ID: **TSK-048**. Nunca reutilizar IDs cancelados.
+3. **Formatos de status**: `[ ]` TODO · `[>]` IN_PROGRESS · `[x]` DONE · `[!]` BLOCKED · `[-]` CANCELLED. Tasks BLOCKED devem declarar `Blocked By` (task, ADR ou decisão). Tasks CANCELLED/obsoletas sem ID ficam na seção `## Cancelled / Obsolete`.
+4. **Estrutura mínima por task**: `### TSK-XXX — Ação clara` → linha de status+`Priority` → metadados (`Category`, `Owner`, `Estimate`) → `**Context:**` + `**Objective:**`. Blocos `Expected`/`Validation`/`Notes`/`References` apenas quando houver conteúdo verificável.
 5. **Mover estado**: se uma task entra/sai de DONE/BLOCKED/IN_PROGRESS, o Dashboard e o Registry são atualizados **na mesma edição** (derivação imediata).
 6. **Sempre concluir com** `.\mvnw.cmd test` antes de marcar algo DONE relacionado a código.
+7. **Sem emojis** em tasks, seções ou CSS (marcadores ASCII apenas: `[ ]`/`[x]`).
 
 ---
 
-> **Documento mantido por:** Quitto · **Última atualização:** 2026-08-11
-> **Backup anterior:** `C:\Users\Quitto\AppData\Local\Temp\opencode_backup_TODO_20260810.md`
+> **Documento mantido por:** Quitto · **Última atualização:** 2026-08-13
 > **Propósito:** Documentação viva — atualize conforme o código evoluir.
