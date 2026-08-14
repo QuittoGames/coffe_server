@@ -2,7 +2,6 @@ package com.quitto.server.application.controllers.REST.AIProvaider;
 
 import java.util.List;
 
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,7 +11,6 @@ import com.quitto.server.application.dto.AIProvider.AIModelDTO;
 import com.quitto.server.application.dto.AIProvider.AIModelRequestDTO;
 import com.quitto.server.application.dto.AIProvider.AIProviderDTO;
 import com.quitto.server.application.dto.AIProvider.AIProviderRequestDTO;
-import com.quitto.server.domain.interfaces.OperationKey.OperationKeyManager;
 import com.quitto.server.infrastructure.interfaces.AI.AIProvaiderPort;
 
 @RestController
@@ -20,12 +18,9 @@ import com.quitto.server.infrastructure.interfaces.AI.AIProvaiderPort;
 public class AIProvaiderController {
 
     private final AIProvaiderPort provaiderAdpiter;
-    private final ObjectProvider<OperationKeyManager> operationKeyManager;
 
-    public AIProvaiderController(AIProvaiderPort provaiderAdpiter,
-                                 ObjectProvider<OperationKeyManager> operationKeyManager) {
+    public AIProvaiderController(AIProvaiderPort provaiderAdpiter) {
         this.provaiderAdpiter = provaiderAdpiter;
-        this.operationKeyManager = operationKeyManager;
     }
 
     @GetMapping("/models/{model}")

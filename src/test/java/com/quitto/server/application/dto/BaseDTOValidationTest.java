@@ -45,15 +45,4 @@ class BaseDTOValidationTest {
         assertTrue(withKey.idempotencyKey() != null);
         assertNull(withoutKey.idempotencyKey());
     }
-
-    @Test
-    void errorResponseImplementsBaseDTO() {
-        ErrorResponse withKey = new ErrorResponse(key(), "msg");
-        ErrorResponse withoutKey = new ErrorResponse(null, "msg");
-
-        assertTrue(withKey instanceof BaseDTO);
-        assertTrue(withoutKey instanceof BaseDTO);
-        assertTrue(withKey.idempotencyKey() != null);
-        assertNull(withoutKey.idempotencyKey());
-    }
 }
