@@ -11,6 +11,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class CustomProvider extends BaseProvider {
 
+    {
+        setEnvId("CUSTOM");
+    }
+
     @Override
     public ServiceProvider getProvider() {
         return ServiceProvider.CUSTOM;

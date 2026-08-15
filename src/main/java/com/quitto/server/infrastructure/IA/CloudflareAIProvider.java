@@ -11,6 +11,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class CloudflareAIProvider extends BaseProvider {
 
+    {
+        setEnvId("CLOUDFLARE_AI");
+    }
+
     @Override
     public ServiceProvider getProvider() {
         return ServiceProvider.CLOUDFLARE_AI;

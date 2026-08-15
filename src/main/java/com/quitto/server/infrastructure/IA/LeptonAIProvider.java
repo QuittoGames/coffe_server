@@ -7,6 +7,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class LeptonAIProvider extends BaseProvider {
 
+    {
+        setEnvId("LEPTON_AI");
+    }
+
     @Override
     public ServiceProvider getProvider() {
         return ServiceProvider.LEPTON_AI;

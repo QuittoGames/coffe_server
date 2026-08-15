@@ -7,6 +7,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class NovitaAIProvider extends BaseProvider {
 
+    {
+        setEnvId("NOVITA_AI");
+    }
+
     @Override
     public ServiceProvider getProvider() {
         return ServiceProvider.NOVITA_AI;

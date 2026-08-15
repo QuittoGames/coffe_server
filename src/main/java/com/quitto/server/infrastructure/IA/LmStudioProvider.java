@@ -7,6 +7,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class LmStudioProvider extends BaseProvider {
 
+    {
+        setEnvId("LM_STUDIO");
+    }
+
     @Override
     public ServiceProvider getProvider() {
         return ServiceProvider.LM_STUDIO;
@@ -23,7 +27,7 @@ public class LmStudioProvider extends BaseProvider {
     }
 
     @Override
-    protected boolean requiresKey() {
+    public boolean requiresKey() {
         return false;
     }
 }

@@ -7,6 +7,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class CohereProvider extends BaseProvider {
 
+    {
+        setEnvId("COHERE");
+    }
+
     @Override
     public ServiceProvider getProvider() {
         return ServiceProvider.COHERE;

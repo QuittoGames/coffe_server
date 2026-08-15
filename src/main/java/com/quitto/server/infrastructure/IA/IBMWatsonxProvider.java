@@ -11,6 +11,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class IBMWatsonxProvider extends BaseProvider {
 
+    {
+        setEnvId("IBM_WATSONX");
+    }
+
     @Override
     public ServiceProvider getProvider() {
         return ServiceProvider.IBM_WATSONX;

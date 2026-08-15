@@ -7,6 +7,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class HyperbolicProvider extends BaseProvider {
 
+    {
+        setEnvId("HYPERBOLIC");
+    }
+
     @Override
     public ServiceProvider getProvider() {
         return ServiceProvider.HYPERBOLIC;

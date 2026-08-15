@@ -7,6 +7,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class TextGenerationWebUIProvider extends BaseProvider {
 
+    {
+        setEnvId("TEXT_GENERATION_WEBUI");
+    }
+
     @Override
     public ServiceProvider getProvider() {
         return ServiceProvider.TEXT_GENERATION_WEBUI;
@@ -16,14 +20,13 @@ public class TextGenerationWebUIProvider extends BaseProvider {
     public String getName() {
         return ServiceProvider.TEXT_GENERATION_WEBUI.name();
     }
-
     @Override
     public String getApiBaseURL() {
         return "http://localhost:5000/v1";
     }
 
     @Override
-    protected boolean requiresKey() {
+    public boolean requiresKey() {
         return false;
     }
 }

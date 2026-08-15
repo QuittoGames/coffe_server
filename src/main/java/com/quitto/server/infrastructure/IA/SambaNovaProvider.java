@@ -7,6 +7,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class SambaNovaProvider extends BaseProvider {
 
+    {
+        setEnvId("SAMBANOVA");
+    }
+
     @Override
     public ServiceProvider getProvider() {
         return ServiceProvider.SAMBANOVA;

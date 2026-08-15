@@ -7,6 +7,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class MoonshotAIProvider extends BaseProvider {
 
+    {
+        setEnvId("MOONSHOT_AI");
+    }
+
     @Override
     public ServiceProvider getProvider() {
         return ServiceProvider.MOONSHOT_AI;

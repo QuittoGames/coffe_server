@@ -7,6 +7,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class LlamacppProvider extends BaseProvider {
 
+    {
+        setEnvId("LLAMACPP");
+    }
+
     @Override
     public ServiceProvider getProvider() {
         return ServiceProvider.LLAMACPP;
@@ -23,7 +27,7 @@ public class LlamacppProvider extends BaseProvider {
     }
 
     @Override
-    protected boolean requiresKey() {
+    public boolean requiresKey() {
         return false;
     }
 }

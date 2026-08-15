@@ -17,6 +17,10 @@ import java.util.List;
 @Service
 public class GoogleVertexAIProvider extends BaseProvider {
 
+    {
+        setEnvId("GOOGLE_VERTEX_AI");
+    }
+
     @Override
     public ServiceProvider getProvider() {
         return ServiceProvider.GOOGLE_VERTEX_AI;

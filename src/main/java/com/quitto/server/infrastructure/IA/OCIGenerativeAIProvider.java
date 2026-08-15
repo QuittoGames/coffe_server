@@ -6,12 +6,19 @@ import com.quitto.server.domain.exception.ProviderException;
 import org.springframework.stereotype.Service;
 
 /**
- * Oracle Cloud Infrastructure Generative AI — a autenticação usa assinatura
- * de requisição OCI (IAM), não um header estático. A assinatura real exige o
- * SDK {@code oci-java-sdk-generativeai} (ver TODO em {@link #fetchModelsFromApi()}).
+ * Oracle Cloud Infrastructure (OCI) Generative AI — listagem de modelos.
+ * <p>A assinatura OCI (RSA-SHA256 com tenancy/user/fingerprint) exige o SDK
+ * {@code oci-java-sdk-generativeai}; a assinatura manual é complexa demais para
+ * este escopo (desvio documentado — ver docs/specs/ai-provider-service.md, SC-003).
+ * Sem credenciais configuradas a falha é sanitizada; com credenciais, a mensagem
+ * indica o requisito do SDK. Nenhuma informação interna é exposta.</p>
  */
 @Service
 public class OCIGenerativeAIProvider extends BaseProvider {
+
+    {
+        setEnvId("OCI_GENERATIVE_AI");
+    }
 
     @Override
     public ServiceProvider getProvider() {
@@ -25,28 +32,32 @@ public class OCIGenerativeAIProvider extends BaseProvider {
 
     @Override
     public String getApiBaseURL() {
-        return "https://generativeai.{REGION}.oci.oraclecloud.com";
+        return "https://inference.generativeai.us-chicago-1.oci.oraclecloud.com";
     }
 
     @Override
-    protected boolean usesBearer() {
+    public boolean requiresKey() {
         return false;
     }
 
     @Override
-    protected String modelsUrl() {
-        // GET /20231130/models?compartmentId={ocid} — API versionada; o compartmentId
-        // é obrigatório na listagem.
-        return "https://generativeai.{REGION}.oci.oraclecloud.com/20231130/models?compartmentId={OCID}";
+    public boolean usesBearer() {
+        return false;
     }
 
     @Override
     public void fetchModelsFromApi() {
-        // TODO: a listagem do OCI exige assinatura de requisição (OCI signing) via
-        // oci-java-sdk-generativeai — fora do escopo do BaseProvider (HTTP puro).
-        // O erro explícito evita request de rede que falharia com 401 silencioso.
+        String tenancy = System.getenv("OCI_TENANCY_OCID");
+        String user = System.getenv("OCI_USER_OCID");
+        String fingerprint = System.getenv("OCI_API_KEY_FINGERPRINT");
+        if (tenancy == null || tenancy.isBlank()
+                || user == null || user.isBlank()
+                || fingerprint == null || fingerprint.isBlank()) {
+            throw new ProviderException(
+                    "Credenciais OCI não configuradas para o provedor 'OCI_GENERATIVE_AI' "
+                            + "(env: OCI_TENANCY_OCID/OCI_USER_OCID/OCI_API_KEY_FINGERPRINT).");
+        }
         throw new ProviderException(
-                "OCI Generative AI requer assinatura de requisição OCI (SDK oci-java-sdk-generativeai) — "
-                        + "fetchModelsFromApi() ainda não implementado para '" + getName() + "'.");
+                "A listagem de modelos do provedor 'OCI_GENERATIVE_AI' requer o SDK oci-java-sdk-generativeai (assinatura OCI).");
     }
 }

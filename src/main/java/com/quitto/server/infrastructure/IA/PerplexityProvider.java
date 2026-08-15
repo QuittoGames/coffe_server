@@ -7,6 +7,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class PerplexityProvider extends BaseProvider {
 
+    {
+        setEnvId("PERPLEXITY");
+    }
+
     @Override
     public ServiceProvider getProvider() {
         return ServiceProvider.PERPLEXITY;

@@ -7,6 +7,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class DashScopeProvider extends BaseProvider {
 
+    {
+        setEnvId("DASHSCOPE");
+    }
+
     @Override
     public ServiceProvider getProvider() {
         return ServiceProvider.DASHSCOPE;

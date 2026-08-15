@@ -7,6 +7,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class AnthropicProvider extends BaseProvider {
 
+    {
+        setEnvId("ANTHROPIC");
+    }
+
     @Override
     public ServiceProvider getProvider() {
         return ServiceProvider.ANTHROPIC;

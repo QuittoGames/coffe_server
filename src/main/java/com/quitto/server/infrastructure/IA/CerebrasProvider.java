@@ -7,6 +7,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class CerebrasProvider extends BaseProvider {
 
+    {
+        setEnvId("CEREBRAS");
+    }
+
     @Override
     public ServiceProvider getProvider() {
         return ServiceProvider.CEREBRAS;

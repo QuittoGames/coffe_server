@@ -7,6 +7,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class OpenAIProvider extends BaseProvider {
 
+    {
+        setEnvId("OPENAI");
+    }
+
     @Override
     public ServiceProvider getProvider() {
         return ServiceProvider.OPENAI;

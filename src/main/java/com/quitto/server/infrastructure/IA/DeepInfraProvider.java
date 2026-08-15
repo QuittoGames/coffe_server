@@ -7,6 +7,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class DeepInfraProvider extends BaseProvider {
 
+    {
+        setEnvId("DEEPINFRA");
+    }
+
     @Override
     public ServiceProvider getProvider() {
         return ServiceProvider.DEEPINFRA;

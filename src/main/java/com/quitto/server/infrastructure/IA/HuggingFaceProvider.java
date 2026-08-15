@@ -11,6 +11,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class HuggingFaceProvider extends BaseProvider {
 
+    {
+        setEnvId("HUGGING_FACE");
+    }
+
     @Override
     public ServiceProvider getProvider() {
         return ServiceProvider.HUGGING_FACE;
@@ -27,7 +31,7 @@ public class HuggingFaceProvider extends BaseProvider {
     }
 
     @Override
-    protected boolean requiresKey() {
+    public boolean requiresKey() {
         return false;
     }
 }

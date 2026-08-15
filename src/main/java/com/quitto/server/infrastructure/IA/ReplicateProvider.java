@@ -7,6 +7,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class ReplicateProvider extends BaseProvider {
 
+    {
+        setEnvId("REPLICATE");
+    }
+
     @Override
     public ServiceProvider getProvider() {
         return ServiceProvider.REPLICATE;

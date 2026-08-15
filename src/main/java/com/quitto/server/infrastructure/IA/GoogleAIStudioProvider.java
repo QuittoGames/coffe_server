@@ -8,6 +8,10 @@ import java.util.Optional;
 @Service
 public class GoogleAIStudioProvider extends BaseProvider {
 
+    {
+        setEnvId("GOOGLE_AI_STUDIO");
+    }
+
     @Override
     public ServiceProvider getProvider() {
         return ServiceProvider.GOOGLE_AI_STUDIO;

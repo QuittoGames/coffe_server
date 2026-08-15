@@ -7,6 +7,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class QianfanProvider extends BaseProvider {
 
+    {
+        setEnvId("QIANFAN");
+    }
+
     @Override
     public ServiceProvider getProvider() {
         return ServiceProvider.QIANFAN;

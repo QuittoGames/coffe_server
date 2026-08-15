@@ -7,6 +7,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class OpenRouterProvider extends BaseProvider {
 
+    {
+        setEnvId("OPENROUTER");
+    }
+
     @Override
     public ServiceProvider getProvider() {
         return ServiceProvider.OPENROUTER;

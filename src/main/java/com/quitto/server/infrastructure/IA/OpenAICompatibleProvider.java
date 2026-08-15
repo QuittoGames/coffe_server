@@ -11,6 +11,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class OpenAICompatibleProvider extends BaseProvider {
 
+    {
+        setEnvId("OPENAI_COMPATIBLE");
+    }
+
     @Override
     public ServiceProvider getProvider() {
         return ServiceProvider.OPENAI_COMPATIBLE;

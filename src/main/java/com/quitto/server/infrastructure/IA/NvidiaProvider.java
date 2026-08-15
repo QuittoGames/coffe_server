@@ -7,6 +7,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class NvidiaProvider extends BaseProvider {
 
+    {
+        setEnvId("NVIDIA");
+    }
+
     @Override
     public ServiceProvider getProvider() {
         return ServiceProvider.NVIDIA;

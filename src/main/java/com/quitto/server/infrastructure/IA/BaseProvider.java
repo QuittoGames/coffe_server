@@ -53,7 +53,7 @@ public abstract class BaseProvider implements AIProvider {
      * Lista de modelos do provedor (drawio: {@code models: List<AIModel>}).
      * Preenchida na primeira chamada a {@link #getModels()} e cacheada.
      */
-    private List<AIModel> models = List.of();
+    protected List<AIModel> models = List.of();
 
     // ─── Hooks de configuração (sobrescreva por provedor se necessário) ───
 
@@ -63,7 +63,8 @@ public abstract class BaseProvider implements AIProvider {
     }
 
     /** {@code true} (padrão) exige que {@code setKey} tenha sido chamado antes de {@code getModels}. */
-    protected boolean requiresKey() {
+    @Override
+    public boolean requiresKey() {
         return true;
     }
 
@@ -133,6 +134,17 @@ public abstract class BaseProvider implements AIProvider {
         this.apiKey = secret;
     }
 
+    /**
+     * Define o ID usado para busca de variáveis de ambiente (ex.: {@code "OPENAI"}).
+     * Chamado pelo initializer de cada provedor concreto ({@code { setEnvId("OPENAI"); }}).
+     *
+     * @param envId ID de busca de ambiente; {@code null} faz o registry cair no
+     *              nome do enum {@code ServiceProvider}
+     */
+    protected void setEnvId(String envId) {
+        this.envId = envId;
+    }
+
     @Override
     public boolean isEnabled() {
         return enabled;
@@ -198,8 +210,11 @@ public abstract class BaseProvider implements AIProvider {
         } catch (ProviderException e) {
             throw e;
         } catch (Exception e) {
+            String detail = (e.getMessage() == null || e.getMessage().isBlank())
+                    ? e.getClass().getSimpleName()
+                    : e.getMessage();
             throw new ProviderException("Falha ao listar modelos do provedor '"
-                    + getName() + "': " + e.getMessage(), e);
+                    + getName() + "': " + detail, e);
         }
     }
 

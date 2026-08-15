@@ -7,6 +7,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class MistralAIProvider extends BaseProvider {
 
+    {
+        setEnvId("MISTRAL_AI");
+    }
+
     @Override
     public ServiceProvider getProvider() {
         return ServiceProvider.MISTRAL_AI;

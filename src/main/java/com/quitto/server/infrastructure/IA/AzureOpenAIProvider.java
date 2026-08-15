@@ -7,6 +7,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class AzureOpenAIProvider extends BaseProvider {
 
+    {
+        setEnvId("AZURE_OPENAI");
+    }
+
     @Override
     public ServiceProvider getProvider() {
         return ServiceProvider.AZURE_OPENAI;

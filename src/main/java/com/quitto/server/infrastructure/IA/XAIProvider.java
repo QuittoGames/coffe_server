@@ -7,6 +7,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class XAIProvider extends BaseProvider {
 
+    {
+        setEnvId("XAI");
+    }
+
     @Override
     public ServiceProvider getProvider() {
         return ServiceProvider.XAI;

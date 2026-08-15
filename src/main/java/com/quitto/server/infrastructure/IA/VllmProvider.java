@@ -7,6 +7,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class VllmProvider extends BaseProvider {
 
+    {
+        setEnvId("VLLM");
+    }
+
     @Override
     public ServiceProvider getProvider() {
         return ServiceProvider.VLLM;
@@ -23,7 +27,7 @@ public class VllmProvider extends BaseProvider {
     }
 
     @Override
-    protected boolean requiresKey() {
+    public boolean requiresKey() {
         return false;
     }
 }

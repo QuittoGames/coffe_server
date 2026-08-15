@@ -7,6 +7,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class OllamaProvider extends BaseProvider {
 
+    {
+        setEnvId("OLLAMA");
+    }
+
     @Override
     public ServiceProvider getProvider() {
         return ServiceProvider.OLLAMA;
@@ -28,7 +32,7 @@ public class OllamaProvider extends BaseProvider {
     }
 
     @Override
-    protected boolean requiresKey() {
+    public boolean requiresKey() {
         return false;
     }
 

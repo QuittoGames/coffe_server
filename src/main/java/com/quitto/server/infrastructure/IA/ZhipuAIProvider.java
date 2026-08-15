@@ -7,6 +7,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class ZhipuAIProvider extends BaseProvider {
 
+    {
+        setEnvId("ZHIPU_AI");
+    }
+
     @Override
     public ServiceProvider getProvider() {
         return ServiceProvider.ZHIPU_AI;

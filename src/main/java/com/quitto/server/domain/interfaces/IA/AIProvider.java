@@ -54,4 +54,16 @@ public interface AIProvider {
      * @return o ID de busca de ambiente, ou {@code null} se não configurado
      */
     String getEnvId();
+
+    /**
+     * Indica se o provedor exige uma chave de API para listar/executar modelos.
+     * <p>Provedores self-hosted (Ollama, VLLM, etc.) retornam {@code false} —
+     * o registry usa este contrato para desabilitar provedores que exigem chave
+     * e não têm chave configurada (D3: o catálogo não falha inteiro).</p>
+     *
+     * @return {@code true} se o provedor precisa de chave de API
+     */
+    default boolean requiresKey() {
+        return true;
+    }
 }

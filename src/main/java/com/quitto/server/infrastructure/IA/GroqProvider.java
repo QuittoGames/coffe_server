@@ -7,6 +7,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class GroqProvider extends BaseProvider {
 
+    {
+        setEnvId("GROQ");
+    }
+
     @Override
     public ServiceProvider getProvider() {
         return ServiceProvider.GROQ;

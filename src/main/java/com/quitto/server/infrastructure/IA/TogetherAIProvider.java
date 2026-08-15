@@ -7,6 +7,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class TogetherAIProvider extends BaseProvider {
 
+    {
+        setEnvId("TOGETHER_AI");
+    }
+
     @Override
     public ServiceProvider getProvider() {
         return ServiceProvider.TOGETHER_AI;
