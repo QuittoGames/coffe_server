@@ -144,13 +144,13 @@ class SecurityTest {
     }
 
     @Test
-    @DisplayName("register with duplicate email returns 401")
-    void register_withDuplicateEmail_returns401() throws Exception {
+    @DisplayName("register with duplicate email returns 400")
+    void register_withDuplicateEmail_returns400() throws Exception {
         RegisterDTO duplicate = new RegisterDTO(null,"outro_usuario", "Senha123!", "admin@test.com");
         mockMvc.perform(post("/auth/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(duplicate)))
-            .andExpect(status().isUnauthorized());
+            .andExpect(status().isBadRequest());
     }
 
     // ── JWT Token Security ──
