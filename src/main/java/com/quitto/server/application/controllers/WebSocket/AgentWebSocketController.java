@@ -30,7 +30,8 @@ public class AgentWebSocketController {
     @SendTo("/queue/coffee-agent")
     public ResponseContentAgent sendRequest(RequestAgentDTO requestDto) {
         try {
-            String token = agentService.getServerToken();
+            String token = agentService.getServerToken()
+                    .orElseThrow(() -> new IllegalArgumentException("Server token is not configured"));
             RequestAgent internalRequest = requestManager.request(token,requestDto);
 
             // Extract the action from the request content

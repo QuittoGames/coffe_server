@@ -9,51 +9,69 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.quitto.server.domain.enums.ServiceProvider;
+import com.quitto.server.domain.exception.ProviderException;
 import com.quitto.server.domain.interfaces.IA.AIProvider;
 import com.quitto.server.domain.interfaces.IA.AIRegistry;
 import com.quitto.server.domain.models.IA.AIModel;
 import com.quitto.server.infrastructure.services.CoffeAgent.CoffeAgentService;
 import com.quitto.server.shared.exception.NotEnableExceptions;
 
-/**
- * Registro dos provedores de IA do escopo, indexado por
- * {@link ServiceProvider}.
- *
- * <p>
- * No boot, injeta todos os beans {@link AIProvider}, mas não aplica a chave de API
- * imediatamente - a chave é aplicada sob demanda quando os modelos são solicitados.
- * </p>
- */
 @Service
 public class AIProviderRegistry implements AIRegistry<ServiceProvider, AIProvider, AIModel> {
+
+    private static final Logger log = LoggerFactory.getLogger(AIProviderRegistry.class);
 
     private final Map<ServiceProvider, AIProvider> registry;
 
     private final CoffeAgentService agentService;
 
-    public AIProviderRegistry(List<AIProvider> providers, CoffeAgentService agentService) {
+    private final int maxProvidersPerRequest;
+
+    public AIProviderRegistry(
+            List<AIProvider> providers,
+            CoffeAgentService agentService,
+            @Value("${coffee.ai.max-providers-per-request:20}") int maxProvidersPerRequest) {
         this.agentService = Objects.requireNonNull(agentService, "agentService cannot be null");
+        this.maxProvidersPerRequest = maxProvidersPerRequest;
         this.registry = load(providers);
     }
 
     private Map<ServiceProvider, AIProvider> load(List<AIProvider> providers) {
-        // Não aplicamos a chave imediatamente - isso será feito sob demanda
-        return providers.stream()
-                .collect(Collectors.toMap(
-                        AIProvider::getProvider,
-                        Function.identity()));
+        Map<ServiceProvider, AIProvider> map = providers.stream()
+                .collect(Collectors.toMap(AIProvider::getProvider, Function.identity()));
+
+        map.values().forEach(this::ensureKeyIsSet);
+        log.debug("Load Providaders of Implemetateion Classes");
+        return map;
     }
 
+    /**
+     * Garante que a chave de API do provedor esteja resolvida. A chave é lida do
+     * ambiente apenas quando ausente; provedores que exigem chave e não têm chave
+     * configurada são desabilitados (D3).
+     */
     private void ensureKeyIsSet(AIProvider provider) {
         if (provider.getApiKey() == null || provider.getApiKey().isBlank()) {
             String providerName = provider.getProvider().name();
             String envId = provider.getEnvId();
             // Usa o envId se disponível, caso contrário usa o nome do provedor
+
             String keyLookupValue = (envId != null && !envId.isBlank()) ? envId : providerName;
-            provider.setKey(agentService.getEnvKey(keyLookupValue));
+            agentService.getEnvKey(keyLookupValue).ifPresentOrElse(
+                    provider::setKey,
+                    () -> {
+                        if (provider.requiresKey()) {
+                            log.warn("API key não configurada para '{}' (env: COFFEE_AI_{}_KEY) — provedor desabilitado",
+                                    provider.getProvider(), keyLookupValue);
+                            provider.turnOff();
+                        }
+                    });
         }
     }
 
@@ -71,12 +89,6 @@ public class AIProviderRegistry implements AIRegistry<ServiceProvider, AIProvide
                 .map(List::of);
     }
 
-    /**
-     * Busca um provedor pela enumeração.
-     *
-     * @param provider provedor desejado
-     * @return o provedor registrado, ou vazio se não existir
-     */
     @Override
     public Optional<AIProvider> findProvider(ServiceProvider provider) {
         Objects.requireNonNull(provider, "provider cannot be null");
@@ -90,38 +102,36 @@ public class AIProviderRegistry implements AIRegistry<ServiceProvider, AIProvide
             throw new NoSuchElementException(
                     "Provider " + provider + " is not registered.");
         }
-
-        // Garante que a chave esteja configurada antes de buscar os modelos
         ensureKeyIsSet(providerTools);
-
         return providerTools.getModels();
     }
 
     @Override
     public List<AIModel> getAllModels() {
         List<AIModel> models = new ArrayList<>();
+
+        int collected = 0;
         for (AIProvider provider : registry.values()) {
-            if (provider == null) {
-                throw new NoSuchElementException(
-                        "Provider " + provider + " is not registered.");
+            if (collected >= maxProvidersPerRequest) {
+                log.warn("Limite de {} provedores por requisição atingido — provedores restantes ignorados no catálogo",
+                        maxProvidersPerRequest);
+                break;
             }
-
-            // Garante que a chave esteja configurada antes de buscar os modelos
-            ensureKeyIsSet(provider);
-
-            models.addAll(provider.getModels());
+            if (!provider.isEnabled()) {
+                continue;
+            }
+            try {
+                ensureKeyIsSet(provider);
+                models.addAll(provider.getModels());
+                collected++;
+            } catch (ProviderException e) {
+                // Falha de um provedor não derruba o catálogo inteiro (F2)
+                log.warn("Falha ao listar modelos do provedor '{}': {}", provider.getProvider(), e.getMessage());
+            }
         }
         return models;
     }
 
-    /**
-     * Busca um provedor habilitado pela enumeração.
-     *
-     * @param provider provedor desejado
-     * @return o provedor registrado e habilitado
-     * @throws IllegalArgumentException se o provedor não estiver registrado
-     * @throws NotEnableExceptions      se o provedor estiver desabilitado
-     */
     public AIProvider findProvaider(ServiceProvider provider) throws IllegalArgumentException {
         Objects.requireNonNull(provider, "provider cannot be null");
 
