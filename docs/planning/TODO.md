@@ -18,6 +18,12 @@ blockquote strong{color:var(--c3)}
 hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 .stat-card{background:var(--el);border:1px solid var(--bd);border-radius:var(--r);padding:8px 16px;font-size:.85rem;color:var(--t3);display:inline-block;margin:0 8px 8px 0}
 .stat-card strong{color:var(--t1);font-size:1.1rem}
+.nav{font-size:.85rem;margin:6px 0;color:var(--t3)}
+.nav a{margin-right:12px}
+.progress{background:var(--hov);border:1px solid var(--bd);border-radius:var(--rs);height:12px;width:150px;display:inline-block;vertical-align:middle;overflow:hidden}
+.progress-fill{background:linear-gradient(90deg,var(--c3),var(--bl));height:100%;display:block}
+.progress-fill.full{background:var(--ok)}
+.legend{font-family:Consolas,monospace;font-size:.85rem}
 .task-done{opacity:.75}
 .task-blocked{color:var(--err)}
 .badge-prio{display:inline-block;padding:1px 8px;border-radius:var(--rs);font-size:.7rem;font-family:Consolas,monospace;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
@@ -29,47 +35,70 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 # coffe_server — TODO
 
-> **SOURCE OF TRUTH** — Tasks identificadas por **IDs estáveis** (TSK-001..TSK-047; próximo livre: **TSK-048**). O **estado canônico é a checkbox** de cada task: `[ ]` TODO · `[>]` IN_PROGRESS · `[x]` DONE · `[!]` BLOCKED · `[-]` CANCELLED. **Dashboard, Metrics e Active Work são derivados** das checkboxes e NÃO contêm estado independente. Backlog reconstruído do zero (2026-08-13) a partir de verificação direta do código — nenhuma task foi herdada do backlog anterior sem evidência.
+> **SOURCE OF TRUTH** — Tasks identificadas por **IDs estáveis** (TSK-001..TSK-047; próximo livre: **TSK-048**). O **estado canônico é a checkbox** de cada task: `[ ]` TODO · `[>]` IN_PROGRESS · `[x]` DONE · `[!]` BLOCKED · `[-]` CANCELLED. **`# Progresso`, `# Dashboard` e `# Task Registry` são derivados** das checkboxes e NÃO contêm estado independente — ao mover uma task, atualize-os na mesma edição. Backlog reconstruído do zero (2026-08-13) a partir de verificação direta do código — nenhuma task foi herdada do backlog anterior sem evidência.
+
+<div class="nav">**Navegação:** [Progresso](#progresso) · [Dashboard](#dashboard) · [Tasks](#tasks) · [Task Registry](#task-registry) · [Agent Protocol](#agent-protocol)</div>
+
+---
+
+# Progresso
+
+> Derivado das checkboxes em `# Tasks` — não editar manualmente. Ao mover uma task, atualize aqui na mesma edição (regra 5 do Agent Protocol).
+
+<span class="stat-card"><strong>47</strong> Total</span><span class="stat-card"><strong>45</strong> TODO</span><span class="stat-card"><strong>0</strong> IN_PROGRESS</span><span class="stat-card"><strong>2</strong> DONE</span><span class="stat-card"><strong>0</strong> BLOCKED</span><span class="stat-card"><strong>0</strong> CANCELLED</span>
+
+**Concluído: 2 de 47 (4%)**
+
+<div class="progress"><div class="progress-fill" style="width:4%"></div></div>
+
+## Progresso por Categoria
+
+| Categoria | Feitas | Total | Progresso |
+|---|---|---|---|
+| SECURITY | 1 | 10 | <div class="progress"><div class="progress-fill" style="width:10%"></div></div> 10% |
+| BUG | 0 | 4 | <div class="progress"><div class="progress-fill" style="width:0%"></div></div> 0% |
+| ARCHITECTURE | 0 | 7 | <div class="progress"><div class="progress-fill" style="width:0%"></div></div> 0% |
+| IA | 1 | 5 | <div class="progress"><div class="progress-fill" style="width:20%"></div></div> 20% |
+| MCP | 0 | 3 | <div class="progress"><div class="progress-fill" style="width:0%"></div></div> 0% |
+| WEBSOCKET | 0 | 3 | <div class="progress"><div class="progress-fill" style="width:0%"></div></div> 0% |
+| INFRA | 0 | 2 | <div class="progress"><div class="progress-fill" style="width:0%"></div></div> 0% |
+| TESTS | 0 | 5 | <div class="progress"><div class="progress-fill" style="width:0%"></div></div> 0% |
+| FEATURE | 0 | 3 | <div class="progress"><div class="progress-fill" style="width:0%"></div></div> 0% |
+| CLEANUP | 0 | 4 | <div class="progress"><div class="progress-fill" style="width:0%"></div></div> 0% |
+| DOCS | 0 | 1 | <div class="progress"><div class="progress-fill" style="width:0%"></div></div> 0% |
 
 ---
 
 # Dashboard
 
-> Contém apenas IDs (derivação das checkboxes em `# Tasks`).
+> Derivado das checkboxes em `# Tasks`. Lista o que está AGORA, PRÓXIMO e BLOQUEADO — com o título de cada task para leitura rápida.
 
-## AGORA
+## AGORA (IN_PROGRESS)
 
 - — (nenhuma task em progresso)
 
-## PRÓXIMO
+## PRÓXIMO (TODO por categoria)
 
-- **SECURITY:** TSK-001, TSK-002, TSK-003, TSK-004, TSK-005, TSK-006, TSK-007, TSK-008, TSK-009, TSK-010
-- **BUG:** TSK-011, TSK-012, TSK-013, TSK-014
-- **ARCHITECTURE:** TSK-015, TSK-016, TSK-017, TSK-018, TSK-019, TSK-020, TSK-021
-- **IA:** TSK-022, TSK-023, TSK-024, TSK-025, TSK-026
-- **MCP:** TSK-027, TSK-028, TSK-029
-- **WEBSOCKET:** TSK-030, TSK-031, TSK-032
-- **INFRA:** TSK-033, TSK-034
-- **TESTS:** TSK-035, TSK-036, TSK-037, TSK-038, TSK-039
-- **FEATURE:** TSK-040, TSK-041, TSK-042
-- **CLEANUP:** TSK-043, TSK-044, TSK-045, TSK-046
-- **DOCS:** TSK-047
+- **SECURITY (9):** TSK-001 (JwtTokenResolver exige `Bearer `) · TSK-002 (CORS ausente no SecurityConfig) · TSK-003 (Chaves TLS fora do JAR) · TSK-004 (OAuth2 → porta UserRepository) · TSK-006 (CookieDomain.sameSite + mapper) · TSK-007 (Register: Bean Validation + regra de senha) · TSK-008 (DEBUG security → dev) · TSK-009 (.env.example) · TSK-010 (h2 herda TLS)
+- **BUG (4):** TSK-011 (Bloco vazio de idempotência no login) · TSK-012 (CacheService.search em cache miss) · TSK-013 (MachineService vaza exceção Spring) · TSK-014 (User.equals sem hashCode)
+- **ARCHITECTURE (7):** TSK-015 (CookieService interface morta) · TSK-016 (TokenResolverManager → application) · TSK-017 (RedisArryCodec camada errada) · TSK-018 (Machine.wakeOnLan() no domínio) · TSK-019 (LinuxUser/Groups persistência) · TSK-020 (ExternalAccount mapper/adapter) · TSK-021 (User construtor vazio)
+- **IA (4):** TSK-022 (getEnvKey stub) · TSK-023 (Endpoints Nível 2 modelsUrl) · TSK-024 (Endpoints Nível 3 SDK) · TSK-025 (Typos AIProvaider/Reagistry)
+- **MCP (3):** TSK-027 (createEvent stub + field injection) · TSK-028 (Tools: injection + SLF4J + erros) · TSK-029 (CalendarController fora de mcp)
+- **WEBSOCKET (3):** TSK-030 (Handshake sem auth) · TSK-031 (Destinos sem role + origins) · TSK-032 (Resposta canônica do /agent)
+- **INFRA (2):** TSK-033 (Dockerfile + compose prod) · TSK-034 (CI GitHub Actions)
+- **TESTS (5):** TSK-035 (Rate limit 429) · TSK-036 (Segurança 401/403) · TSK-037 (Providers IA mockados) · TSK-038 (WebSocket STOMP) · TSK-039 (E2E happy path)
+- **FEATURE (3):** TSK-040 (CRUD de máquinas REST) · TSK-041 (Wake-on-LAN) · TSK-042 (Tailscale)
+- **CLEANUP (4):** TSK-043 (System.out/err + imports) · TSK-044 (Typos Redis/Database) · TSK-045 (HttpCookieWriterManeger) · TSK-046 (User param passoword)
+- **DOCS (1):** TSK-047 (ADRs deletados + docs desatualizadas)
 
-## BLOQUEADO
+## BLOQUEADO (BLOCKED)
 
 - — (nenhuma task bloqueada)
 
-## Metrics
+## Concluídas Recentes (DONE)
 
-> Informação **derivada** das checkboxes de status em `# Tasks`. Não editar manualmente.
-
-<span class="stat-card"><strong>47</strong> Total</span><span class="stat-card"><strong>47</strong> TODO</span><span class="stat-card"><strong>0</strong> IN_PROGRESS</span><span class="stat-card"><strong>0</strong> DONE</span><span class="stat-card"><strong>0</strong> BLOCKED</span><span class="stat-card"><strong>0</strong> CANCELLED</span>
-
-## Active Work
-
-> Derivado das tasks `[>]` (IN_PROGRESS) em `# Tasks`. Sem estado duplicado.
-
-- — (nenhuma)
+- TSK-005 (Handler 500 genérico + sem vazar mensagens)
+- TSK-026 (CoffeAgentService constructor injection)
 
 ---
 
@@ -79,11 +108,11 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ## SECURITY
 
+> **Progresso:** 1/10 concluídas · 9 pendentes
+
 ### TSK-001 — JwtTokenResolver exige esquema `Bearer ` no header Authorization
 
-- [ ] **Status:** TODO
-- **Priority:** HIGH
-- **Category:** SECURITY · **Owner:** BOTH
+- [ ] **Priority:** HIGH · **Owner:** BOTH
 
 **Context:** `JwtTokenResolver.java:17` faz `v.replace("Bearer ", "")` sem exigir o prefixo — um header `Authorization: <token sem prefixo>` é aceito como token válido.
 
@@ -99,9 +128,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ### TSK-002 — CORS ausente no SecurityConfig
 
-- [ ] **Status:** TODO
-- **Priority:** HIGH
-- **Category:** SECURITY · **Owner:** BOTH
+- [ ] **Priority:** HIGH · **Owner:** BOTH
 
 **Context:** Nenhuma configuração `CorsConfigurationSource`/`cors()` existe no projeto (grep por `CorsConfiguration` = 0 hits em `src/main/java`). O frontend estático serve do mesmo domínio hoje, mas clientes web externos (PS3, apps) serão bloqueados.
 
@@ -117,9 +144,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ### TSK-003 — Chaves TLS privadas fora do JAR
 
-- [ ] **Status:** TODO
-- **Priority:** HIGH
-- **Category:** SECURITY · **Owner:** HUMAN
+- [ ] **Priority:** HIGH · **Owner:** HUMAN
 
 **Context:** `src/main/resources/keys/` contém `server.p12`, `server.key`, `server.csr`, `server.crt`, `ca.key`, `ca.crt` commitados — chaves privadas são empacotadas no JAR (`server.ssl.key-store=classpath:keys/server.p12`).
 
@@ -135,9 +160,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ### TSK-004 — OAuth2UserProvisioningService usa JpaUserRepository direto (DIP)
 
-- [ ] **Status:** TODO
-- **Priority:** MEDIUM
-- **Category:** SECURITY · **Owner:** AGENT
+- [ ] **Priority:** MEDIUM · **Owner:** AGENT
 
 **Context:** `OAuth2UserProvisioningService.java:14-15,33` injeta e usa `JpaUserRepository` (Spring Data) diretamente, ignorando a porta `UserRepository` do domínio.
 
@@ -151,9 +174,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ### TSK-005 — AuthExceptionHandler: 500 genérico e sem vazar mensagens cruas
 
-- [ ] **Status:** TODO
-- **Priority:** MEDIUM
-- **Category:** SECURITY · **Owner:** AGENT
+- [x] **Priority:** MEDIUM · **Owner:** AGENT
 
 **Context:** O handler mapeia `IllegalArgumentException` → 401 com a mensagem crua da exceção no body (vaza detalhes internos) e não há handler genérico para 500.
 
@@ -167,9 +188,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ### TSK-006 — CookieDomain sem sameSite + CookieMapper hardcoda `Lax`
 
-- [ ] **Status:** TODO
-- **Priority:** MEDIUM
-- **Category:** SECURITY · **Owner:** AGENT
+- [ ] **Priority:** MEDIUM · **Owner:** AGENT
 
 **Context:** `CookieMapper.java:18` fixa `sameSite("Lax")`; `CookieDomain` não possui campo `sameSite` — o atributo não é configurável por cookie.
 
@@ -185,9 +204,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ### TSK-007 — Register: Bean Validation no DTO + regra única de senha
 
-- [ ] **Status:** TODO
-- **Priority:** MEDIUM
-- **Category:** SECURITY · **Owner:** AGENT
+- [ ] **Priority:** MEDIUM · **Owner:** AGENT
 
 **Context:** `AuthenticationController.java:66-68` valida senha manualmente (1..500) e responde 401 em caso de falha; `RegisterDTO` não usa Bean Validation; `SpringAuthenticationService.register()` não aplica a regra mínima de 8 caracteres que existe apenas em `User.changePassword()`.
 
@@ -201,9 +218,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ### TSK-008 — Logging DEBUG de security no profile default
 
-- [ ] **Status:** TODO
-- **Priority:** LOW
-- **Category:** SECURITY · **Owner:** AGENT
+- [ ] **Priority:** LOW · **Owner:** AGENT
 
 **Context:** `application.properties` mantém `logging.level.org.springframework.security=DEBUG` (e TRACE) no profile padrão — ruído e exposição de detalhes de autenticação em produção.
 
@@ -217,9 +232,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ### TSK-009 — .env.example ausente
 
-- [ ] **Status:** TODO
-- **Priority:** LOW
-- **Category:** SECURITY · **Owner:** AGENT
+- [ ] **Priority:** LOW · **Owner:** AGENT
 
 **Context:** O projeto importa `.env` via `spring.config.import=optional:file:.env[.properties]` e lê secrets de env vars, mas não existe `.env.example` documentando as variáveis (`DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, `SERVER_API_KEY`, `GOOGLE_CLIENT_ID`, `GOOGLE_SECRET_API`, `REDIS_*`).
 
@@ -233,9 +246,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ### TSK-010 — Profile h2 herda TLS do default
 
-- [ ] **Status:** TODO
-- **Priority:** MEDIUM
-- **Category:** SECURITY · **Owner:** AGENT
+- [ ] **Priority:** MEDIUM · **Owner:** AGENT
 
 **Context:** `application.properties` define `server.ssl.enabled=true` e `application-h2.properties` não sobrescreve `server.ssl.*` — o profile h2 herda TLS (com keystore do classpath), forçando HTTPS no ambiente de dev local.
 
@@ -251,11 +262,11 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ## BUG
 
+> **Progresso:** 0/4 concluídas · 4 pendentes
+
 ### TSK-011 — AuthenticationController.login: bloco vazio de idempotência
 
-- [ ] **Status:** TODO
-- **Priority:** MEDIUM
-- **Category:** BUG · **Owner:** AGENT
+- [ ] **Priority:** MEDIUM · **Owner:** AGENT
 
 **Context:** `AuthenticationController.java:47-49` contém `if(operationKeyManager.validated(key)){}` — bloco vazio (placeholder): a idempotência é verificada mas nada é feito com o resultado.
 
@@ -269,9 +280,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ### TSK-012 — CacheService.search lança exceção de idempotência em cache miss
 
-- [ ] **Status:** TODO
-- **Priority:** MEDIUM
-- **Category:** BUG · **Owner:** AGENT
+- [ ] **Priority:** MEDIUM · **Owner:** AGENT
 
 **Context:** `CacheService.java:44-54` — quando a chave não existe no Redis, `search()` lança `InvalidIdempotencyKeyException` em vez de retornar `Optional.empty()`. Semântica incorreta: cache miss é ausência, não erro de chave inválida.
 
@@ -285,9 +294,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ### TSK-013 — MachineService vaza UsernameNotFoundException do Spring
 
-- [ ] **Status:** TODO
-- **Priority:** MEDIUM
-- **Category:** BUG · **Owner:** AGENT
+- [ ] **Priority:** MEDIUM · **Owner:** AGENT
 
 **Context:** `MachineService.java:3,28` importa e lança `org.springframework.security.core.userdetails.UsernameNotFoundException` na camada de aplicação — vazamento de framework para fora da infraestrutura.
 
@@ -301,9 +308,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ### TSK-014 — User.equals por email sem hashCode
 
-- [ ] **Status:** TODO
-- **Priority:** LOW
-- **Category:** BUG · **Owner:** AGENT
+- [ ] **Priority:** LOW · **Owner:** AGENT
 
 **Context:** `User.java:102-115` implementa `equals` por email, mas não há `hashCode()` — violação do contrato equals/hashCode (documentada no javadoc :25-27). Quebra coleções hash (Set/Map) com `User`.
 
@@ -319,11 +324,11 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ## ARCHITECTURE
 
+> **Progresso:** 0/7 concluídas · 7 pendentes
+
 ### TSK-015 — CookieService: interface morta com Jakarta na infra
 
-- [ ] **Status:** TODO
-- **Priority:** MEDIUM
-- **Category:** ARCHITECTURE · **Owner:** AGENT
+- [ ] **Priority:** MEDIUM · **Owner:** AGENT
 
 **Context:** `infrastructure/interfaces/Cookies/CookieService.java` é uma interface de contrato (deveria ser domínio) que expõe `HttpServletResponse` (Jakarta) e não possui implementação nem usos — o fluxo atual usa `CookieManager` (domínio) + `HttpCookieWriter` (application). É código morto.
 
@@ -337,9 +342,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ### TSK-016 — TokenResolverManager na infra → application (use case)
 
-- [ ] **Status:** TODO
-- **Priority:** MEDIUM
-- **Category:** ARCHITECTURE · **Owner:** AGENT
+- [ ] **Priority:** MEDIUM · **Owner:** AGENT
 
 **Context:** `TokenResolverManager` (orquestrador da chain de resolvers) está em `infrastructure/services/Auth/Token/` — é lógica de orquestração (use case), não implementação de infraestrutura.
 
@@ -353,9 +356,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ### TSK-017 — RedisArryCodec em camada errada (infra em vez de domínio)
 
-- [ ] **Status:** TODO
-- **Priority:** LOW
-- **Category:** ARCHITECTURE · **Owner:** AGENT
+- [ ] **Priority:** LOW · **Owner:** AGENT
 
 **Context:** `infrastructure/interfaces/Codec/RedisArryCodec.java:7` estende `RedisCodec<String, byte[]>` (Lettuce) e fica em `infrastructure/interfaces/` — contrato que deveria pertencer ao domínio, mas dependendo de Lettuce não pode. Camada inconsistente.
 
@@ -369,9 +370,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ### TSK-018 — Machine anêmico: criar comportamento `wakeOnLan()` no domínio
 
-- [ ] **Status:** TODO
-- **Priority:** MEDIUM
-- **Category:** ARCHITECTURE · **Owner:** AGENT
+- [ ] **Priority:** MEDIUM · **Owner:** AGENT
 
 **Context:** `Machine` é data bag (só campos/getters) — não possui `wakeOnLan()` nem regras de negócio relacionadas a WOL/Tailscale.
 
@@ -387,9 +386,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ### TSK-019 — LinuxUser/Groups: persistência incompleta
 
-- [ ] **Status:** TODO
-- **Priority:** MEDIUM
-- **Category:** ARCHITECTURE · **Owner:** AGENT
+- [ ] **Priority:** MEDIUM · **Owner:** AGENT
 
 **Context:** Existem domain models (`LinuxUser`, `Groups`) e entities JPA (`GroupsEntity`, `LinuxUserEntity`), mas faltam mappers, adapters e Spring Data repositories — persistência não conectada às portas do domínio.
 
@@ -403,9 +400,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ### TSK-020 — ExternalAccount: mapper + adapter de persistência
 
-- [ ] **Status:** TODO
-- **Priority:** LOW
-- **Category:** ARCHITECTURE · **Owner:** AGENT
+- [ ] **Priority:** LOW · **Owner:** AGENT
 
 **Context:** Domain model `ExternalAccount` e `ExternalAccountEntity` existem, mas não há mapper/adapter conectando-os à persistência.
 
@@ -419,9 +414,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ### TSK-021 — User: construtor público vazio permite estado inválido
 
-- [ ] **Status:** TODO
-- **Priority:** LOW
-- **Category:** ARCHITECTURE · **Owner:** AGENT
+- [ ] **Priority:** LOW · **Owner:** AGENT
 
 **Context:** `User.java:53-55` expõe `public User()` sem campos — permite criar agregado raiz sem nome/email/role/hash.
 
@@ -437,13 +430,13 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ## IA
 
+> **Progresso:** 1/5 concluídas · 4 pendentes
+
 ### TSK-022 — CoffeAgentService.getEnvKey() retorna vazio (stub)
 
-- [ ] **Status:** TODO
-- **Priority:** HIGH
-- **Category:** IA · **Owner:** AGENT
+- [ ] **Priority:** HIGH · **Owner:** AGENT
 
-**Context:** `CoffeAgentService.java:22-24` retorna `""` para qualquer `providerName` — sem secrets reais, a listagem/chamada de modelos falha em runtime (blocker do ecossistema IA).
+**Context:** `CoffeAgentService.getEnvKey()` retornava `""` para qualquer `providerName` — sem secrets reais, a listagem/chamada de modelos falhava em runtime (blocker do ecossistema IA). **Estado atual (PG-001 TEMPORARY):** agora retorna `Optional<String>` com hash de placeholder (`"sk-placeholder-temp"`) para os providers mapeados em `TEMP_PROVIDER_KEYS` — nunca `""` (F4). A leitura real de env vars (`COFFEE_AI_*_KEY`, com fallback `_API_KEY`) está **deferida** por orientação do usuário até a integração real do CoffeAgent (ver `docs/specs/ai-provider-service.md` §3.2 e ADR D2).
 
 **Objective:** Ler a API key de variável de ambiente (ex.: `OPENAI_API_KEY`, `ANTHROPIC_API_KEY` conforme `ServiceProvider`) e devolver `Optional<String>` (vazio quando ausente).
 
@@ -455,9 +448,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ### TSK-023 — IA endpoints Nível 2: modelsUrl() custom por provedor
 
-- [ ] **Status:** TODO
-- **Priority:** MEDIUM
-- **Category:** IA · **Owner:** AGENT
+- [ ] **Priority:** MEDIUM · **Owner:** AGENT
 
 **Context:** Pesquisa `docs/research/model-listing-endpoints.md` aponta 11 providers com URL de listagem incorreta. Nível 1 (Together/Cohere/Perplexity) já corrigido; falta o Nível 2: sobrescrever `modelsUrl()` para DeepInfra (`/models/list`), Novita (`/openai/v1`), Ollama (`/api/tags`), Cloudflare (`/ai/models/search`), Fireworks (`accounts/{id}`), Azure (`api-version`).
 
@@ -473,9 +464,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ### TSK-024 — IA endpoints Nível 3: SDK/assinatura (Vertex, watsonx, OCI, Bedrock)
 
-- [ ] **Status:** TODO
-- **Priority:** LOW
-- **Category:** IA · **Owner:** AGENT
+- [ ] **Priority:** LOW · **Owner:** AGENT
 
 **Context:** TODOs no código (`AwsBedrockProvider.java:45`, `OCIGenerativeAIProvider.java:45`, `FireworksAIProvider.java:39`) indicam pendência de auth por SDK/assinatura (SigV4, OCI signing, IAM) — não cabem no padrão Bearer do `BaseProvider`.
 
@@ -489,9 +478,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ### TSK-025 — Typos IA: AIProvaider*, getModelsForProvaider, ProvaiderIAService, packages
 
-- [ ] **Status:** TODO
-- **Priority:** MEDIUM
-- **Category:** IA · **Owner:** AGENT
+- [ ] **Priority:** MEDIUM · **Owner:** AGENT
 
 **Context:** Typos públicos persistem: `AIProvaiderController`, `AIProvaiderPort`, `AIProvaiderAdpiter`, `ProvaiderIAService`, método `getModelsForProvaider` (`AIRegistry.java:27`), `findProvaider`, packages `Provaiders`/`Reagistry`.
 
@@ -507,9 +494,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ### TSK-026 — CoffeAgentService: field injection `@Value` → constructor
 
-- [ ] **Status:** TODO
-- **Priority:** LOW
-- **Category:** IA · **Owner:** AGENT
+- [x] **Priority:** LOW · **Owner:** AGENT
 
 **Context:** `CoffeAgentService.java:19-20` usa `@Value` em campos (field injection) — a convenção do projeto é constructor injection.
 
@@ -525,11 +510,11 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ## MCP
 
+> **Progresso:** 0/3 concluídas · 3 pendentes
+
 ### TSK-027 — GoogleCalendarService.createEvent() stub + field injection
 
-- [ ] **Status:** TODO
-- **Priority:** MEDIUM
-- **Category:** MCP · **Owner:** AGENT
+- [ ] **Priority:** MEDIUM · **Owner:** AGENT
 
 **Context:** `GoogleCalendarService.java:19-21` — `createEvent()` retorna `""` (stub); o client é campo `@Autowired` público (:16-17).
 
@@ -545,9 +530,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ### TSK-028 — GoogleCalendarTools: injection + logging + tratamento de exceções
 
-- [ ] **Status:** TODO
-- **Priority:** MEDIUM
-- **Category:** MCP · **Owner:** AGENT
+- [ ] **Priority:** MEDIUM · **Owner:** AGENT
 
 **Context:** `GoogleCalendarTools` usa campos `@Autowired` públicos (:21-25), `System.err.println` (:40,42) e engole exceções retornando lista vazia — falhas de MCP ficam invisíveis para o agente.
 
@@ -561,9 +544,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ### TSK-029 — CalendarController (REST) dentro de mcp/tools + permitAll + println
 
-- [ ] **Status:** TODO
-- **Priority:** MEDIUM
-- **Category:** MCP · **Owner:** AGENT
+- [ ] **Priority:** MEDIUM · **Owner:** AGENT
 
 **Context:** `mcp/tools/CalendarController.java` é controller REST (não MCP) com `@PreAuthorize("permitAll()")` e `System.out/err.println` (:31,43,46) — camada MCP misturada com REST público.
 
@@ -579,11 +560,11 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ## WEBSOCKET
 
+> **Progresso:** 0/3 concluídas · 3 pendentes
+
 ### TSK-030 — WebSocket handshake sem autenticação JWT
 
-- [ ] **Status:** TODO
-- **Priority:** HIGH
-- **Category:** WEBSOCKET · **Owner:** AGENT
+- [ ] **Priority:** HIGH · **Owner:** AGENT
 
 **Context:** `WebSocketConfig.java` registra `/protocol` sem `HandshakeInterceptor` nem filtro — o endpoint STOMP é acessível sem token, ignorando a chain de resolvers do projeto.
 
@@ -597,9 +578,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ### TSK-031 — Destinos STOMP sem proteção por role + allowedOrigins ausente
 
-- [ ] **Status:** TODO
-- **Priority:** MEDIUM
-- **Category:** WEBSOCKET · **Owner:** AGENT
+- [ ] **Priority:** MEDIUM · **Owner:** AGENT
 
 **Context:** `AgentWebSocketController.java:29-30` expõe `@MessageMapping("/agent")` sem controle de autorização; `WebSocketConfig` não define `setAllowedOrigins`.
 
@@ -613,9 +592,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ### TSK-032 — AgentWebSocketController responde resposta canônica
 
-- [ ] **Status:** TODO
-- **Priority:** MEDIUM
-- **Category:** WEBSOCKET · **Owner:** AGENT
+- [ ] **Priority:** MEDIUM · **Owner:** AGENT
 
 **Context:** O controller chama `requestManager.request(...)` mas responde ao cliente com texto fixo ("processed"), descartando o resultado real do protocolo do agente (`CoffeAgentRequestManager`).
 
@@ -631,11 +608,11 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ## INFRA
 
+> **Progresso:** 0/2 concluídas · 2 pendentes
+
 ### TSK-033 — Dockerfile multi-stage + docker-compose prod ausentes
 
-- [ ] **Status:** TODO
-- **Priority:** MEDIUM
-- **Category:** INFRA · **Owner:** HUMAN
+- [ ] **Priority:** MEDIUM · **Owner:** HUMAN
 
 **Context:** Não existem `Dockerfile`, `docker-compose.yml` nem `docker-compose.prod.yml` no repositório (glob não encontrou).
 
@@ -649,9 +626,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ### TSK-034 — CI GitHub Actions ausente
 
-- [ ] **Status:** TODO
-- **Priority:** MEDIUM
-- **Category:** INFRA · **Owner:** HUMAN
+- [ ] **Priority:** MEDIUM · **Owner:** HUMAN
 
 **Context:** Não existe `.github/workflows/` — build/testes não rodam em CI.
 
@@ -665,11 +640,11 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ## TESTS
 
+> **Progresso:** 0/5 concluídas · 5 pendentes
+
 ### TSK-035 — Teste de rate limit (429) em /auth/login e /auth/register
 
-- [ ] **Status:** TODO
-- **Priority:** MEDIUM
-- **Category:** TESTS · **Owner:** AGENT
+- [ ] **Priority:** MEDIUM · **Owner:** AGENT
 
 **Context:** O `RateLimitFilter` implementa política por rota (enum `RateLimitPolicy`) e responde 429, mas não há teste cobrindo o estouro de limite.
 
@@ -681,9 +656,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ### TSK-036 — Testes de segurança 401/403 nas rotas protegidas
 
-- [ ] **Status:** TODO
-- **Priority:** HIGH
-- **Category:** TESTS · **Owner:** AGENT
+- [ ] **Priority:** HIGH · **Owner:** AGENT
 
 **Context:** Existem testes de integração de auth, mas não há suíte dedicada validando 401 sem token e 403 com role incorreta nas rotas protegidas (ex.: `/api/**`, `/mcp/**`).
 
@@ -693,9 +666,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ### TSK-037 — Testes dos providers de IA (HTTP mockado)
 
-- [ ] **Status:** TODO
-- **Priority:** MEDIUM
-- **Category:** TESTS · **Owner:** AGENT
+- [ ] **Priority:** MEDIUM · **Owner:** AGENT
 
 **Context:** Nenhum teste cobre `BaseProvider`/providers concretos — parsing de modelos e erros HTTP não são validados.
 
@@ -707,9 +678,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ### TSK-038 — Testes WebSocket (handshake, auth e tópicos)
 
-- [ ] **Status:** TODO
-- **Priority:** MEDIUM
-- **Category:** TESTS · **Owner:** AGENT
+- [ ] **Priority:** MEDIUM · **Owner:** AGENT
 
 **Context:** Não há testes STOMP/WebSocket cobrindo o endpoint `/protocol`.
 
@@ -719,9 +688,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ### TSK-039 — E2E happy path (register → login → cookie → /api/test)
 
-- [ ] **Status:** TODO
-- **Priority:** MEDIUM
-- **Category:** TESTS · **Owner:** AGENT
+- [ ] **Priority:** MEDIUM · **Owner:** AGENT
 
 **Context:** Os testes existentes cobrem partes do fluxo, mas não o caminho feliz completo via HTTP real.
 
@@ -733,11 +700,11 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ## FEATURE
 
+> **Progresso:** 0/3 concluídas · 3 pendentes
+
 ### TSK-040 — CRUD de máquinas REST
 
-- [ ] **Status:** TODO
-- **Priority:** HIGH
-- **Category:** FEATURE · **Owner:** AGENT
+- [ ] **Priority:** HIGH · **Owner:** AGENT
 
 **Context:** `MachineRepository` (porta) e `MachineRepositoryAdapter` estão completos e `MachineService` existe, mas não há controller REST de máquinas — o domínio está sem exposição.
 
@@ -749,9 +716,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ### TSK-041 — Wake-on-LAN (magic packet)
 
-- [ ] **Status:** TODO
-- **Priority:** MEDIUM
-- **Category:** FEATURE · **Owner:** AGENT
+- [ ] **Priority:** MEDIUM · **Owner:** AGENT
 
 **Context:** `Machine` tem `macAddress`/`wolEnabled`, mas nenhuma implementação envia magic packet (UDP 9).
 
@@ -763,9 +728,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ### TSK-042 — Integração Tailscale (listar máquinas)
 
-- [ ] **Status:** TODO
-- **Priority:** MEDIUM
-- **Category:** FEATURE · **Owner:** AGENT
+- [ ] **Priority:** MEDIUM · **Owner:** AGENT
 
 **Context:** `Machine` possui `tailscaleNodeKey`, mas nenhuma integração consulta a API Tailscale.
 
@@ -779,11 +742,11 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ## CLEANUP
 
+> **Progresso:** 0/4 concluídas · 4 pendentes
+
 ### TSK-043 — Varredura System.out/err e imports não usados
 
-- [ ] **Status:** TODO
-- **Priority:** LOW
-- **Category:** CLEANUP · **Owner:** AGENT
+- [ ] **Priority:** LOW · **Owner:** AGENT
 
 **Context:** Restam `System.out/err` (CalendarController já em TSK-029, GoogleCalendarTools em TSK-028 — aqui a varredura geral) e imports não usados/duplicados no código.
 
@@ -795,9 +758,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ### TSK-044 — Typos Redis/Database: getAdpterConnector, getProvaiders, DatabaseProvaider
 
-- [ ] **Status:** TODO
-- **Priority:** LOW
-- **Category:** CLEANUP · **Owner:** AGENT
+- [ ] **Priority:** LOW · **Owner:** AGENT
 
 **Context:** `DatabaseClientProvider` declara `getAdpterConnector(...)`/`getProvaiders(...)` e o package `infrastructure/services/DatabaseProvaider/` mantém o typo `Provaider`.
 
@@ -813,9 +774,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ### TSK-045 — HttpCookieWriterManeger → HttpCookieWriterManager
 
-- [ ] **Status:** TODO
-- **Priority:** LOW
-- **Category:** CLEANUP · **Owner:** AGENT
+- [ ] **Priority:** LOW · **Owner:** AGENT
 
 **Context:** Classe `HttpCookieWriterManeger` (application/interfaces/Cookies) mantém o typo `Maneger`.
 
@@ -827,9 +786,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ### TSK-046 — User: parâmetro `passowrd` no construtor
 
-- [ ] **Status:** TODO
-- **Priority:** LOW
-- **Category:** CLEANUP · **Owner:** AGENT
+- [ ] **Priority:** LOW · **Owner:** AGENT
 
 **Context:** `User.java:45` — o construtor `User(long, String, String passowrd, ...)` usa o parâmetro com typo.
 
@@ -843,11 +800,11 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ## DOCS
 
+> **Progresso:** 0/1 concluídas · 1 pendente
+
 ### TSK-047 — ADRs e redis-abstraction deletados sem commit; docs de arquitetura desatualizadas
 
-- [ ] **Status:** TODO
-- **Priority:** LOW
-- **Category:** DOCS · **Owner:** BOTH
+- [ ] **Priority:** LOW · **Owner:** BOTH
 
 **Context:** `git status` mostra `docs/architecture/adr/ADR-001..005`, `README.md` e `redis-abstraction.*` como **deletados sem commit**; `docs/architecture/arquiteture.md` ainda descreve classes renomeadas/removidas (ex.: `CookieService` na infra, `JtwTokenResvoler`, `RegisterResponseDTO`).
 
@@ -883,7 +840,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ## Task Registry
 
-> Sumário por ID. **Derivado** das checkboxes em `# Tasks` — não editar manualmente. Estados: `[ ]` TODO · `[>]` IN_PROGRESS · `[x]` DONE · `[!]` BLOCKED · `[-]` CANCELLED.
+> Sumário por ID. **Derivado** das checkboxes em `# Tasks` — não editar manualmente (regra 5 do Agent Protocol). Estados: `[ ]` TODO · `[>]` IN_PROGRESS · `[x]` DONE · `[!]` BLOCKED · `[-]` CANCELLED.
 
 | ID | Estado | Prio | Categoria | Título curto |
 |----|--------|------|-----------|--------------|
@@ -891,7 +848,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 | TSK-002 | `[ ]` | HIGH | SECURITY | CORS ausente no SecurityConfig |
 | TSK-003 | `[ ]` | HIGH | SECURITY | Chaves TLS fora do JAR |
 | TSK-004 | `[ ]` | MEDIUM | SECURITY | OAuth2 → porta UserRepository |
-| TSK-005 | `[ ]` | MEDIUM | SECURITY | Handler 500 genérico + sem vazar mensagens |
+| TSK-005 | `[x]` | MEDIUM | SECURITY | Handler 500 genérico + sem vazar mensagens |
 | TSK-006 | `[ ]` | MEDIUM | SECURITY | CookieDomain.sameSite + mapper |
 | TSK-007 | `[ ]` | MEDIUM | SECURITY | Register: Bean Validation + regra de senha |
 | TSK-008 | `[ ]` | LOW | SECURITY | DEBUG security → dev |
@@ -912,7 +869,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 | TSK-023 | `[ ]` | MEDIUM | IA | Endpoints Nível 2 (modelsUrl) |
 | TSK-024 | `[ ]` | LOW | IA | Endpoints Nível 3 (SDK) |
 | TSK-025 | `[ ]` | MEDIUM | IA | Typos AIProvaider/Reagistry |
-| TSK-026 | `[ ]` | LOW | IA | CoffeAgentService constructor injection |
+| TSK-026 | `[x]` | LOW | IA | CoffeAgentService constructor injection |
 | TSK-027 | `[ ]` | MEDIUM | MCP | createEvent stub + field injection |
 | TSK-028 | `[ ]` | MEDIUM | MCP | Tools: injection + SLF4J + erros |
 | TSK-029 | `[ ]` | MEDIUM | MCP | CalendarController fora de mcp |
@@ -941,15 +898,15 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 > Regras para agentes que editam este arquivo — **obrigatório**.
 
-1. **Estado canônico = checkbox** em `# Tasks`. Nunca duplicar descrição/estado em Dashboard, Metrics, Active Work ou Registry (são derivados — atualizar apenas as checkboxes).
+1. **Estado canônico = checkbox** em `# Tasks`. Nunca duplicar estado em `# Progresso`, `# Dashboard` ou `# Task Registry` (são derivados — atualizar apenas as checkboxes).
 2. **IDs estáveis**: TSK-001..TSK-047. Próximo ID: **TSK-048**. Nunca reutilizar IDs cancelados.
 3. **Formatos de status**: `[ ]` TODO · `[>]` IN_PROGRESS · `[x]` DONE · `[!]` BLOCKED · `[-]` CANCELLED. Tasks BLOCKED devem declarar `Blocked By` (task, ADR ou decisão). Tasks CANCELLED/obsoletas sem ID ficam na seção `## Cancelled / Obsolete`.
-4. **Estrutura mínima por task**: `### TSK-XXX — Ação clara` → linha de status+`Priority` → metadados (`Category`, `Owner`, `Estimate`) → `**Context:**` + `**Objective:**`. Blocos `Expected`/`Validation`/`Notes`/`References` apenas quando houver conteúdo verificável.
-5. **Mover estado**: se uma task entra/sai de DONE/BLOCKED/IN_PROGRESS, o Dashboard e o Registry são atualizados **na mesma edição** (derivação imediata).
+4. **Estrutura mínima por task**: `### TSK-XXX — Ação clara` → linha de metadados `- [ ] **Priority:** X · **Owner:** Y` (a checkbox já é o status; a `Category` é definida pelo heading da seção) → `**Context:**` + `**Objective:**`. Blocos `Expected`/`Validation`/`Notes`/`References` apenas quando houver conteúdo verificável.
+5. **Mover estado**: se uma task entra/sai de DONE/BLOCKED/IN_PROGRESS, atualize na MESMA edição: (a) a checkbox em `# Tasks`; (b) `# Progresso` (stat cards + "Concluído: X de N" + tabela por categoria); (c) `# Dashboard` (AGORA/PRÓXIMO/BLOQUEADO/Concluídas Recentes); (d) `# Task Registry` (linha da task). Derivação imediata.
 6. **Sempre concluir com** `.\mvnw.cmd test` antes de marcar algo DONE relacionado a código.
 7. **Sem emojis** em tasks, seções ou CSS (marcadores ASCII apenas: `[ ]`/`[x]`).
 
 ---
 
-> **Documento mantido por:** Quitto · **Última atualização:** 2026-08-13
+> **Documento mantido por:** Quitto · **Última atualização:** 2026-08-15
 > **Propósito:** Documentação viva — atualize conforme o código evoluir.
