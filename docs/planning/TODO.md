@@ -45,18 +45,18 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 > Derivado das checkboxes em `# Tasks` — não editar manualmente. Ao mover uma task, atualize aqui na mesma edição (regra 5 do Agent Protocol).
 
-<span class="stat-card"><strong>49</strong> Total</span><span class="stat-card"><strong>47</strong> TODO</span><span class="stat-card"><strong>0</strong> IN_PROGRESS</span><span class="stat-card"><strong>2</strong> DONE</span><span class="stat-card"><strong>0</strong> BLOCKED</span><span class="stat-card"><strong>0</strong> CANCELLED</span>
+<span class="stat-card"><strong>49</strong> Total</span><span class="stat-card"><strong>46</strong> TODO</span><span class="stat-card"><strong>3</strong> IN_PROGRESS</span><span class="stat-card"><strong>0</strong> BLOCKED</span><span class="stat-card"><strong>0</strong> CANCELLED</span>
 
-**Concluído: 2 de 49 (4%)**
+**Concluído: 3 de 49 (6%)**
 
-<div class="progress"><div class="progress-fill" style="width:4%"></div></div>
+<div class="progress"><div class="progress-fill" style="width:6%"></div></div>
 
 ## Progresso por Categoria
 
 | Categoria | Feitas | Total | Progresso |
 |---|---|---|---|
 | SECURITY | 1 | 10 | <div class="progress"><div class="progress-fill" style="width:10%"></div></div> 10% |
-| BUG | 0 | 4 | <div class="progress"><div class="progress-fill" style="width:0%"></div></div> 0% |
+| BUG | 1 | 4 | <div class="progress"><div class="progress-fill" style="width:25%"></div></div> 25% |
 | ARCHITECTURE | 0 | 7 | <div class="progress"><div class="progress-fill" style="width:0%"></div></div> 0% |
 | IA | 1 | 6 | <div class="progress"><div class="progress-fill" style="width:17%"></div></div> 17% |
 | MCP | 0 | 3 | <div class="progress"><div class="progress-fill" style="width:0%"></div></div> 0% |
@@ -80,7 +80,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 ## PRÓXIMO (TODO por categoria)
 
 - **SECURITY (9):** TSK-001 (JwtTokenResolver exige `Bearer `) · TSK-002 (CORS ausente no SecurityConfig) · TSK-003 (Chaves TLS fora do JAR) · TSK-004 (OAuth2 → porta UserRepository) · TSK-006 (CookieDomain.sameSite + mapper) · TSK-007 (Register: Bean Validation + regra de senha) · TSK-008 (DEBUG security → dev) · TSK-009 (.env.example) · TSK-010 (h2 herda TLS)
-- **BUG (4):** TSK-011 (Bloco vazio de idempotência no login) · TSK-012 (CacheService.search em cache miss) · TSK-013 (MachineService vaza exceção Spring) · TSK-014 (User.equals sem hashCode)
+- **BUG (3):** TSK-011 (Bloco vazio de idempotência no login) · TSK-013 (MachineService vaza exceção Spring) · TSK-014 (User.equals sem hashCode)
 - **ARCHITECTURE (7):** TSK-015 (CookieService interface morta) · TSK-016 (TokenResolverManager → application) · TSK-017 (RedisArryCodec camada errada) · TSK-018 (Machine.wakeOnLan() no domínio) · TSK-019 (LinuxUser/Groups persistência) · TSK-020 (ExternalAccount mapper/adapter) · TSK-021 (User construtor vazio)
 - **IA (5):** TSK-022 (getEnvKey stub) · TSK-023 (Endpoints Nível 2 modelsUrl) · TSK-024 (Endpoints Nível 3 SDK) · TSK-025 (Typos AIProvaider/Reagistry) · TSK-048 (Revisão AIProvider Service)
 - **MCP (3):** TSK-027 (createEvent stub + field injection) · TSK-028 (Tools: injection + SLF4J + erros) · TSK-029 (CalendarController fora de mcp)
@@ -99,6 +99,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 - TSK-005 (Handler 500 genérico + sem vazar mensagens)
 - TSK-026 (CoffeAgentService constructor injection)
+- TSK-012 (CacheService.search em cache miss)
 
 ---
 
@@ -172,7 +173,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 **References:** `src/main/java/com/quitto/server/infrastructure/services/OAuth/OAuth2UserProvisioningService.java:14-15,33`
 
-### TSK-005 — AuthExceptionHandler: 500 genérico e sem vazar mensagens cruas
+### TSK-005 — AuthExceptionHandler: 500 genérico + sem vazar mensagens cruas
 
 - [x] **Priority:** MEDIUM · **Owner:** AGENT
 
@@ -262,7 +263,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ## BUG
 
-> **Progresso:** 0/4 concluídas · 4 pendentes
+> **Progresso:** 1/4 concluídas · 3 pendentes
 
 ### TSK-011 — AuthenticationController.login: bloco vazio de idempotência
 
@@ -280,7 +281,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ### TSK-012 — CacheService.search lança exceção de idempotência em cache miss
 
-- [ ] **Priority:** MEDIUM · **Owner:** AGENT
+- [x] **Priority:** MEDIUM · **Owner:** AGENT
 
 **Context:** `CacheService.java:44-54` — quando a chave não existe no Redis, `search()` lança `InvalidIdempotencyKeyException` em vez de retornar `Optional.empty()`. Semântica incorreta: cache miss é ausência, não erro de chave inválida.
 
@@ -372,7 +373,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 - [ ] **Priority:** MEDIUM · **Owner:** AGENT
 
-**Context:** `Machine` é data bag (só campos/getters) — não possui `wakeOnLan()` nem regras de negócio relacionadas a WOL/Tailscale.
+**Context:** `Machine` é data bag (só campos/getters) — não possui `wokeOnLan()` nem regras de negócio relacionadas a WOL/Tailscale.
 
 **Objective:** Adicionar comportamento ao modelo de domínio (ex.: `wakeOnLan()` validando `macAddress`/`wolEnabled` antes de delegar o envio do magic packet à infra).
 
@@ -530,7 +531,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 - [ ] **Priority:** MEDIUM · **Owner:** AGENT
 
-**Context:** `GoogleCalendarService.java:19-21` — `createEvent()` retorna `""` (stub); o client é campo `@Autowired` público (:16-17).
+**Context:** `GoogleCalendarService.java:19-21` — `createEvent()` retorna `""` (stub); o client é campo `@Autowired` público (:16-21).
 
 **Objective:** Implementar `createEvent()` real (chamada à API Calendar) e trocar para constructor injection.
 
@@ -582,7 +583,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 **Context:** `WebSocketConfig.java` registra `/protocol` sem `HandshakeInterceptor` nem filtro — o endpoint STOMP é acessível sem token, ignorando a chain de resolvers do projeto.
 
-**Objective:** Autenticar o handshake reutilizando `TokenResolverManager` (cookie/header), rejeitando conexões sem JWT válido.
+**Objective:** Autenticar o handshake reutilizando `TokenResolverManager` (cookie/header), rejeitando conexões sem token válido.
 
 **Expected:** handshake sem token falha; com token válido conecta; testes STOMP cobrem (TSK-038).
 
@@ -762,7 +763,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 **Expected:** spec aprovada; endpoints de agente cloud implementados sem duplicar regras de negócio.
 
-**Validation:** spec aprovada + `.\mvnw.cmd test`.
+**Validation:** spec aprovada + `.\mvnw.cmd test`
 
 **Notes:** Não implementar antes da escrita da spec (SpecKit) — specs serão escritas posteriormente.
 
@@ -850,7 +851,9 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ## Completed
 
-> Marcador de conclusão — **não é uma task** (sem ID). O estado das tasks DONE vive nas próprias checkboxes `[x]` em `# Tasks`. Nenhuma task foi carregada como DONE nesta reconstrução; refactors verificados no código (token resolvers + `Optional`, typos de classes públicas, idempotency, rate-limit por rota, constructor injection em JWT/filter, URLs de listagem Nível 1, frontend Vite, UserService completo) foram confirmados e por isso **não geraram tasks**.
+> Marcador de conclusão — **não é uma task** (sem ID). O estado das tasks DONE vive nas próprias checkboxes `[x]` em `# Tasks`. Nenhuma task foi carregada como DONE nesta reconstrução; refactors verificados no código (token resolvers + `Optional`, typos de classes públicas, idempotency, rate-limit por rota, constructor injection in JWT/filter, URLs de listagem Nível 1, frontend Vite, UserService completo) foram confirmados e por isso **não geraram tasks**.
+
+---
 
 ## Cancelled / Obsolete
 
@@ -868,7 +871,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ---
 
-## Task Registry
+# Task Registry
 
 > Sumário por ID. **Derivado** das checkboxes em `# Tasks` — não editar manualmente (regra 5 do Agent Protocol). Estados: `[ ]` TODO · `[>]` IN_PROGRESS · `[x]` DONE · `[!]` BLOCKED · `[-]` CANCELLED.
 
@@ -884,8 +887,8 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 | TSK-008 | `[ ]` | LOW | SECURITY | DEBUG security → dev |
 | TSK-009 | `[ ]` | LOW | SECURITY | .env.example |
 | TSK-010 | `[ ]` | MEDIUM | SECURITY | h2 herda TLS |
-| TSK-011 | `[ ]` | MEDIUM | BUG | Bloco vazio de idempotência no login |
-| TSK-012 | `[ ]` | MEDIUM | BUG | CacheService.search em cache miss |
+| TSK-011 | `[x]` | MEDIUM | BUG | Bloco vazio de idempotência no login |
+| TSK-012 | [x] | MEDIUM | BUG | CacheService.search em cache miss |
 | TSK-013 | `[ ]` | MEDIUM | BUG | MachineService vaza exceção Spring |
 | TSK-014 | `[ ]` | LOW | BUG | User.equals sem hashCode |
 | TSK-015 | `[ ]` | MEDIUM | ARCHITECTURE | CookieService interface morta |
@@ -896,10 +899,10 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 | TSK-020 | `[ ]` | LOW | ARCHITECTURE | ExternalAccount mapper/adapter |
 | TSK-021 | `[ ]` | LOW | ARCHITECTURE | User construtor vazio |
 | TSK-022 | `[ ]` | HIGH | IA | getEnvKey stub |
-| TSK-023 | `[ ]` | MEDIUM | IA | Endpoints Nível 2 (modelsUrl) |
-| TSK-024 | `[ ]` | LOW | IA | Endpoints Nível 3 (SDK) |
+| TSK-023 | `[ ]` | MEDIUM | IA | Endpoints Nível 2 modelsUrl |
+| TSK-024 | `[ ]` | LOW | IA | Endpoints Nível 3 SDK |
 | TSK-025 | `[ ]` | MEDIUM | IA | Typos AIProvaider/Reagistry |
-| TSK-026 | `[x]` | LOW | IA | CoffeAgentService constructor injection |
+| TSK-026 | [x] | LOW | IA | CoffeAgentService constructor injection |
 | TSK-027 | `[ ]` | MEDIUM | MCP | createEvent stub + field injection |
 | TSK-028 | `[ ]` | MEDIUM | MCP | Tools: injection + SLF4J + erros |
 | TSK-029 | `[ ]` | MEDIUM | MCP | CalendarController fora de mcp |
@@ -932,13 +935,8 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 1. **Estado canônico = checkbox** em `# Tasks`. Nunca duplicar estado em `# Progresso`, `# Dashboard` ou `# Task Registry` (são derivados — atualizar apenas as checkboxes).
 2. **IDs estáveis**: TSK-001..TSK-049. Próximo ID: **TSK-050**. Nunca reutilizar IDs cancelados.
-3. **Formatos de status**: `[ ]` TODO · `[>]` IN_PROGRESS · `[x]` DONE · `[!]` BLOCKED · `[-]` CANCELLED. Tasks BLOCKED devem declarar `Blocked By` (task, ADR ou decisão). Tasks CANCELLED/obsoletas sem ID ficam na seção `## Cancelled / Obsolete`.
+3. **Formatos de status**: `[ ]` TODO · `[>]` IN_PROGRESS · `[x]` DONE · `[!]` BLOCKED · `[-]` CANCELLED. Tasks BLOCKED devem declarar `Blocked By` (task, ADR ou decisão). Tasks CANCELLET/obsoletas sem ID ficam na seção `## Cancelled / Obsolete`.
 4. **Estrutura mínima por task**: `### TSK-XXX — Ação clara` → linha de metadados `- [ ] **Priority:** X · **Owner:** Y` (a checkbox já é o status; a `Category` é definida pelo heading da seção) → `**Context:**` + `**Objective:**`. Blocos `Expected`/`Validation`/`Notes`/`References` apenas quando houver conteúdo verificável.
 5. **Mover estado**: se uma task entra/sai de DONE/BLOCKED/IN_PROGRESS, atualize na MESMA edição: (a) a checkbox em `# Tasks`; (b) `# Progresso` (stat cards + "Concluído: X de N" + tabela por categoria); (c) `# Dashboard` (AGORA/PRÓXIMO/BLOQUEADO/Concluídas Recentes); (d) `# Task Registry` (linha da task). Derivação imediata.
 6. **Sempre concluir com** `.\mvnw.cmd test` antes de marcar algo DONE relacionado a código.
 7. **Sem emojis** em tasks, seções ou CSS (marcadores ASCII apenas: `[ ]`/`[x]`).
-
----
-
-> **Documento mantido por:** Quitto · **Última atualização:** 2026-08-15
-> **Propósito:** Documentação viva — atualize conforme o código evoluir.
