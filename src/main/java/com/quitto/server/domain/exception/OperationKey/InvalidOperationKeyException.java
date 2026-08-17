@@ -1,4 +1,4 @@
-package com.quitto.server.domain.exception;
+package com.quitto.server.domain.exception.OperationKey;
 
 public class InvalidOperationKeyException extends RuntimeException {
 

@@ -1,4 +1,4 @@
-package com.quitto.server.domain.exception;
+package com.quitto.server.domain.exception.OperationKey;
 
 /**
  * Domain exception for invalid idempotency keys.

@@ -1,4 +1,4 @@
-package com.quitto.server.domain.exception;
+package com.quitto.server.domain.exception.OperationKey;
 
 /**
  * Exceção de domínio para chaves de operação com Key (valor) inválida.
