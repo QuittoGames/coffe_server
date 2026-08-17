@@ -1,9 +1,13 @@
 package com.quitto.server.application.dto.AIProvider;
 
+import java.util.Set;
+
 import com.quitto.server.application.dto.BaseDTO;
-import com.quitto.server.domain.enums.ServiceProvider;
+import com.quitto.server.domain.enums.IA.AIModelCapability;
+import com.quitto.server.domain.enums.IA.AIProviderType;
 import com.quitto.server.domain.interfaces.OperationKey.OperationKey;
 import com.quitto.server.domain.models.IA.AIModel;
+import com.quitto.server.domain.models.IA.AIModelPricing;
 
 /**
  * DTO de resposta para um modelo de IA (catálogo de um provedor).
@@ -15,10 +19,9 @@ public record AIModelDTO(
         OperationKey idempotencyKey,
         String id,
         String name,
-        ServiceProvider provider,
-        boolean stream,
-        boolean tools,
-        boolean reasoning
+        AIProviderType provider,
+        Set<AIModelCapability> capabilities,
+        AIModelPricing pricing
 ) implements BaseDTO {
 
     public static AIModelDTO from(AIModel model) {
@@ -31,9 +34,8 @@ public record AIModelDTO(
                 model.getId(),
                 model.getName(),
                 model.getProvider(),
-                model.supportsStreaming(),
-                model.supportsTools(),
-                model.supportsReasoning()
+                model.getCapabilities(),
+                model.getPricing()
         );
     }
 }

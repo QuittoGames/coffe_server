@@ -1,13 +1,13 @@
 package com.quitto.server.domain.interfaces.IA;
 
-import com.quitto.server.domain.enums.ServiceProvider;
+import com.quitto.server.domain.enums.IA.AIProviderType;
 import com.quitto.server.domain.models.IA.AIModel;
 
 import java.util.List;
 
 /**
- * Porta de domínio para um <strong>provedor de IA</strong> (OpenAI, Anthropic,
- * Ollama, etc.).
+ * Porta de domínio para um <strong>provedor de IA</strong> (OpenAI, OpenRouter,
+ * Gemini, etc.).
  *
  * <p>Define o contrato de identidade, ciclo de vida, chave de acesso e
  * catálogo de modelos de um provedor. A implementação abstrata de referência é
@@ -16,16 +16,17 @@ import java.util.List;
  *
  * <p>A relação <strong>1:N</strong> (um provedor → vários {@link AIModel}) é o
  * coração do registro de IA: {@link #getModels()} expõe o catálogo que o
- * {@code AIRegistry} agrega por chave ({@link ServiceProvider}).</p>
+ * {@link AIProviderRegistry} agrega por chave ({@link AIProviderType}).</p>
  *
- * @see com.quitto.server.domain.enums.ServiceProvider
+ * @see com.quitto.server.domain.enums.IA.AIProviderType
  * @see com.quitto.server.domain.models.IA.AIModel
+ * @see com.quitto.server.domain.interfaces.IA.AIProviderRegistry
  */
 public interface AIProvider {
 
     void setKey(String secret);
 
-    ServiceProvider getProvider();
+    AIProviderType getProvider();
 
     String getName();
 
@@ -42,18 +43,23 @@ public interface AIProvider {
     void turnOff();
 
     /**
-     * Retorna a chave de API atualmente configurada para o provedor.
-     * @return a chave de API, ou {@code null} se não estiver configurada
+     * Indica se o provedor está pronto para uso: configurado com a chave
+     * necessária (quando {@link #requiresKey()} é {@code true}) e habilitado.
+     *
+     * @return {@code true} se o provedor pode listar/executar modelos
      */
-    String getApiKey();
+    boolean isConfigured();
 
     /**
      * Retorna o ID usado para busca de variáveis de ambiente (ex: "OPENAI").
      * Este ID é usado pelo {@code CoffeAgentService} para buscar a chave
      * de API apropriada nas variáveis de ambiente.
+     *
      * @return o ID de busca de ambiente, ou {@code null} se não configurado
      */
-    String getEnvId();
+    default String getEnvId() {
+        return null;
+    }
 
     /**
      * Indica se o provedor exige uma chave de API para listar/executar modelos.

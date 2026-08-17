@@ -1,24 +1,31 @@
 package com.quitto.server.infrastructure.IA;
 
-import com.quitto.server.domain.enums.ServiceProvider;
-
 import org.springframework.stereotype.Service;
 
+import com.quitto.server.domain.enums.IA.AIProviderType;
+
+/**
+ * Provedor concreto da OpenAI.
+ *
+ * <p>Adapter de infraestrutura que herda do {@link BaseProvider} e configura
+ * apenas identidade ({@link AIProviderType#OPENAI}) e URL base da API. A
+ * listagem real de modelos ({@code fetchModelsFromApi()}) é trabalho futuro.</p>
+ */
 @Service
 public class OpenAIProvider extends BaseProvider {
 
-    {
+    public OpenAIProvider() {
         setEnvId("OPENAI");
     }
 
     @Override
-    public ServiceProvider getProvider() {
-        return ServiceProvider.OPENAI;
+    public AIProviderType getProvider() {
+        return AIProviderType.OPENAI;
     }
 
     @Override
     public String getName() {
-        return ServiceProvider.OPENAI.name();
+        return "OpenAI";
     }
 
     @Override
