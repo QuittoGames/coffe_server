@@ -35,7 +35,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 # coffe_server — TODO
 
-> **SOURCE OF TRUTH** — Tasks identificadas por **IDs estáveis** (TSK-001..TSK-047; próximo livre: **TSK-048**). O **estado canônico é a checkbox** de cada task: `[ ]` TODO · `[>]` IN_PROGRESS · `[x]` DONE · `[!]` BLOCKED · `[-]` CANCELLED. **`# Progresso`, `# Dashboard` e `# Task Registry` são derivados** das checkboxes e NÃO contêm estado independente — ao mover uma task, atualize-os na mesma edição. Backlog reconstruído do zero (2026-08-13) a partir de verificação direta do código — nenhuma task foi herdada do backlog anterior sem evidência.
+> **SOURCE OF TRUTH** — Tasks identificadas por **IDs estáveis** (TSK-001..TSK-049; próximo livre: **TSK-050**). O **estado canônico é a checkbox** de cada task: `[ ]` TODO · `[>]` IN_PROGRESS · `[x]` DONE · `[!]` BLOCKED · `[-]` CANCELLED. **`# Progresso`, `# Dashboard` e `# Task Registry` são derivados** das checkboxes e NÃO contêm estado independente — ao mover uma task, atualize-os na mesma edição. Backlog reconstruído do zero (2026-08-13) a partir de verificação direta do código — nenhuma task foi herdada do backlog anterior sem evidência.
 
 <div class="nav">**Navegação:** [Progresso](#progresso) · [Dashboard](#dashboard) · [Tasks](#tasks) · [Task Registry](#task-registry) · [Agent Protocol](#agent-protocol)</div>
 
@@ -45,9 +45,9 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 > Derivado das checkboxes em `# Tasks` — não editar manualmente. Ao mover uma task, atualize aqui na mesma edição (regra 5 do Agent Protocol).
 
-<span class="stat-card"><strong>47</strong> Total</span><span class="stat-card"><strong>45</strong> TODO</span><span class="stat-card"><strong>0</strong> IN_PROGRESS</span><span class="stat-card"><strong>2</strong> DONE</span><span class="stat-card"><strong>0</strong> BLOCKED</span><span class="stat-card"><strong>0</strong> CANCELLED</span>
+<span class="stat-card"><strong>49</strong> Total</span><span class="stat-card"><strong>47</strong> TODO</span><span class="stat-card"><strong>0</strong> IN_PROGRESS</span><span class="stat-card"><strong>2</strong> DONE</span><span class="stat-card"><strong>0</strong> BLOCKED</span><span class="stat-card"><strong>0</strong> CANCELLED</span>
 
-**Concluído: 2 de 47 (4%)**
+**Concluído: 2 de 49 (4%)**
 
 <div class="progress"><div class="progress-fill" style="width:4%"></div></div>
 
@@ -58,12 +58,12 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 | SECURITY | 1 | 10 | <div class="progress"><div class="progress-fill" style="width:10%"></div></div> 10% |
 | BUG | 0 | 4 | <div class="progress"><div class="progress-fill" style="width:0%"></div></div> 0% |
 | ARCHITECTURE | 0 | 7 | <div class="progress"><div class="progress-fill" style="width:0%"></div></div> 0% |
-| IA | 1 | 5 | <div class="progress"><div class="progress-fill" style="width:20%"></div></div> 20% |
+| IA | 1 | 6 | <div class="progress"><div class="progress-fill" style="width:17%"></div></div> 17% |
 | MCP | 0 | 3 | <div class="progress"><div class="progress-fill" style="width:0%"></div></div> 0% |
 | WEBSOCKET | 0 | 3 | <div class="progress"><div class="progress-fill" style="width:0%"></div></div> 0% |
 | INFRA | 0 | 2 | <div class="progress"><div class="progress-fill" style="width:0%"></div></div> 0% |
 | TESTS | 0 | 5 | <div class="progress"><div class="progress-fill" style="width:0%"></div></div> 0% |
-| FEATURE | 0 | 3 | <div class="progress"><div class="progress-fill" style="width:0%"></div></div> 0% |
+| FEATURE | 0 | 4 | <div class="progress"><div class="progress-fill" style="width:0%"></div></div> 0% |
 | CLEANUP | 0 | 4 | <div class="progress"><div class="progress-fill" style="width:0%"></div></div> 0% |
 | DOCS | 0 | 1 | <div class="progress"><div class="progress-fill" style="width:0%"></div></div> 0% |
 
@@ -82,12 +82,12 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 - **SECURITY (9):** TSK-001 (JwtTokenResolver exige `Bearer `) · TSK-002 (CORS ausente no SecurityConfig) · TSK-003 (Chaves TLS fora do JAR) · TSK-004 (OAuth2 → porta UserRepository) · TSK-006 (CookieDomain.sameSite + mapper) · TSK-007 (Register: Bean Validation + regra de senha) · TSK-008 (DEBUG security → dev) · TSK-009 (.env.example) · TSK-010 (h2 herda TLS)
 - **BUG (4):** TSK-011 (Bloco vazio de idempotência no login) · TSK-012 (CacheService.search em cache miss) · TSK-013 (MachineService vaza exceção Spring) · TSK-014 (User.equals sem hashCode)
 - **ARCHITECTURE (7):** TSK-015 (CookieService interface morta) · TSK-016 (TokenResolverManager → application) · TSK-017 (RedisArryCodec camada errada) · TSK-018 (Machine.wakeOnLan() no domínio) · TSK-019 (LinuxUser/Groups persistência) · TSK-020 (ExternalAccount mapper/adapter) · TSK-021 (User construtor vazio)
-- **IA (4):** TSK-022 (getEnvKey stub) · TSK-023 (Endpoints Nível 2 modelsUrl) · TSK-024 (Endpoints Nível 3 SDK) · TSK-025 (Typos AIProvaider/Reagistry)
+- **IA (5):** TSK-022 (getEnvKey stub) · TSK-023 (Endpoints Nível 2 modelsUrl) · TSK-024 (Endpoints Nível 3 SDK) · TSK-025 (Typos AIProvaider/Reagistry) · TSK-048 (Revisão AIProvider Service)
 - **MCP (3):** TSK-027 (createEvent stub + field injection) · TSK-028 (Tools: injection + SLF4J + erros) · TSK-029 (CalendarController fora de mcp)
 - **WEBSOCKET (3):** TSK-030 (Handshake sem auth) · TSK-031 (Destinos sem role + origins) · TSK-032 (Resposta canônica do /agent)
 - **INFRA (2):** TSK-033 (Dockerfile + compose prod) · TSK-034 (CI GitHub Actions)
 - **TESTS (5):** TSK-035 (Rate limit 429) · TSK-036 (Segurança 401/403) · TSK-037 (Providers IA mockados) · TSK-038 (WebSocket STOMP) · TSK-039 (E2E happy path)
-- **FEATURE (3):** TSK-040 (CRUD de máquinas REST) · TSK-041 (Wake-on-LAN) · TSK-042 (Tailscale)
+- **FEATURE (4):** TSK-040 (CRUD de máquinas REST) · TSK-041 (Wake-on-LAN) · TSK-042 (Tailscale) · TSK-049 (Endpoints agente cloud/Jarvis)
 - **CLEANUP (4):** TSK-043 (System.out/err + imports) · TSK-044 (Typos Redis/Database) · TSK-045 (HttpCookieWriterManeger) · TSK-046 (User param passoword)
 - **DOCS (1):** TSK-047 (ADRs deletados + docs desatualizadas)
 
@@ -266,7 +266,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ### TSK-011 — AuthenticationController.login: bloco vazio de idempotência
 
-- [ ] **Priority:** MEDIUM · **Owner:** AGENT
+- [x] **Priority:** MEDIUM · **Owner:** AGENT
 
 **Context:** `AuthenticationController.java:47-49` contém `if(operationKeyManager.validated(key)){}` — bloco vazio (placeholder): a idempotência é verificada mas nada é feito com o resultado.
 
@@ -430,7 +430,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ## IA
 
-> **Progresso:** 1/5 concluídas · 4 pendentes
+> **Progresso:** 1/6 concluídas · 5 pendentes
 
 ### TSK-022 — CoffeAgentService.getEnvKey() retorna vazio (stub)
 
@@ -505,6 +505,20 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 **Validation:** `.\mvnw.cmd test`
 
 **References:** `src/main/java/com/quitto/server/infrastructure/services/CoffeAgent/CoffeAgentService.java:19-20`
+
+### TSK-048 — Revisar alterações errôneas dos agentes no AIProvider Service e evoluir a arquitetura
+
+- [ ] **Priority:** HIGH · **Owner:** HUMAN
+
+**Context:** Alterações automáticas (agentes/IDE) no ecossistema AIProvider Service podem ter introduzido typos, decisões temporárias e regressões. Estado atual conhecido: `CoffeAgentService.getEnvKey()` retorna hash de placeholder (`"sk-placeholder-temp"`), leitura real de secrets deferida (ADR D2), e a spec `docs/specs/ai-provider-service.md` registra pendências PG-002..PG-006 e findings de segurança F1..F8.
+
+**Objective:** Revisão humana do estado real do AIProvider Service (BaseProvider, providers concretos, AIProviderRegistry, CoffeAgentService, endpoints `/coffee/api/v1/ai/provider/*`) contra a spec; corrigir alterações errôneas e desenvolver a arquitetura (catálogo de modelos, resolução de secrets, segurança F1..F8).
+
+**Expected:** AIProvider Service revisado e alinhado à spec; alterações errôneas corrigidas; arquitetura evoluída.
+
+**Validation:** `.\mvnw.cmd test` verde + revisão da spec.
+
+**References:** `docs/specs/ai-provider-service.md`, `src/main/java/com/quitto/server/infrastructure/IA/`, `src/main/java/com/quitto/server/infrastructure/services/IA/`, `src/main/java/com/quitto/server/infrastructure/services/CoffeAgent/`
 
 ---
 
@@ -700,7 +714,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 ## FEATURE
 
-> **Progresso:** 0/3 concluídas · 3 pendentes
+> **Progresso:** 0/4 concluídas · 4 pendentes
 
 ### TSK-040 — CRUD de máquinas REST
 
@@ -737,6 +751,22 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 **Expected:** status das máquinas consultável; falha de integração tratada sem derrubar o fluxo.
 
 **Validation:** `.\mvnw.cmd test` (mocks)
+
+### TSK-049 — Endpoints de agente cloud (Jarvis-like): spec SpecKit + implementação
+
+- [ ] **Priority:** MEDIUM · **Owner:** BOTH
+
+**Context:** Visão do ecossistema (ver `docs/planning/plain.md`): expor o Coffee Server como backend para agentes de IA em cloud (estilo Jarvis) — endpoints de inferência/capacidades consumíveis por agentes externos via REST/MCP. Spec ainda não escrita.
+
+**Objective:** Escrever a spec com SpecKit (`docs/specs/`) definindo os endpoints de agente cloud (chat/request, tools do ecossistema, autenticação para agentes) e implementar seguindo Clean Architecture (MCP como adapter, sem regras de negócio na camada de interface).
+
+**Expected:** spec aprovada; endpoints de agente cloud implementados sem duplicar regras de negócio.
+
+**Validation:** spec aprovada + `.\mvnw.cmd test`.
+
+**Notes:** Não implementar antes da escrita da spec (SpecKit) — specs serão escritas posteriormente.
+
+**References:** `docs/planning/plain.md` (visão Jarvis), `docs/specs/`
 
 ---
 
@@ -891,6 +921,8 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 | TSK-045 | `[ ]` | LOW | CLEANUP | HttpCookieWriterManeger |
 | TSK-046 | `[ ]` | LOW | CLEANUP | User param passowrd |
 | TSK-047 | `[ ]` | LOW | DOCS | ADRs deletados + docs desatualizadas |
+| TSK-048 | `[ ]` | HIGH | IA | Revisão AIProvider Service |
+| TSK-049 | `[ ]` | MEDIUM | FEATURE | Endpoints agente cloud/Jarvis |
 
 ---
 
@@ -899,7 +931,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 > Regras para agentes que editam este arquivo — **obrigatório**.
 
 1. **Estado canônico = checkbox** em `# Tasks`. Nunca duplicar estado em `# Progresso`, `# Dashboard` ou `# Task Registry` (são derivados — atualizar apenas as checkboxes).
-2. **IDs estáveis**: TSK-001..TSK-047. Próximo ID: **TSK-048**. Nunca reutilizar IDs cancelados.
+2. **IDs estáveis**: TSK-001..TSK-049. Próximo ID: **TSK-050**. Nunca reutilizar IDs cancelados.
 3. **Formatos de status**: `[ ]` TODO · `[>]` IN_PROGRESS · `[x]` DONE · `[!]` BLOCKED · `[-]` CANCELLED. Tasks BLOCKED devem declarar `Blocked By` (task, ADR ou decisão). Tasks CANCELLED/obsoletas sem ID ficam na seção `## Cancelled / Obsolete`.
 4. **Estrutura mínima por task**: `### TSK-XXX — Ação clara` → linha de metadados `- [ ] **Priority:** X · **Owner:** Y` (a checkbox já é o status; a `Category` é definida pelo heading da seção) → `**Context:**` + `**Objective:**`. Blocos `Expected`/`Validation`/`Notes`/`References` apenas quando houver conteúdo verificável.
 5. **Mover estado**: se uma task entra/sai de DONE/BLOCKED/IN_PROGRESS, atualize na MESMA edição: (a) a checkbox em `# Tasks`; (b) `# Progresso` (stat cards + "Concluído: X de N" + tabela por categoria); (c) `# Dashboard` (AGORA/PRÓXIMO/BLOQUEADO/Concluídas Recentes); (d) `# Task Registry` (linha da task). Derivação imediata.
