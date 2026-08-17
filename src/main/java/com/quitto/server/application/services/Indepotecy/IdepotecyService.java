@@ -4,7 +4,7 @@ import java.util.Objects;
 
 import org.springframework.stereotype.Service;
 
-import com.quitto.server.domain.exception.InvalidOperationKeyException;
+import com.quitto.server.domain.exception.OperationKey.InvalidOperationKeyException;
 import com.quitto.server.domain.interfaces.OperationKey.OperationKey;
 import com.quitto.server.domain.interfaces.OperationKey.OperationKeyManager;
 

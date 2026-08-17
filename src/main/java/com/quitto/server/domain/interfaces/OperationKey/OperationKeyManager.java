@@ -1,6 +1,6 @@
 package com.quitto.server.domain.interfaces.OperationKey;
 
-import com.quitto.server.domain.exception.InvalidIdempotencyKeyException;
+import com.quitto.server.domain.exception.OperationKey.InvalidIdempotencyKeyException;
 
 public interface OperationKeyManager {
     public void register(OperationKey key);

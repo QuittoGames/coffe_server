@@ -9,9 +9,9 @@ import java.util.UUID;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
-import com.quitto.server.domain.exception.InvalidIdempotencyKeyException;
-import com.quitto.server.domain.exception.OperationKeyIdNotFoundException;
-import com.quitto.server.domain.exception.OperationKeyNotFoundException;
+import com.quitto.server.domain.exception.OperationKey.InvalidIdempotencyKeyException;
+import com.quitto.server.domain.exception.OperationKey.OperationKeyIdNotFoundException;
+import com.quitto.server.domain.exception.OperationKey.OperationKeyNotFoundException;
 import com.quitto.server.domain.interfaces.OperationKey.OperationKey;
 import com.quitto.server.domain.interfaces.OperationKey.OperationKeyFactory;
 import com.quitto.server.domain.interfaces.OperationKey.OperationKeyManager;
@@ -52,17 +52,15 @@ public class IdempotencyManager implements OperationKeyManager{
     public boolean validated(OperationKey key) throws InvalidIdempotencyKeyException{
         Objects.requireNonNull(key);
 
-        String idOfKey = String.valueOf(key.getId());
-        if (idOfKey == null || idOfKey.isBlank()) {
+        if (key.getId() == null) {
             throw new OperationKeyIdNotFoundException("Operation key id is null or blank");
         }
 
-        String valueOfKey = String.valueOf(key.getValue());
-        if (valueOfKey == null || valueOfKey.isBlank()) {
+        if (key.getValue() == null) {
             throw new OperationKeyNotFoundException("Operation key value is null or blank");
         }
 
-        Optional<String> redisKey = cacheService.search(idOfKey);
+        Optional<String> redisKey = cacheService.search(key.getId().toString());
 
         return redisKey.isPresent();
     }
