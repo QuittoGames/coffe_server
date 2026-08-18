@@ -3,9 +3,9 @@ package com.quitto.server.domain.models.User;
 import java.util.List;
 
 import com.quitto.server.domain.enums.Role;
+import com.quitto.server.domain.exception.Auth.InvalidPasswordException;
 import com.quitto.server.domain.models.LinuxAccount.LinuxUser;
 import com.quitto.server.domain.models.Machine.Machine;
-import com.quitto.server.domain.exception.InvalidPasswordException;
 
 /**
  * Agregado raiz do sistema — representa um usuário da plataforma.
