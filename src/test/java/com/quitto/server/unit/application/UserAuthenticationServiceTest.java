@@ -10,7 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.quitto.server.application.services.Auth.UserAuthenticationService;
-import com.quitto.server.domain.exception.AuthenticationException;
+import com.quitto.server.domain.exception.Auth.AuthenticationException;
 import com.quitto.server.domain.interfaces.Auth.AuthenticationService;
 import com.quitto.server.domain.interfaces.Token.TokenService;
 import com.quitto.server.domain.models.User.User;

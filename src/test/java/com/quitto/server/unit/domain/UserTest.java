@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import com.quitto.server.domain.enums.Role;
 import com.quitto.server.domain.models.User.User;
+import com.quitto.server.domain.exception.Auth.InvalidPasswordException;
 
 class UserTest {
 

@@ -6,7 +6,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import com.quitto.server.domain.Repository.users.UserRepository;
-import com.quitto.server.domain.exception.AuthenticationException;
+import com.quitto.server.domain.exception.Auth.AuthenticationException;
 import com.quitto.server.domain.interfaces.Auth.AuthenticationService;
 import com.quitto.server.domain.interfaces.Auth.PasswordService;
 import com.quitto.server.domain.models.User.User;

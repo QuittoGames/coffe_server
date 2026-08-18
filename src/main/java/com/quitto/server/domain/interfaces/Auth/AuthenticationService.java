@@ -1,6 +1,6 @@
 package com.quitto.server.domain.interfaces.Auth;
 
-import com.quitto.server.domain.exception.AuthenticationException;
+import com.quitto.server.domain.exception.Auth.AuthenticationException;
 import com.quitto.server.domain.models.User.User;
 
 /**

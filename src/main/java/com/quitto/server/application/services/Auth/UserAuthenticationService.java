@@ -2,8 +2,7 @@ package com.quitto.server.application.services.Auth;
 
 import org.springframework.stereotype.Service;
 
-import com.quitto.server.domain.exception.AuthenticationException;
-
+import com.quitto.server.domain.exception.Auth.AuthenticationException;
 import com.quitto.server.domain.interfaces.Auth.AuthenticationService;
 import com.quitto.server.domain.interfaces.Token.TokenService;
 import com.quitto.server.domain.models.User.User;

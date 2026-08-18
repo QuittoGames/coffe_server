@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.quitto.server.domain.Repository.users.UserRepository;
 import com.quitto.server.domain.enums.Role;
-import com.quitto.server.domain.exception.UserNotFoundException;
+import com.quitto.server.domain.exception.Resource.UserNotFoundException;
 import com.quitto.server.domain.models.User.User;
 
 @Service

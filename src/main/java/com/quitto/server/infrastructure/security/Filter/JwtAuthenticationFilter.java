@@ -1,6 +1,6 @@
 package com.quitto.server.infrastructure.security.Filter;
 
-import com.quitto.server.domain.exception.InvalidTokenException;
+import com.quitto.server.domain.exception.Auth.InvalidTokenException;
 
 import java.io.IOException;
 import java.util.List;

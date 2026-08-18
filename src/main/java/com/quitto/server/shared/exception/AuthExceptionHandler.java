@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.quitto.server.application.dto.ErrorResponse;
-import com.quitto.server.domain.exception.AuthenticationException;
+import com.quitto.server.domain.exception.Auth.AuthenticationException;
 
 /**
  * Traduz exceções para respostas HTTP padronizadas.
