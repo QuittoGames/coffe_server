@@ -13,7 +13,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import com.quitto.server.domain.enums.IA.AIProviderType;
-import com.quitto.server.domain.exception.ProviderNotFoundException;
+import com.quitto.server.domain.exception.IA.ProviderNotFoundException;
 import com.quitto.server.domain.interfaces.IA.AIProvider;
 import com.quitto.server.infrastructure.services.IA.DefaultAIProviderRegistry;
 

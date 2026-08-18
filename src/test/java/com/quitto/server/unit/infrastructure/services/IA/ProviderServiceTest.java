@@ -10,6 +10,8 @@ import static org.mockito.Mockito.when;
 import java.util.EnumSet;
 import java.util.List;
 
+import com.quitto.server.domain.exception.IA.ProviderNotFoundException;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -18,7 +20,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.quitto.server.application.services.IA.ProviderService;
 import com.quitto.server.domain.enums.IA.AIModelCapability;
 import com.quitto.server.domain.enums.IA.AIProviderType;
-import com.quitto.server.domain.exception.ProviderNotFoundException;
 import com.quitto.server.domain.interfaces.IA.AIProvider;
 import com.quitto.server.domain.interfaces.IA.AIProviderRegistry;
 import com.quitto.server.domain.models.IA.AIModel;

@@ -25,7 +25,7 @@ import com.quitto.server.application.dto.AIProvider.AIProviderRequestDTO;
 import com.quitto.server.application.interfaces.IA.AIProviderPort;
 import com.quitto.server.domain.enums.IA.AIModelCapability;
 import com.quitto.server.domain.enums.IA.AIProviderType;
-import com.quitto.server.domain.exception.ProviderNotFoundException;
+import com.quitto.server.domain.exception.IA.ProviderNotFoundException;
 import com.quitto.server.domain.interfaces.IA.AIProvider;
 import com.quitto.server.domain.models.IA.AIModel;
 import com.quitto.server.domain.models.IA.AIModelPricing;

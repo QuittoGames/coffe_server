@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import com.quitto.server.domain.enums.IA.AIProviderType;
-import com.quitto.server.domain.exception.ProviderNotFoundException;
+import com.quitto.server.domain.exception.IA.ProviderNotFoundException;
 import com.quitto.server.domain.interfaces.IA.AIProvider;
 import com.quitto.server.domain.interfaces.IA.AIProviderRegistry;
 

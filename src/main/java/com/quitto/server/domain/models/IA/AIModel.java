@@ -5,6 +5,7 @@ import java.util.EnumSet;
 import java.util.Objects;
 import java.util.Set;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.quitto.server.domain.enums.IA.AIModelCapability;
 import com.quitto.server.domain.enums.IA.AIProviderType;
 

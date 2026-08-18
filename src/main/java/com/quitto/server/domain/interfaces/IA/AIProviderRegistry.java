@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.quitto.server.domain.enums.IA.AIProviderType;
-import com.quitto.server.domain.exception.ProviderNotFoundException;
+import com.quitto.server.domain.exception.IA.ProviderNotFoundException;
 
 /**
  * Porta de domínio do registro de provedores de IA.
