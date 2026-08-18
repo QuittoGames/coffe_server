@@ -1,4 +1,4 @@
-package com.quitto.server.domain.exception;
+package com.quitto.server.domain.exception.Resource;
 
 /**
  * Exceção de domínio para <strong>usuário não encontrado</strong>.

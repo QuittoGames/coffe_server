@@ -1,4 +1,4 @@
-package com.quitto.server.domain.exception;
+package com.quitto.server.domain.exception.Auth;
 
 /**
  * Exceção de domínio para <strong>token inválido ou expirado</strong>.
