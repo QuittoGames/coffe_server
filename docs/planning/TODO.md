@@ -35,7 +35,9 @@ hr{border:none;border-top:1px solid var(--bd);margin:24px 0}
 
 # coffe_server — TODO
 
-> **SOURCE OF TRUTH** — Tasks identificadas por **IDs estáveis** (TSK-001..TSK-049; próximo livre: **TSK-050**). O **estado canônico é a checkbox** de cada task: `[ ]` TODO · `[>]` IN_PROGRESS · `[x]` DONE · `[!]` BLOCKED · `[-]` CANCELLED. **`# Progresso`, `# Dashboard` e `# Task Registry` são derivados** das checkboxes e NÃO contêm estado independente — ao mover uma task, atualize-os na mesma edição. Backlog reconstruído do zero (2026-08-13) a partir de verificação direta do código — nenhuma task foi herdada do backlog anterior sem evidência.
+> **SOURCE OF TRUTH** — Sistema de task injection híbrido: suporta tasks originadas tanto do modelo de AI (via specs/plan.md/spec.md) quanto do desenvolvedor local/global. Tasks identificadas por **IDs estáveis** (TSK-001..TSK-049; próximo livre: **TSK-050**). O **estado canônico é a checkbox** de cada task: `[ ]` TODO · `[>` IN_PROGRESS · `[x]` DONE · `[!]` BLOCKED · `[-]` CANCELLED. **`# Progresso`, `# Dashboard` e `# Task Registry` são derivados** das checkboxes e NÃO contêm estado independente — ao mover uma task, atualize-os na mesma edição. Backlog reconstruído do zero (2026-08-13) a partir de verificação direta do código — nenhuma task foi herdada do backlog anterior sem evidência.
+
+> **Modo de operação**: As checkboxes em `# Tasks` são a fonte de verdade independentemente de quem/onde a task tenha sido criada. O sistema derriva automaticamente `# Progresso`, `# Dashboard` e `# Task Registry`. Para tasks AI: verificar na spec correspondente. Para tasks dev: seguir o fluxo normal do projeto.
 
 <div class="nav">**Navegação:** [Progresso](#progresso) · [Dashboard](#dashboard) · [Tasks](#tasks) · [Task Registry](#task-registry) · [Agent Protocol](#agent-protocol)</div>
 
