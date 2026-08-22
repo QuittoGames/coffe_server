@@ -1,5 +1,6 @@
 package com.quitto.server.infrastructure.services.Auth.Token.Jtw;
 
+import com.quitto.server.application.controllers.Auth.AuthenticationController;
 import java.util.Date;
 import java.util.Optional;
 
@@ -77,4 +78,10 @@ public class JwtTokenService implements TokenService<Long> {
             throw e;
         }
     }
+
+    @Override
+    public Optional<String> reafresh(Long id){
+        return Optional.of(generateToken(id));
+    }
+
 }

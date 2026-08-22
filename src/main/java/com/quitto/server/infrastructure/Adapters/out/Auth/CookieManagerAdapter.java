@@ -24,4 +24,5 @@ public class CookieManagerAdapter implements CookieManager {
     public CookieDomain createAccessTokenCookie(String value, Integer maxAgeInSeconds) {
         return cookieFactory.createCookie("access_token", value, "/", maxAgeInSeconds);
     }
+
 }

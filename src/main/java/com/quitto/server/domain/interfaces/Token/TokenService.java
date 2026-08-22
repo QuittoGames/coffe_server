@@ -13,4 +13,6 @@ public interface TokenService<ID extends Number>{
     boolean verifyToken(String token);
 
     Optional<ID> extractIdSubject(String token);
+
+    Optional<String> reafresh(Long id);
 }

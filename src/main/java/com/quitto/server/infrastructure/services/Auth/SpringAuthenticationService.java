@@ -1,5 +1,7 @@
 package com.quitto.server.infrastructure.services.Auth;
 
+import java.util.Objects;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -10,7 +12,6 @@ import com.quitto.server.domain.exception.Auth.AuthenticationException;
 import com.quitto.server.domain.interfaces.Auth.AuthenticationService;
 import com.quitto.server.domain.interfaces.Auth.PasswordService;
 import com.quitto.server.domain.models.User.User;
-
 import com.quitto.server.domain.enums.Role;
 
 @Service

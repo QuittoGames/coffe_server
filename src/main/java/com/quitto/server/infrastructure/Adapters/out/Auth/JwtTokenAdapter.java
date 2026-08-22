@@ -27,4 +27,9 @@ public class JwtTokenAdapter implements TokenService<Long>{
         return service.extractIdSubject(token);
     }
 
+    @Override
+    public Optional<String> reafresh(Long id){
+        return service.reafresh(id);
+    }
+
 }

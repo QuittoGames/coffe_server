@@ -27,4 +27,17 @@ public class UserAuthenticationService {
         User user = authenticationService.register(name, password, email);
         return tokenService.generateToken(user.getId());
     }
+
+    public String reafresh(User user, String oldToken){
+        if (!tokenService.extractIdSubject(oldToken).equals(user.getId())) {
+            throw new IllegalAccessError("");
+        };
+
+        if (tokenService.verifyToken(oldToken)){
+            return tokenService.reafresh(user.getId()).get();
+        }
+
+        return null;
+
+    }
 }
