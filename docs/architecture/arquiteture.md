@@ -1947,34 +1947,41 @@ Usuário autenticado via Google
 
 ## 12. Integração MCP / Spring AI
 
-### Arquitetura MCP
+> **STATUS: DECISION** — MCP é um **microsserviço externo** (Spring AI MCP Server) acessado exclusivamente via **API Gateway**. O `coffe_server` (monólito Spring Boot) expõe endpoints REST que o Gateway roteia; o MCP **não** roda no mesmo processo.
+
+### Arquitetura MCP (Distribuída)
 
 ```
 Agente de IA (Claude, GPT, etc.)
         │
-        ├── HTTP → /mcp/** (Spring AI MCP Server)
-        │       │
-        │       └── GoogelCalenderTools.listEvents() [@Tool]
-        │               │
-        │               ├── SecurityContextHolder.getAuthentication()
-        │               ├── GoogleAuthService.getAuthorizedClient()
-        │               ├── GoogleCalendarClient.getCalendar()
-        │               └── GoogleCalenderService.listEvents()
+        ▼
+   API Gateway (Kong / NGINX / Spring Cloud Gateway)
         │
-        └── HTTP → /api/calendar/events (REST)
-                │
-                └── CalendarController.listEvents()
+        ├── /mcp/**  ──▶  MCP Microservice (Spring AI MCP Server 1.0.2)
+        │                  │
+        │                  └── Tools (@Tool) → chamadas HTTP/REST de volta
+        │                      para o coffe_server (ex.: /api/calendar/events)
+        │
+        └── /api/**  ──▶  coffe_server (monólito Spring Boot)
+                           │
+                           ├── REST Controllers
+                           ├── Application Services
+                           └── Domain / Infra
 ```
 
-### Componentes MCP
+### Componentes no coffe_server (adapters expostos via REST)
 
-| Componente | Responsabilidade |
-|---|---|
-| `GoogelCalenderTools` | Expõe `@Tool` para agentes de IA via MCP |
-| `GoogleCalenderService` | Lógica de negócio do Google Calendar |
-| `CalendarController` | REST endpoints para calendário |
-| `GoogleAuthService` | Obtém tokens OAuth2 autorizados |
-| `GoogleCalendarClient` | Cliente da API Google Calendar |
+| Componente | Responsabilidade | Acesso MCP |
+|---|---|---|
+| `GoogleCalendarTools` | Expõe `@Tool` para agentes de IA via MCP | O MCP Service chama `GET /api/calendar/events` |
+| `GoogleCalendarService` | Lógica de negócio do Google Calendar | Usado pelo `CalendarController` |
+| `CalendarController` | REST endpoints `/api/calendar/*` | **Superfície exposta ao Gateway** |
+| `GoogleAuthService` | Obtém tokens OAuth2 autorizados | Usado internamente |
+| `GoogleCalendarClient` | Cliente da API Google Calendar | Usado internamente |
+
+> **FACT:** O MCP Service **não** tem acesso direto ao `SecurityContextHolder`, repositórios JPA, nem beans do Spring do `coffe_server`. Toda comunicação ocorre via **contratos REST** versionados e autenticados (JWT + mTLS no Gateway).
+
+> **PROPOSAL:** Definir contrato OpenAPI 3.1 para `/api/calendar/*` e `/api/study/*` para que o MCP Service possa gerar clientes tipados.
 
 ---
 
@@ -2042,7 +2049,7 @@ Duas instâncias Redis separadas, cada uma com um papel distinto:
 | `coffee.redis.cache` | **User Cache** | Sessões, dados de usuário, leitura rápida |
 | `coffee.redis.rate-limit` | **RateLimit** | Contadores distribuídos por IP/rota |
 
-A abstração completa (Ports & Adapters, Lettuce, codecs) está documentada em **`docs/architecture/redis-abstraction.md`** e resumida na seção 18.
+A abstração completa (Ports & Adapters, Lettuce, codecs) está documentada na seção 18.
 
 ---
 
@@ -2150,6 +2157,8 @@ if (isJwt(token)) {
 
 ## 17. Ecossistema IA Provider Service
 
+> **STATUS: DECISION** — O ecossistema de provedores de IA foi refatorado para seguir o padrão Ports & Adapters, com correções de nomes de classes e organização de pacotes.
+
 ### 17.1 Problema & Conceito
 
 O coffe_server precisa expor **capacidades de IA** para os agentes do ecossistema (Claude, GPT, agentes locais via MCP). O problema: existem **dezenas de provedores** de modelos — OpenAI, Anthropic, Google AI Studio, Ollama (self-hosted), entre outros — cada um com API, base URL e formato de resposta próprios.
@@ -2173,9 +2182,9 @@ infrastructure/IA/
 ├── AnthropicProvider.java
 └── ... (38 providers no total)
 
-infrastructure/services/IA/Provaiders/
-├── ProvaiderIAService.java        # Use case de IA (wraps o registry)
-└── Reagistry/
+infrastructure/services/IA/Providers/
+├── ProviderIAService.java        # Use case de IA (wraps o registry)
+└── Registry/
     └── AIProviderRegistry.java    # Implementa AIRegistry<ServiceProvider, AIProvider>
 
 infrastructure/services/CoffeAgent/
@@ -2271,7 +2280,7 @@ Padrão: cada provider é um `@Service` minimalista (~24 linhas) que só configu
 
 #### AIProviderRegistry (implementação do registry)
 
-**Localização:** `infrastructure/services/IA/Provaiders/Reagistry/AIProviderRegistry.java`
+**Localização:** `infrastructure/services/IA/Providers/Registry/AIProviderRegistry.java`
 
 ```java
 @Service
@@ -2284,7 +2293,7 @@ public class AIProviderRegistry implements AIRegistry<ServiceProvider, AIProvide
     //   provider.getModels()
     //   → Collectors.toMap(AIProvider::getProvider, identity)
 
-    public AIProvider findProvaider(ServiceProvider provider) {
+    public AIProvider findProvider(ServiceProvider provider) {
         // null → IllegalArgumentException
         // !isEnabled() → NotEnableExceptions
     }
@@ -2297,7 +2306,7 @@ public class AIProviderRegistry implements AIRegistry<ServiceProvider, AIProvide
 3. `provider.setKey(secret)` injeta a chave no provider; `provider.getModels()` pré-carrega o catálogo
 4. Os providers são indexados num `Map<ServiceProvider, AIProvider>` via `Collectors.toMap` (1:1 — um provider por enum)
 
-**Busca por enumeração:** o método `findProvaider(ServiceProvider)` (fora da interface `AIRegistry`) devolve o provider registrado e habilitado — lança `IllegalArgumentException` se não houver provider para a chave e `NotEnableExceptions` (`shared/exception/NotEnableExceptions.java`) se o provider estiver desabilitado.
+**Busca por enumeração:** o método `findProvider(ServiceProvider)` (fora da interface `AIRegistry`) devolve o provider registrado e habilitado — lança `IllegalArgumentException` se não houver provider para a chave e `NotEnableExceptions` (`shared/exception/NotEnableExceptions.java`) se o provider estiver desabilitado.
 
 #### CoffeAgentService (AgentService do diagrama)
 
@@ -2315,9 +2324,9 @@ public class CoffeAgentService {
 
 É a ponte entre o registry e os **secrets** do ambiente. Atualmente é um placeholder que retorna `"key_temp"` — a integração real com env vars está pendente.
 
-#### ProvaiderIAService (use case)
+#### ProviderIAService (use case)
 
-**Localização:** `infrastructure/services/IA/Provaiders/ProvaiderIAService.java`
+**Localização:** `infrastructure/services/IA/Providers/ProviderIAService.java`
 
 `@Service` que envolve o registry e expõe operações de alto nível para a aplicação. `getModels()` é um stub vazio — a exposição real via MCP tools está pendente.
 
@@ -2340,7 +2349,7 @@ Cada constante possui um provider concreto em `infrastructure/IA/` (ex.: `Ollama
 ```mermaid
 sequenceDiagram
     participant App as Aplicação / MCP
-    participant Svc as ProvaiderIAService
+    participant Svc as ProviderIAService
     participant Reg as AIProviderRegistry
     participant Env as CoffeAgentService
     participant P as BaseProvider (concreto)
@@ -2362,7 +2371,7 @@ sequenceDiagram
 **Pontos de atenção (estado atual):**
 
 - `CoffeAgentService.getEnvKey()` retorna placeholder — providers não têm chaves reais ainda
-- `ProvaiderIAService.getModels()` é stub — sem exposição via MCP tools
+- `ProviderIAService.getModels()` é stub — sem exposição via MCP tools
 - `BaseProvider` tem hooks de auth/formato por provedor — implementação por provedor pendente
 
 ---
@@ -2397,7 +2406,7 @@ As duas instâncias Redis rodam como **Docker Instances** separadas — cada uma
 
 ### 18.2 Redis User Cache vs RateLimit
 
-A abstração Redis (documentação detalhada: `docs/architecture/redis-abstraction.md`) separa **portas no domínio** de **adapters na infraestrutura**:
+A abstração Redis (documentada na seção 18) separa **portas no domínio** de **adapters na infraestrutura**:
 
 ```
 DOMAIN  ◄──────  INFRASTRUCTURE  ◄──────  Lettuce / Netty
@@ -2451,7 +2460,7 @@ Internamente, o `RedisClientProvider`:
 
 **Integração com Rate Limit:** `Bucket4jConfig` cria o `RateLimit` bean com o `RedisClientProvider` + `PolicyProvider`; o `Bucket4jRateLimiter` monta o `ProxyManager` distribuído de forma **lazy** (primeira chamada de `tryConsume`), então o boot não depende do Redis no ar.
 
-**Pendências conhecidas** (ver `docs/architecture/redis-abstraction.md`):
+**Pendências conhecidas** (ver seção 18):
 - 🟡 Drift de config no Redis remoto (6380): instância rate-limit roda SEM `requirepass` (AUTH → ERR), mas o `.env` espera `REDIS_RATELIMIT_PASSWORD` — alinhar config do servidor com o `.env` (verificado 2026-08-04)
 - `RedisArryCodec` na camada errada (infra em vez de domínio)
 - Typos de pacote: `Adpter` → `Adapter`, `Provaider` → `Provider`, `Arry` → `Array`

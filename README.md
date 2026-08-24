@@ -286,7 +286,7 @@ Scripts SQL disponíveis em `sql/`:
 | 6 | `05_external_account.sql` | `external_account` |
 | 7 | `06_roles.sql` | Roles PostgreSQL |
 
-O acesso ao Redis (cache de usuário + rate limiting) é abstraído via Ports & Adapters — o domínio define `Connection`/`DatabaseClientProvider`, e a infraestrutura implementa com Lettuce (`RedisClientProvider`, `RedisClientConnectionAdapter`). Detalhes em `docs/architecture/redis-abstraction.md`.
+O acesso ao Redis (cache de usuário + rate limiting) é abstraído via Ports & Adapters — o domínio define `Connection`/`DatabaseClientProvider`, e a infraestrutura implementa com Lettuce (`RedisClientProvider`, `RedisClientConnectionAdapter`). Veja `docs/architecture/arquiteture.md` (seção 18).
 
 ---
 

@@ -1,14 +1,12 @@
 ---
-description: Servidor pessoal multifuncional com Clean Architecture — autenticação JWT, OAuth2 Google, gerenciamento de máquinas, integração Linux, ecossistema de provedores de IA (40+ providers), cache/rate-limit com Redis, servidor MCP para agentes de IA, controle de backup e sistema multi-usuário com permissões.
+description: Servidor pessoal multifuncional com Clean Architecture — autenticação JWT, OAuth2 Google, gerenciamento de máquinas, integração Linux, ecossistema de provedores de IA (40+ providers), cache/rate-limit com Redis, controle de backup e sistema multi-usuário com permissões. Expõe funcionalidades via REST e API Gateway para MCP externo.
 ---
 
 # coffe_server
 
 ## Coffee Server Architecture
 
-The **Coffee Server** is the outermost application of the Coffee ecosystem. It is designed as an **independent monolithic service** that exposes the capabilities of the Coffee SDK through the **Model Context Protocol (MCP)** while internally following **Clean Architecture**.
-
-Although the Coffee Server uses a traditional **MVC** structure at its entry point, the MVC layer is **not responsible for business logic**. It acts only as an adapter between external protocols and the application's use cases.
+The **Coffee Server** is the central monolith of the Coffee ecosystem. It is an **independent monolithic service** that implements the Coffee SDK using **Clean Architecture**. The Coffee Server exposes its capabilities through a **REST API** and acts as the backend for an **external MCP microservice** that is accessed via an **API Gateway**. While the Coffee Server follows a traditional **MVC** structure at its entry point, the MVC layer is **not responsible for business logic**. It acts only as an adapter between external protocols (REST) and the application's use cases.
 
 The architecture is organized as follows:
 
@@ -16,53 +14,69 @@ The architecture is organized as follows:
 External Client
         │
         ▼
- MCP / REST / CLI / Other Adapters
+   API Gateway
+(Kong / NGINX / Spring Cloud Gateway)
         │
-        ▼
-   MVC Controllers (Entry Layer)
+        ├─── /api/** ─────────────────────▶
+        │                coffe_server
+        │               (monolith Spring Boot)
         │
+        ├─── /mcp/** ─────────────────────▶  MCP Microservice
+        │                (Spring AI MCP Server)        │
+        │                mcp/ package                 │
+        │                (@Tool wrappers)             │
+        │                     │                      │
+        │                     └──── REST ────────────┘
+        │                           /api/*
         ▼
-     Application Layer
-       (Use Cases)
-        │
-        ▼
-      Domain Layer
-(Entities, Value Objects,
- Domain Services, Interfaces)
-        │
-        ▼
- Infrastructure Layer
-(Repositories, File System,
- DNF, Docker, Git, etc.)
+   RabbitMQ (PROPOSAL)
+   (async fallback)
+
+        ┌──────────────────────────────────────────┐
+        │        coffe_server (monolith)          │
+        │                                          │
+        │  MVC Controllers (Entry Layer)           │
+        │        │                                  │
+        │        ▼                                  │
+        │  Application Layer (Use Cases)           │
+        │        │                                  │
+        │        ▼                                  │
+        │  Domain Layer (PURO)                     │
+        │  (Entities, Value Objects,               │
+        │   Domain Services, Interfaces)            │
+        │        │                                  │
+        │        ▼                                  │
+        │  Infrastructure Layer                    │
+        │  (Repositories, File System,            │
+        │   DNF, Docker, Git, etc.)                 │
+        └──────────────────────────────────────────┘
 ```
 
-The **MCP layer** is treated as an **input adapter**, similar to a REST API, CLI, or gRPC interface. Its only responsibility is to translate incoming requests into application use cases and transform the results back into MCP responses.
+The **MCP layer** is **NOT** part of the Coffee Server process. The MCP microservice is an **external service** that runs independently and accesses the Coffee Server exclusively through versioned REST endpoints exposed behind the API Gateway. The Coffee Server's `mcp/` package acts only as a collection point for `@Tool`-annotated methods; the actual MCP transport handling, session management, and tool registration are performed by the external MCP microservice.
 
-This design ensures that the business rules remain completely independent of the communication protocol. The Domain and Application layers have no knowledge of MCP, HTTP, or any framework-specific technology.
+This design ensures that:
 
-The Infrastructure layer implements the interfaces defined by the inner layers and communicates with operating system resources, package managers, Docker, Git repositories, the file system, and any other external dependency required by the Coffee ecosystem.
-
-From a deployment perspective, the Coffee Server behaves like a **standalone monolithic service**. All modules execute within the same process and share the same codebase, avoiding the operational complexity of a microservice architecture. However, because it exposes its functionality through MCP, it behaves externally like a dedicated platform service that can be consumed by multiple AI agents, desktop applications, CLIs, or future integrations.
-
-This approach combines the simplicity and performance of a monolith with the modularity provided by Clean Architecture. New protocols (REST, CLI, WebSocket, gRPC, or additional MCP transports) can be added as new adapters without requiring changes to the Domain or Application layers.
+- **Business rules remain completely independent of MCP.** The Domain and Application layers have no knowledge of MCP, the MCP microservice, or any framework-specific technology used by the external service.
+- **The Coffee Server remains a standalone monolith.** All core modules (domain, application, infrastructure) execute in the same process and share one codebase. New REST endpoints can be added without requiring changes to the Domain or Application layers.
+- **MCP exposure is decoupled.** The external MCP microservice communicates with the Coffee Server via REST contracts, allowing the MCP transport to evolve independently (e.g., migrating to a different MCP server implementation or switching to WebSocket-based MCP without touching the Coffee Server core).
 
 The result is a highly maintainable architecture where:
 
-* Business rules remain framework-independent.
-* Communication protocols are isolated in the outer layer.
+* Business rules remain framework-independent within the monolith.
+* REST endpoints are the sole interface between the Coffee Server and external services.
 * Infrastructure details are fully encapsulated.
-* Multiple clients can reuse the same application logic.
+* Multiple clients (browser, CLI, MCP microservice) can reuse the same application logic.
 * The Coffee Server acts as the central orchestration point for the entire Coffee ecosystem while remaining loosely coupled to the technologies used to access it.
 
 ---
 
 ## 1. Descrição do Projeto
 
-**coffe_server** é o servidor central do ecossistema pessoal do Quitto — um hub multifuncional pensado para estudos, automação e gerenciamento de homelab. A visão de longo prazo é um sistema tipo "Jarvis" (Iron Man): um backend que integra autenticação centralizada, gerenciamento de máquinas (Wake-on-LAN, Tailscale), usuários Linux, serviços Google (Calendar, Tasks), servidor MCP para agentes de IA, **controle de backup** e **sistema de permissões multi-usuário**.
+**coffe_server** é o servidor central do ecossistema pessoal do Quitto — um hub multifuncional pensado para estudos, automação e gerenciamento de homelab. A visão de longo prazo é um sistema tipo "Jarvis" (Iron Man): um backend que integra autenticação centralizada, gerenciamento de máquinas (Wake-on-LAN, Tailscale), usuários Linux, serviços Google (Calendar, Tasks), **controle de backup** e **sistema de permissões multi-usuário**.
 
-Ele funciona como um **servidor geral** que pode ser acessado por outras pessoas que o administrador permitir, cada uma com seu nível de acesso. A ideia é que seja o cérebro do homelab — máquinas, arquivos, calendário, tarefas, automação — tudo exposto via REST e MCP Tools para agentes de IA, formando a base de um ecossistema de agentes consistente.
+Ele funciona como um **servidor geral** que pode ser acessado por outras pessoas que o administrador permitir, cada uma com seu nível de acesso. A ideia é que seja o cérebro do homelab — máquinas, arquivos, calendário, tarefas, automação — tudo exposto via REST. Agentes de IA acessam as funcionalidades via um **microserviço MCP externo** (Spring AI MCP Server) que se comunica com o Coffee Server por meio de um **API Gateway**, formando a base de um ecossistema de agentes consistente.
 
-O projeto segue **Clean Architecture / Arquitetura Hexagonal** com camadas bem definidas: domínio puro (sem frameworks), application (orquestração), infraestrutura (implementações concretas) e MCP (camada de agentes de IA).
+O projeto segue **Clean Architecture / Arquitetura Hexagonal** com camadas bem definidas: domínio puro (sem frameworks), application (orquestração), infraestrutura (implementações concretas). O MCP é um microserviço separado que consome a API REST do Coffee Server.
 
 Usuários finais: Quitto (dev/admin), agentes de IA via MCP, usuários convidados com permissões específicas, e futuros usuários do PS3 (Project Setup 3 Web).
 
@@ -81,7 +95,7 @@ Usuários finais: Quitto (dev/admin), agentes de IA via MCP, usuários convidado
 | **Cache/RateLimit** | Redis 7 (Lettuce) — instâncias `cache` e `rate-limit` |
 | **IA** | Ecossistema próprio — `BaseProvider` + 40+ provedores (OpenAI, Anthropic, Ollama…) |
 | **OAuth2** | Spring Security OAuth2 Client + Google Auth Library 1.23.0 |
-| **IA/MCP** | Spring AI MCP Server WebMVC 1.0.2 |
+| **Gatekeeper** | Spring AI MCP Server WebMVC 1.0.2 (executa no microserviço MCP externo) |
 | **Templates** | Thymeleaf |
 | **Monitoria** | Spring Actuator |
 | **Geração de código** | Lombok (opcional) |
@@ -127,7 +141,7 @@ src/main/java/com/quitto/server/
 │   └── services/                           #   SpringAuthenticationService, JwtTokenService, BCrypt,
 │                                           #   AIProviderRegistry, RedisClientProvider, CoffeAgentService
 │
-├── mcp/                                    # CAMADA MCP (Spring AI)
+├── mcp/                                    # @Tool wrappers (collection point for external MCP microservice)
 │   ├── services/                           #   GoogleCalenderService
 │   └── tools/                              #   GoogelCalenderTools, CalendarController
 │
@@ -212,9 +226,11 @@ TokenResolverManager iterates over resolvers[]
 ### 5.4 MCP (Agentes de IA)
 
 ```
-Agente de IA (Claude, GPT) → HTTP /mcp/** → GoogelCalenderTools ( @Tool )
-  → GoogleAuthService → GoogleCalendarClient → GoogleCalenderService
+Agente de IA (Claude, GPT) → API Gateway → /mcp/** → MCP Microservice (Spring AI MCP Server)
+  → REST /api/calendar/* → GoogleCalenderService → GoogleAuthService → GoogleCalendarClient
 ```
+
+**Note**: The MCP microservice is an external service that communicates with the Coffee Server exclusively through versioned REST endpoints exposed behind the API Gateway. The Coffee Server's `mcp/` package acts only as a collection point for `@Tool`-annotated methods; the actual MCP transport handling, session management, and tool registration are performed by the external MCP microservice.
 
 ### 5.5 IA Providers (ecossistema de modelos)
 
@@ -413,7 +429,7 @@ REDIS_RATELIMIT_SSL=***
 ## 12. Recursos Úteis
 
 - **Documentação de arquitetura completa**: `docs/architecture/arquiteture.md`
-- **Abstração Redis (Ports & Adapters)**: `docs/architecture/redis-abstraction.md`
+- **Abstração Redis (Ports & Adapters)**: documentada em `docs/architecture/arquiteture.md` (seção 18 — Database Integration PostgreSQL + Redis)
 - **Notas do agente Claude**: `.agents/IA_README.md` (OAuth2 Google não deve ser base para análise de arquitetura — será refatorado)
 - **Notas de planejamento**: `docs/planning/plain.md` (visão geral, motivações, integrações futuras)
 - **README**: `README.md`

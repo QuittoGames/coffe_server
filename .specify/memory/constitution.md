@@ -10,16 +10,17 @@
 # Coffee Server Constitution
 
 Spec-Driven Development Constitution for the **coffe_server** — the central hub of the
-Coffee ecosystem (Clean Architecture monolith exposing REST, WebSocket and MCP adapters).
+Coffee ecosystem (Clean Architecture monolith exposing REST API via API Gateway; external MCP microservice provides Model Context Protocol tools).
 
 ## Core Principles
 
 ### I. Clean Architecture Dependency Rule
 Every dependency points inward. `domain/` imports nothing from `application/`,
-`infrastructure/`, `mcp/`, Spring, Jakarta, or any framework. `application/` orchestrates
-use cases and must not contain business logic. `infrastructure/` implements the interfaces
-defined by the inner layers. The MCP layer is an input adapter (like REST/CLI/gRPC) and must
-never move business rules into the interface layer.
+`infrastructure/`, Spring, Jakarta, or any framework. `application/` orchestrates
+use cases and must not contain business logic. `infrastructure/` implements the
+interfaces defined by the inner layers. The MCP microservice is a separate entity
+that communicates with the Coffee Server via REST APIs. The MCP layer must never
+move business rules into the interface layer.
 
 ### II. Domain Purity (NON-NEGOTIABLE)
 The domain layer is pure Java: zero Spring, zero Jakarta, zero HTTP, zero framework imports.
@@ -47,16 +48,13 @@ structure before being considered complete.
 Constructor injection everywhere (no field injection). Prefer `Optional<T>` over `null` for
 absent values. Structured SLF4J logging (never `System.out`/`System.err`). Public class and
 method names MUST be free of typos (historical typos like `JtwTokenResvoler`,
-`BCryptPassowordService`, `Provaider`, `ExternalAccont`, `GoogelCalenderTools`,
+`BCryptPassowordService`, `Provaider`, `ExternalAccont`, `GooglCalenderTools`,
 `GoogleCalenderService` were corrected and must not reappear). Logs must not expose secrets
 or raw exception messages to HTTP responses.
 
 ## Architecture & Constraints
 
-The Coffee Server is a standalone monolithic service. All modules (domain, application,
-infrastructure, MCP) execute in the same process and share one codebase. This combines the
-simplicity of a monolith with the modularity of Clean Architecture: new protocols can be
-added as new adapters without touching domain or application layers.
+The Coffee Server is an **independent monolith** that runs in a single process with one codebase (domain, application, infrastructure). It exposes its capabilities through a **REST API** behind an **API Gateway** which provides routing, authentication, and rate limiting. The external **MCP microservice** is a separate service that provides Model Context Protocol tools to AI agents by calling the Coffee Server's REST API.
 
 **Stack**: Java 21 · Spring Boot 4.0.6 · Maven (wrapper) · PostgreSQL (prod) / H2 (dev/test) ·
 Redis (cache + rate-limit) · Auth0 java-jwt · Spring AI MCP Server · Thymeleaf.

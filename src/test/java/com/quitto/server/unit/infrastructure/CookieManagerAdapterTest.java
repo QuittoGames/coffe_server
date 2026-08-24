@@ -47,4 +47,18 @@ class CookieManagerAdapterTest {
         assertEquals("/", result.path());
         assertNull(result.maxAge());
     }
+
+    @Test
+    void createAccessTokenCookie_withMaxAge_delegatesToFactoryWithRootPath() {
+        // Overload usado pelo logout (maxAge=0) e por futuros cookies persistentes.
+        CookieDomain expected = CookieDomain.of("access_token", "", "/", 0);
+        when(cookieService.createCookie("access_token", "", "/", 0)).thenReturn(expected);
+
+        CookieDomain result = adapter.createAccessTokenCookie("", 0);
+
+        assertEquals(expected, result);
+        assertEquals(0, result.maxAge());
+        assertEquals("/", result.path());
+        verify(cookieService).createCookie("access_token", "", "/", 0);
+    }
 }

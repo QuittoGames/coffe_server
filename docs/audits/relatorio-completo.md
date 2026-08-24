@@ -1,7 +1,7 @@
 # Relatório Completo — coffe_server
 
 > **Projeto:** `com.quitto:server:0.0.1-SNAPSHOT`
-> **Stack:** Java 21 + Spring Boot 4.0.6 + Spring AI MCP 1.0.2
+> **Stack:** Java 21 + Spring Boot 4.0.6 · MCP served by external microservice (Spring AI MCP Server 1.0.2) via API Gateway
 > **Arquitetura:** Hexagonal (Ports & Adapters / Clean Architecture)
 > **Banco:** PostgreSQL (prod) / H2 (dev/teste)
 > **Build:** Maven
@@ -11,7 +11,7 @@
 
 ## Coffee Server Architecture
 
-The **Coffee Server** is the outermost application of the Coffee ecosystem. It is designed as an **independent monolithic service** that exposes the capabilities of the Coffee SDK through the **Model Context Protocol (MCP)** while internally following **Clean Architecture**.
+The **Coffee Server** is the central monolith of the Coffee ecosystem. It is an **independent monolithic service** that implements the Coffee SDK using **Clean Architecture**. The Coffee Server exposes its capabilities through a **REST API** and acts as the backend for an **external MCP microservice** accessed via an **API Gateway**. The MCP layer is **NOT** part of the Coffee Server process: the MCP microservice runs independently and consumes the Coffee Server exclusively through versioned REST endpoints behind the Gateway (FACT, per `.agents/AGENTS.md`).
 
 Although the Coffee Server uses a traditional **MVC** structure at its entry point, the MVC layer is **not responsible for business logic**. It acts only as an adapter between external protocols and the application's use cases.
 
@@ -21,7 +21,10 @@ The architecture is organized as follows:
 External Client
         │
         ▼
- MCP / REST / CLI / Other Adapters
+   API Gateway (Kong / NGINX / Spring Cloud Gateway)
+        │
+        ▼
+ coffe_server — REST monolith
         │
         ▼
    MVC Controllers (Entry Layer)
@@ -41,7 +44,7 @@ External Client
  DNF, Docker, Git, etc.)
 ```
 
-The **MCP layer** is treated as an **input adapter**, similar to a REST API, CLI, or gRPC interface. Its only responsibility is to translate incoming requests into application use cases and transform the results back into MCP responses.
+The **MCP layer** is **NOT** part of the Coffee Server process. The Coffee Server's `mcp/` package acts only as a collection point for `@Tool`-annotated methods; the actual MCP transport, session management, and tool registration are performed by an **external MCP microservice** (Spring AI MCP Server) that runs independently and accesses the Coffee Server exclusively through versioned REST endpoints behind the **API Gateway**. Within the Coffee Server's own architecture, MCP is therefore an **external input adapter** — it does not run inside the monolith (FACT).
 
 This design ensures that the business rules remain completely independent of the communication protocol. The Domain and Application layers have no knowledge of MCP, HTTP, or any framework-specific technology.
 
@@ -1145,11 +1148,7 @@ server/                                          # Projeto raiz (pom.xml pai)
 │       ├── external/
 │       └── services/
 │
-├── server-mcp/                                  # Módulo: MCP TOOLS
-│   ├── pom.xml                                  #   Depende de server-domain
-│   └── src/main/java/com/quitto/server/mcp/
-│
-├── server-boot/                                 # Módulo: SPRING BOOT APP
+├── server-boot/                                 # Módulo: SPRING BOOT APP (monólito final; o pacote mcp/ fica aqui como ponto de coleta de @Tool)
 │   ├── pom.xml                                  #   Depende de TODOS os módulos
 │   ├── src/main/java/com/quitto/server/
 │   │   └── ServerApplication.java
@@ -1159,6 +1158,8 @@ server/                                          # Projeto raiz (pom.xml pai)
 │
 └── pom.xml                                      # POM pai (packaging: pom)
 ```
+
+> **FACT:** O MCP é um **microserviço externo** (Spring AI MCP Server) que roda de forma independente e acessa o `coffe_server` exclusivamente via REST versionado atrás do API Gateway. Por isso `server-mcp/` **não** é um módulo interno do reactor Maven acima — o pacote `mcp/` permanece dentro de `server-boot` apenas como ponto de coleta de métodos `@Tool`; o transporte, a sessão e o registro de ferramentas ficam no microserviço externo.
 
 **Exemplo do `server-domain/pom.xml`:**
 
@@ -1217,7 +1218,7 @@ server/                                          # Projeto raiz (pom.xml pai)
 | `coffe-infra-jwt` | Implementação JWT (Auth0) | `coffe-domain` | Server, CLI |
 | `coffe-infra-oauth` | Implementação Google OAuth | `coffe-domain` | Server, Web |
 | `coffe-infra-jpa` | Persistência JPA (PostgreSQL) | `coffe-domain` | Server |
-| `coffe-mcp-tools` | Ferramentas MCP reutilizáveis | `coffe-domain` | Agentes IA |
+| `coffe-mcp-tools` | Ferramentas MCP (`@Tool`) reutilizáveis — consumidas pelo microserviço MCP externo | `coffe-domain` | Microserviço MCP externo, Agentes IA |
 | `coffe-boot` | App Spring Boot final | Todos | Deploy |
 
 ---
@@ -1320,6 +1321,8 @@ server/                                          # Projeto raiz (pom.xml pai)
 ---
 
 ## 9. Glossário de Componentes
+
+> **FACT:** O pacote `mcp/` do coffe_server é apenas um ponto de coleta de métodos `@Tool`; o transporte MCP real, o gerenciamento de sessão e o registro de ferramentas são executados por um **microserviço MCP externo** (Spring AI MCP Server) que acessa o coffe_server exclusivamente via REST versionado atrás do **API Gateway**.
 
 | Componente | Localização | Responsabilidade | Status |
 |---|---|---|---|

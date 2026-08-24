@@ -104,7 +104,7 @@ class LoginIntegrationTest {
     }
 
     @Test
-    void login_setsCookieOnResponse() throws Exception {
+    void login_cookieIsSessionCookie_whenNoMaxAgeConfigured() throws Exception {
         LoginDTO login = new LoginDTO(null,USERNAME, PASSWORD);
 
         MvcResult result = mockMvc.perform(post("/auth/login")
@@ -113,9 +113,12 @@ class LoginIntegrationTest {
             .andExpect(status().isOk())
             .andReturn();
 
-        Cookie accessTokenCookie = result.getResponse().getCookie("access_token");
-        assertNotNull(accessTokenCookie, "access_token cookie must be present");
-        assertFalse(accessTokenCookie.getValue().isBlank());
+        // Documenta a decisão atual: cookie de sessão (sem Max-Age) com JWT de 1h dentro.
+        String header = result.getResponse().getHeader(org.springframework.http.HttpHeaders.SET_COOKIE);
+        assertNotNull(header, "Set-Cookie header must be present");
+        assertTrue(header.contains("access_token="));
+        assertFalse(header.contains("Max-Age"),
+            "login must emit a session cookie (no Max-Age) — decisão atual de ciclo de vida");
     }
 
     @Test
@@ -133,6 +136,12 @@ class LoginIntegrationTest {
         assertTrue(cookie.isHttpOnly(), "Cookie must be httpOnly");
         // Secure depends on app.cookie.secure property (false on HTTP/dev, true on HTTPS/prod)
         assertFalse(cookie.getSecure(), "Cookie should NOT be secure on HTTP (test profile)");
+
+        // Flags de segurança do header real (SameSite/Path não são parseados por jakarta Cookie)
+        String header = result.getResponse().getHeader(org.springframework.http.HttpHeaders.SET_COOKIE);
+        assertNotNull(header);
+        assertTrue(header.contains("SameSite=Lax"), "login cookie must carry SameSite=Lax");
+        assertTrue(header.contains("Path=/"), "login cookie must carry Path=/");
     }
 
     @Test

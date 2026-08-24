@@ -170,7 +170,7 @@ class CookieSystemIntegrationTest {
     }
 
     @Test
-    void jtwTokenResvoler_extractsBearerToken() {
+    void jwtTokenResolver_extractsBearerToken() {
         var req = new MockHttpServletRequest();
         req.addHeader("Authorization", "Bearer my-bearer-jwt");
         var ctx = new HttpTokenRequestContext(req);
@@ -311,5 +311,38 @@ class CookieSystemIntegrationTest {
         assertNotNull(httpCookieService);
         assertNotNull(resolverManager);
         assertNotNull(jwtAuthenticationFilter);
+    }
+
+    // --- Chain injetada pelo Spring (ordem real dos beans) ---
+
+    @Test
+    void injectedResolverChain_prefersCookieOverBearer() {
+        // Usa o TokenResolverManager AUTOWIRED (ordem injetada pelo Spring),
+        // não uma lista montada manualmente — valida a precedência real.
+        String cookieToken = "token-from-cookie";
+        var request = new MockHttpServletRequest();
+        request.setCookies(new Cookie("access_token", cookieToken));
+        request.addHeader("Authorization", "Bearer token-from-header");
+
+        var result = resolverManager.resolve(new HttpTokenRequestContext(request));
+
+        assertTrue(result.isPresent());
+        assertEquals(cookieToken, result.get(),
+                "Spring-injected chain must resolve cookie before Bearer header");
+    }
+
+    // --- Endpoints protegidos sem credencial ---
+
+    @Test
+    void protectedEndpoint_withoutCredentials_returns401() throws Exception {
+        mockMvc.perform(get("/coffee/api/v1/ai/provider/models"))
+            .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void protectedEndpoint_withInvalidBearerToken_returns401() throws Exception {
+        mockMvc.perform(get("/coffee/api/v1/ai/provider/models")
+                .header("Authorization", "Bearer token-invalido-lixo"))
+            .andExpect(status().isUnauthorized());
     }
 }
