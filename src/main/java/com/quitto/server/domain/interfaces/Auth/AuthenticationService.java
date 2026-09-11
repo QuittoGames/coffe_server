@@ -23,4 +23,6 @@ public interface AuthenticationService{
     User authenticate(String username, String password) throws AuthenticationException;
 
     User register(String name, String password , String email);
+
+    boolean isAuthenticate(String token);
 }

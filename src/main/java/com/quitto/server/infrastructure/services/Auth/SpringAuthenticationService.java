@@ -55,4 +55,10 @@ public class SpringAuthenticationService implements AuthenticationService{
 
         return userRepository.save(user);
     }
+
+    @Override
+    public boolean isAuthenticate(String token){
+        return false;
+    }
+
 }
